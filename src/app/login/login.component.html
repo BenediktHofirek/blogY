@@ -1,0 +1,51 @@
+<div class="alert alert-danger" *ngIf="error">
+  <p>{{ error }}</p>
+</div>
+<div *ngIf="isLoading" style="text-align: center;">
+  <app-loading-spinner></app-loading-spinner>
+</div>
+<form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)" *ngIf="!isLoading" class="loginForm">
+  <div class="form-group">
+    <mat-form-field appearance="outline">
+      <mat-label
+        for="email"
+      >E-Mail</mat-label>
+      <input
+        matInput
+        placeholder="example@gmail.com"
+        type="email"
+        id="email"
+        ngModel
+        name="email"
+        required
+        email
+      >
+    </mat-form-field>
+  </div>
+  <div class="form-group">
+    <mat-form-field appearance="outline">
+      <mat-label
+        for="password"
+      >Password</mat-label>
+      <input
+        matInput
+        type="password"
+        id="password"
+        ngModel
+        name="password"
+        required
+        minlength="6"
+      >
+    </mat-form-field>
+  </div>
+  <div>
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="!loginForm.valid"
+    >
+      Login
+    </button>
+  </div>
+</form>
