@@ -10,13 +10,12 @@ import { AuthService } from '../auth.service';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  public user: firebase.User | null = null;
+  public user: firebase.User | null | undefined = undefined;
   private userSubscription: Subscription;
 
   constructor(private authService: AuthService,
               private router: Router) {
-    this.userSubscription = this.authService.userObservable.subscribe(user => {
-      console.log('user', user);
+    this.userSubscription = this.authService.user.subscribe(user => {
       this.user = user;
     });
   }

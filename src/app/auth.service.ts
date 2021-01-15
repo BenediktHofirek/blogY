@@ -2,22 +2,24 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { AngularFireAuth } from  "@angular/fire/auth";
 import { Router } from '@angular/router';
 import firebase from 'firebase';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, Observable } from 'rxjs';
 import { NavigationService } from "./navigation.service";
 
 @Injectable({ providedIn: 'root' })
 export class AuthService implements OnDestroy {
-  public userObservable;
-  private user: firebase.User | null = null;
+  private userSubject: BehaviorSubject<firebase.User | null | undefined>;
+  public user: Observable<firebase.User | null | undefined>;
   private expirationTime = 3600000;
   private userSubscription: Subscription;
 
   constructor(private firebaseAuth: AngularFireAuth,
               private navigationService: NavigationService,
               private router: Router) {
-    this.userObservable = this.firebaseAuth.authState;
+    this.userSubject = new BehaviorSubject<firebase.User | null | undefined>(undefined);
+    this.user = this.userSubject.asObservable();
+    
     this.userSubscription = this.firebaseAuth.authState.subscribe((user) => {
-      this.user = user;
+      this.userSubject.next(user);
     });
   }
 
@@ -26,7 +28,7 @@ export class AuthService implements OnDestroy {
   }
 
   getCurrentUser() {
-    if ((new Date(this.user?.metadata.lastSignInTime || 0).getTime() + this.expirationTime) - Date.now() > 0) {
+    if ((new Date(this.userSubject.getValue()?.metadata.lastSignInTime || 0).getTime() + this.expirationTime) - Date.now() > 0) {
       return this.user;
     }
     
@@ -34,7 +36,7 @@ export class AuthService implements OnDestroy {
   }
 
   getToken(): Promise<any> {
-    const currentUser = this.getCurrentUser();
+    const currentUser = this.userSubject.getValue();
     if (!currentUser) {
       return new Promise(resolve => resolve(currentUser));
     }
