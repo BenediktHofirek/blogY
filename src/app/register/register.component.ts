@@ -28,7 +28,7 @@ export class RegisterComponent implements OnInit {
     } = form.value;
     
     this.isLoading = true;
-    this.authService.register(email, password).catch(
+    this.authService.register(email, password, username).catch(
       error => {
         console.log('error', error);
         this.error = error.message;

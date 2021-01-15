@@ -20,12 +20,7 @@ export class AuthService {
         this.userSubject.next(parsedUser);
       }
     }
-
-    this.firebaseAuth.authState.subscribe(user => {
-      if (user){
-        console.log('user',user);
-      }
-    });
+    
   }
 
   getCurrentUser() {
@@ -45,7 +40,9 @@ export class AuthService {
     console.log('userData',userData);
     const newUser: User = {
       email: userData.email,
-      expirationTime: 100000000000000,
+      expirationTime: new Date(userData.metadata.lastSignInTime).getTime() + 3600000,
+      token: userData.ya,
+      username: userData.displayName,  
     }
     
     localStorage.setItem('user', JSON.stringify(newUser));
@@ -53,16 +50,20 @@ export class AuthService {
   }
   
   //Create new user 
-  register(email: string, password: string) {
+  register(email: string, password: string, username: string) {
     return new Promise<object | void>((resolve, reject) => { 
       this.firebaseAuth
         .createUserWithEmailAndPassword(email, password)
         .then(
           ({ user }) => {
-            this.setUser(user)
-            this.sendVerificationEmail();
-            this.navigationService.back();
-            resolve();
+            user && user.updateProfile({
+              displayName: username,
+            }).then(user => {
+              this.setUser(user)
+              this.sendVerificationEmail();
+              this.navigationService.back();
+              resolve();
+            }).catch((error) => reject(error));
           },
           (error) => { reject(error) }
         );
