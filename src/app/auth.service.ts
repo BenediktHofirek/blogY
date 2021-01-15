@@ -1,52 +1,49 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { AngularFireAuth } from  "@angular/fire/auth";
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Router } from '@angular/router';
+import firebase from 'firebase';
+import { Subscription } from 'rxjs';
 import { NavigationService } from "./navigation.service";
-import User from './_models/user';
 
 @Injectable({ providedIn: 'root' })
-export class AuthService {
-  private userSubject: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
-  public user: Observable<User | null> = this.userSubject.asObservable();
+export class AuthService implements OnDestroy {
+  public userObservable;
+  private user: firebase.User | null = null;
+  private expirationTime = 3600000;
+  private userSubscription: Subscription;
 
   constructor(private firebaseAuth: AngularFireAuth,
-              private navigationService: NavigationService) {
-    const user = localStorage.getItem('user');
+              private navigationService: NavigationService,
+              private router: Router) {
+    this.userObservable = this.firebaseAuth.authState;
+    this.userSubscription = this.firebaseAuth.authState.subscribe((user) => {
+      this.user = user;
+    });
+  }
 
-    if (user) {
-      const parsedUser = JSON.parse(user);
-      
-      if (parsedUser.expirationTime - Date.now() > 0) {
-        this.userSubject.next(parsedUser);
-      }
-    }
-    
+  ngOnDestroy() {
+    this.userSubscription.unsubscribe();
   }
 
   getCurrentUser() {
-    const currentUser = this.userSubject.value;
-    if (currentUser && currentUser.expirationTime - Date.now() > 0) {
-      this.userSubject.next(null);
+    if ((new Date(this.user?.metadata.lastSignInTime || 0).getTime() + this.expirationTime) - Date.now() > 0) {
+      return this.user;
     }
     
-    return this.userSubject.value;
+    return null;
+  }
+
+  getToken(): Promise<any> {
+    const currentUser = this.getCurrentUser();
+    if (!currentUser) {
+      return new Promise(resolve => resolve(currentUser));
+    }
+
+    return currentUser.getIdToken();
   }
 
   isAuthenticated() {
     return !!this.getCurrentUser();
-  }
-
-  setUser(userData: any) {
-    console.log('userData',userData);
-    const newUser: User = {
-      email: userData.email,
-      expirationTime: new Date(userData.metadata.lastSignInTime).getTime() + 3600000,
-      token: userData.ya,
-      username: userData.displayName,  
-    }
-    
-    localStorage.setItem('user', JSON.stringify(newUser));
-    this.userSubject.next(newUser);
   }
   
   //Create new user 
@@ -56,23 +53,20 @@ export class AuthService {
         .createUserWithEmailAndPassword(email, password)
         .then(
           ({ user }) => {
-            user && user.updateProfile({
-              displayName: username,
-            }).then(user => {
-              this.setUser(user)
-              this.sendVerificationEmail();
-              this.navigationService.back();
-              resolve();
-            }).catch((error) => reject(error));
+            if (user) {
+              user.sendEmailVerification();
+              user.updateProfile({
+                displayName: username,
+              }).then(user => {
+                this.navigationService.back();
+                resolve();
+              }).catch((error) => reject(error));
+            }
           },
           (error) => { reject(error) }
         );
     });
   }
-
-  sendVerificationEmail() {
-  }
-  
   
   //Login user
   login(email: string, password: string) {
@@ -80,10 +74,10 @@ export class AuthService {
       this.firebaseAuth
         .signInWithEmailAndPassword(email, password)
         .then(
-          (data) => {
-            console.log(data);
-            this.setUser(data.user);
-            this.navigationService.back();
+          ({ user }) => {
+            if (user) {
+              this.navigationService.back();
+            }
             resolve();
           },
           (error) => { reject(error) }
@@ -92,7 +86,9 @@ export class AuthService {
   }
 
   singOut() {
-    localStorage.removeItem('user');
-    this.userSubject.next(null);
+    this.firebaseAuth.signOut().then(() => {
+      localStorage.removeItem('user');
+      this.router.navigateByUrl('/login');
+    });
   }
 }
