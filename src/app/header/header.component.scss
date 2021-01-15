@@ -1,0 +1,30 @@
+.container {
+  display: block;
+  width: calc(100% - 2rem);
+  max-width: 1000px;
+  height: min-content;
+  margin: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.title {
+  display: block;
+  width: min-content;
+  height: 100%;
+  float: left;
+}
+
+.navigation {
+  display: block;
+  width: max-content;
+  margin: auto;
+  float: right;
+
+  &__button {
+    margin-left: 1rem;
+  }
+}

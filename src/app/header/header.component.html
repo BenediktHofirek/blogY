@@ -1,0 +1,25 @@
+<mat-toolbar color="primary" style="position: relative;">
+  <div class="container">
+    <h1 class="title">Blog Y</h1>
+    <div class="navigation" *ngIf="user">
+      {{user.email}}
+    </div>
+    <div class="navigation" *ngIf="!user">
+      <button
+        class="navigation__button"
+        mat-stroked-button
+        (click)="router.navigateByUrl('/login')"
+      >
+        Login
+      </button>
+      <button
+        class="navigation__button"
+        mat-raised-button
+        color="accent"
+        (click)="router.navigateByUrl('/register')"
+      >
+        Register
+      </button>
+    </div>
+  </div>
+</mat-toolbar>

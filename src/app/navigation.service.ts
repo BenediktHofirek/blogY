@@ -7,7 +7,6 @@ export class NavigationService {
   private history: string[] = [];
 
   constructor(private router: Router) {
-    console.log('navigationConstructor');
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd || event instanceof NavigationCancel) {
         if (this.history[this.history.length - 1] !== event.url) {
