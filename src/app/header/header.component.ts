@@ -16,11 +16,16 @@ export class HeaderComponent implements OnInit, OnDestroy {
   constructor(private authService: AuthService,
               private router: Router) {
     this.userSubscription = this.authService.userObservable.subscribe(user => {
+      console.log('user', user);
       this.user = user;
     });
   }
   
   ngOnInit(): void {
+  }
+
+  singOut() {
+    this.authService.singOut();
   }
 
   ngOnDestroy(): void {

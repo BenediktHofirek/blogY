@@ -57,7 +57,7 @@ export class AuthService implements OnDestroy {
               user.sendEmailVerification();
               user.updateProfile({
                 displayName: username,
-              }).then(user => {
+              }).then(() => {
                 this.navigationService.back();
                 resolve();
               }).catch((error) => reject(error));
@@ -87,7 +87,6 @@ export class AuthService implements OnDestroy {
 
   singOut() {
     this.firebaseAuth.signOut().then(() => {
-      localStorage.removeItem('user');
       this.router.navigateByUrl('/login');
     });
   }

@@ -2,7 +2,33 @@
   <div class="container">
     <h1 class="title">Blog Y</h1>
     <div class="navigation" *ngIf="user">
-      {{user.displayName}}
+      <button
+        mat-raised-button
+        color="accent"
+        [matMenuTriggerFor]="menu"
+      >
+        {{user.displayName}}
+      </button>
+      <mat-menu #menu="matMenu">
+        <button
+          mat-menu-item
+          (click)="router.navigateByUrl('/account')"
+        >
+          Account
+        </button>
+        <button
+          mat-menu-item
+          (click)="router.navigateByUrl('/settings')"
+        >
+          Settings
+        </button>
+        <button
+          mat-menu-item
+          (click)="singOut()"
+        >
+          Sing Out
+        </button>
+      </mat-menu>
     </div>
     <div class="navigation" *ngIf="!user">
       <button
