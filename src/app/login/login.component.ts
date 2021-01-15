@@ -28,13 +28,10 @@ export class LoginComponent implements OnInit {
     } = form.value;
     
     this.isLoading = true;
-    this.authService.login(email, password).then(
-      userData => {
-        console.log('success', userData);
-      },
+    this.authService.login(email, password).catch(
       error => {
         console.log('error', error);
-        this.error = error;
+        this.error = error.message;
         this.isLoading = false;
       }
     )

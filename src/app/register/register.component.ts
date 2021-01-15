@@ -28,13 +28,10 @@ export class RegisterComponent implements OnInit {
     } = form.value;
     
     this.isLoading = true;
-    this.authService.register(email, password).then(
-      userData => {
-        console.log('success', userData);
-      },
+    this.authService.register(email, password).catch(
       error => {
         console.log('error', error);
-        this.error = error;
+        this.error = error.message;
         this.isLoading = false;
       }
     )

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { NavigationService } from './navigation.service';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +7,6 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  constructor(private navigationService: NavigationService) {}
   title = 'blogY';
 }
