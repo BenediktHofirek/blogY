@@ -17,6 +17,7 @@ export class NavigationService {
   }
 
   back(): void {
+    console.log('history', this.history);
     this.history.pop();
     const historyLength = this.history.length;
     if (historyLength > 1) {
@@ -37,6 +38,7 @@ export class NavigationService {
         this.router.navigateByUrl(previousPage);
       }
     } else {
+      console.log('pruchodElse');
       this.router.navigateByUrl('/')
     }
   }

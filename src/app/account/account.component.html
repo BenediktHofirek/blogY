@@ -1,2 +1,5 @@
-<p>account works!</p>
-<router-outlet></router-outlet>
+<div *ngIf="user">
+  <h2>Account</h2>
+  <p>Username {{user.displayName}}</p>
+  <p>Email: {{user.email}}</p>
+</div>

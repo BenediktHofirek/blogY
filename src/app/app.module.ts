@@ -10,8 +10,6 @@ import { BlogComponent } from './blog/blog.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ArticleComponent } from './blog/article/article.component';
 import { AccountComponent } from './account/account.component';
-import { AccountInfoComponent } from './account/account-info/account-info.component';
-import { AccountSettingsComponent } from './account/account-settings/account-settings.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -32,6 +30,7 @@ import { MatInputModule } from '@angular/material/input';
 
 import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 import { HeaderComponent } from './header/header.component';
+import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -42,12 +41,11 @@ import { HeaderComponent } from './header/header.component';
     PageNotFoundComponent,
     ArticleComponent,
     AccountComponent,
-    AccountInfoComponent,
-    AccountSettingsComponent,
     LoginComponent,
     RegisterComponent,
     LoadingSpinnerComponent,
-    HeaderComponent
+    HeaderComponent,
+    SettingsComponent
   ],
   imports: [
     BrowserModule,

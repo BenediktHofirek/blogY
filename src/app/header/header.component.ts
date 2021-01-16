@@ -15,7 +15,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   constructor(private authService: AuthService,
               private router: Router) {
-    this.userSubscription = this.authService.user.subscribe(user => {
+    this.userSubscription = this.authService.userSubject.subscribe(user => {
       this.user = user;
     });
   }

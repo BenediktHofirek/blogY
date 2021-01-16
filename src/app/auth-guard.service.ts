@@ -3,6 +3,9 @@ import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from
 
 import { NavigationService } from './navigation.service';
 import { AuthService } from './auth.service';
+import { Observable } from 'rxjs';
+import { map, skip } from 'rxjs/operators';
+import firebase from 'firebase';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
@@ -11,14 +14,33 @@ export class AuthGuard implements CanActivate {
         private navigationService: NavigationService) {};
 
     canActivate(route: ActivatedRouteSnapshot,
-                state: RouterStateSnapshot): boolean {
-        const isUserAuthenticated = this.authService.isAuthenticated();
-        console.log('guard', state.url, isUserAuthenticated);
-        if (state.url === '/login' || state.url === '/register') {
-           return !isUserAuthenticated;
+                state: RouterStateSnapshot): Observable<boolean> | boolean {
+        const currentUser = this.authService.getCurrentUser();
+
+        if (typeof currentUser !== 'undefined') {
+            return this.isAllowed(currentUser, state.url);
         }
 
-        if (isUserAuthenticated) {
+        return this.authService.userSubject.asObservable().pipe(
+            skip(1),
+            map((user: firebase.User | null | undefined) => {
+                return this.isAllowed(user, state.url);
+            })
+        );
+    }
+
+    isAllowed(user: firebase.User | null | undefined, url: string): boolean {
+        console.log('isAllowed',user, url);
+        if (url === '/login' || url === '/register') {
+            if (!user) {
+                return true;
+            }
+            
+            this.navigationService.back();
+            return false;
+        }
+
+        if (user) {
             return true;
         }
 

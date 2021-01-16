@@ -7,19 +7,22 @@ import { NavigationService } from "./navigation.service";
 
 @Injectable({ providedIn: 'root' })
 export class AuthService implements OnDestroy {
-  private userSubject: BehaviorSubject<firebase.User | null | undefined>;
-  public user: Observable<firebase.User | null | undefined>;
+  public userSubject: BehaviorSubject<firebase.User | null | undefined>;
   private expirationTime = 3600000;
   private userSubscription: Subscription;
+  private isSingedOut = false;
 
   constructor(private firebaseAuth: AngularFireAuth,
               private navigationService: NavigationService,
               private router: Router) {
     this.userSubject = new BehaviorSubject<firebase.User | null | undefined>(undefined);
-    this.user = this.userSubject.asObservable();
-    
     this.userSubscription = this.firebaseAuth.authState.subscribe((user) => {
-      this.userSubject.next(user);
+      this.isSingedOut = false;
+      if (this.validateUser(user)) {
+        this.userSubject.next(user);
+      } else {
+        this.userSubject.next(null);
+      }
     });
   }
 
@@ -27,16 +30,21 @@ export class AuthService implements OnDestroy {
     this.userSubscription.unsubscribe();
   }
 
+  validateUser(user: firebase.User | null | undefined): boolean {
+    return (new Date(user?.metadata.lastSignInTime || 0).getTime() + this.expirationTime) - Date.now() > 0
+  }
+
   getCurrentUser() {
-    if ((new Date(this.userSubject.getValue()?.metadata.lastSignInTime || 0).getTime() + this.expirationTime) - Date.now() > 0) {
-      return this.user;
+    const currentUser = this.isSingedOut ? null : this.userSubject.getValue();
+    if (this.validateUser(currentUser)) {
+      return currentUser;
     }
     
-    return null;
+    return currentUser;
   }
 
   getToken(): Promise<any> {
-    const currentUser = this.userSubject.getValue();
+    const currentUser = this.getCurrentUser();
     if (!currentUser) {
       return new Promise(resolve => resolve(currentUser));
     }
@@ -88,7 +96,9 @@ export class AuthService implements OnDestroy {
   }
 
   singOut() {
+    console.log('beforeLogout');
     this.firebaseAuth.signOut().then(() => {
+      this.isSingedOut = true;
       this.router.navigateByUrl('/login');
     });
   }
