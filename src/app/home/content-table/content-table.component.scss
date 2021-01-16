@@ -1,0 +1,25 @@
+.container {
+  width: 90%;
+  max-width: 800px;
+  margin: auto;
+}
+
+.search {
+  display: block;
+  width: 100%;
+  float: left;
+}
+
+table {
+  width: 100%;
+  user-select: none;
+}
+
+.mat-form-field {
+  font-size: 14px;
+  width: 100%;
+}
+
+td, th {
+  width: 25%;
+}

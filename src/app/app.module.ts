@@ -20,13 +20,9 @@ import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { environment } from '../environments/environment';
 
 //angular material
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule} from '@angular/material/button';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import {MatNativeDateModule} from '@angular/material/core';
+import {MaterialModule} from './material-module';
 
 import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 import { HeaderComponent } from './header/header.component';
@@ -50,18 +46,14 @@ import { ContentTableComponent } from './home/content-table/content-table.compon
     ContentTableComponent
   ],
   imports: [
+    MatNativeDateModule,
+    MaterialModule,
     BrowserModule,
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
-    MatButtonModule,
-    MatMenuModule,
-    MatToolbarModule,
-    MatIconModule,
-    MatCardModule,
     MatFormFieldModule,
-    MatInputModule,
     AngularFireModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,

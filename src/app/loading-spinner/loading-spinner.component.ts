@@ -7,6 +7,7 @@ import { Component, OnInit } from '@angular/core';
   `,
   styles: [`
     .lds-spinner {
+      user-select: none;
       display: block;
       position: absolute;
       top: 50%;
