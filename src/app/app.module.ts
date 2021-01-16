@@ -31,6 +31,7 @@ import { MatInputModule } from '@angular/material/input';
 import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
 import { HeaderComponent } from './header/header.component';
 import { SettingsComponent } from './settings/settings.component';
+import { ContentTableComponent } from './home/content-table/content-table.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { SettingsComponent } from './settings/settings.component';
     RegisterComponent,
     LoadingSpinnerComponent,
     HeaderComponent,
-    SettingsComponent
+    SettingsComponent,
+    ContentTableComponent
   ],
   imports: [
     BrowserModule,

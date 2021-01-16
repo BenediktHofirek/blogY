@@ -14,8 +14,14 @@
 .title {
   display: block;
   width: min-content;
-  height: 100%;
-  float: left;
+  height: min-content;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  color: white;
+  text-decoration: none;
 }
 
 .navigation {

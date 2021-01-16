@@ -30,7 +30,6 @@ export class AuthGuard implements CanActivate {
     }
 
     isAllowed(user: firebase.User | null | undefined, url: string): boolean {
-        console.log('isAllowed',user, url);
         if (url === '/login' || url === '/register') {
             if (!user) {
                 return true;

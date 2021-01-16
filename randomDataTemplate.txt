@@ -1,0 +1,37 @@
+{
+    blogs: {
+      "blogSoskRJoD5qWAdlxhd8mmWIN8NAb2": {
+    	id: 'blogSoskRJoD5qWAdlxhd8mmWIN8NAb2',
+      	author_id: 'SoskRJoD5qWAdlxhd8mmWIN8NAb2',
+      	created_ad: '{{moment(this.date(new Date(2010, 0, 1), new Date(2014, 0, 1))).format("LLLL")}}',
+      	name: '{{company()}}',
+      },
+        "blogUab3fykKN3aBHs758QWTwbNqUEE3": {
+    	id: '{{objectId()}}',
+      	author_id: 'Uab3fykKN3aBHs758QWTwbNqUEE3',
+      	created_ad: '{{moment(this.date(new Date(2010, 0, 1), new Date(2014, 0, 1))).format("LLLL")}}',
+      	name: '{{company()}}',
+      },
+        "blogczNGAwSoVUfrhC04SpNyanDzCiv2": {
+    	id: 'blogczNGAwSoVUfrhC04SpNyanDzCiv2',
+      	author_id: 'czNGAwSoVUfrhC04SpNyanDzCiv2',
+      	created_ad: '{{moment(this.date(new Date(2010, 0, 1), new Date(2014, 0, 1))).format("LLLL")}}',
+      	name: '{{company()}}',
+      },
+        "blogrA2zVIKukPbpiF0mQJboPVXRFAD3": {
+    	id: 'blogrA2zVIKukPbpiF0mQJboPVXRFAD3',
+      	author_id: 'rA2zVIKukPbpiF0mQJboPVXRFAD3',
+      	created_ad: '{{moment(this.date(new Date(2010, 0, 1), new Date(2014, 0, 1))).format("LLLL")}}',
+      	name: '{{company()}}',
+      },
+    },
+    articles: {
+      'repeat(50,50)': {
+    	id: '{{objectId()}}',
+        name: '{{company()}}',
+      	blog_id: '{{random("SoskRJoD5qWAdlxhd8mmWIN8NAb2", "Uab3fykKN3aBHs758QWTwbNqUEE3", "czNGAwSoVUfrhC04SpNyanDzCiv2", "rA2zVIKukPbpiF0mQJboPVXRFAD3")}}',
+      	created_ad: '{{moment(this.date(new Date(2015, 0, 1), new Date())).format("LLLL")}}',
+      	content: '{{lorem(6, "paragraphs")}}',
+      }
+    },
+  }
