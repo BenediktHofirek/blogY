@@ -19,13 +19,35 @@ interface blogs {
 
 export class ContentTableComponent implements AfterViewInit {
   display: "articles" | "authors" | "blogs" = "articles";
+  displayOptionList = [
+    "articles",
+    "authors",
+    "blogs"
+  ];
+
   sortBy: "newest" | "mostRead" | "highestRated" = "newest";
+  sortByOptionList = [
+    "newest",
+    "mostRead",
+    "highestRated"
+  ];
+
   timeframe: "day" | "week" | "month" | "quarter" | "year" | "all" = "all";
+  timeframeOptionList = [
+    "day",
+    "week",
+    "month",
+    "quarter",
+    "year",
+    "all",
+  ];
+
   displayedColumnsMap = {
-    articles: ['blogName', 'name', 'createdAt'],
+    articles: ['name', 'blogName', 'createdAt'],
+    authors: ['name', 'author', 'createdAt'],
     blogs: ['name', 'author', 'createdAt'],
   };
-  
+
   dataSource: any;
   dataMap: { [key: string] : any[] | null} = {
     articles: null,
@@ -427,7 +449,43 @@ export class ContentTableComponent implements AfterViewInit {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
-  
+
+  handleDisplayChange(newDisplayValue: "articles" | "authors" | "blogs") {
+    this.display = newDisplayValue;
+
+    this.generateTableData();
+    this.initializeTableData();
+  }
+
+  handleSortByChange(newSortByValue: "newest" | "mostRead" | "highestRated") {
+    this.sortBy = newSortByValue;
+
+    this.dataSource = this.sortTableData(this.dataSource, newSortByValue);
+    this.initializeTableData();
+  }
+
+  handleTimeframeChange(newSortByValue: "newest" | "mostRead" | "highestRated") {
+    this.sortBy = newSortByValue;
+
+    this.dataSource = this.sortTableData(this.dataSource, newSortByValue);
+    this.initializeTableData();
+  }
+
+
+  sortTableData(dataList: any[], sortOption: string) {
+    switch(sortOption) {
+      case 'newest':
+        return dataList.sort((a,b) => 
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      case 'highestRated':
+        return dataList;
+      case 'mostReaded':
+        return dataList;
+      default:
+        return dataList;
+    }
+  }
+
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
@@ -439,7 +497,9 @@ export class ContentTableComponent implements AfterViewInit {
 
   generateTableData() {
     const applyData = (dataList: any[]) => {
-      this.dataSource = new MatTableDataSource(dataList);
+      this.dataSource = new MatTableDataSource(
+        this.sortTableData(dataList, this.sortBy)
+      );
       this.dataMap[this.display] = dataList;
     }
 

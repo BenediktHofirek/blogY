@@ -4,6 +4,17 @@
   margin: auto;
 }
 
+.toolbar {
+  display: block;
+  float: left;
+  
+  &__select {
+    display: block;
+    width: 200px;
+    font-size: 0.9rem;
+  }
+}
+
 .search {
   display: block;
   width: 100%;
@@ -11,13 +22,15 @@
 }
 
 table {
+  display: block;
+  float: left;
   width: 100%;
   user-select: none;
 }
 
-.mat-form-field {
-  font-size: 14px;
-  width: 100%;
+.paginator {
+  display: block;
+  float: right;
 }
 
 td, th {

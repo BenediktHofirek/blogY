@@ -11,15 +11,52 @@
     >
     <mat-icon matSuffix>search</mat-icon>
   </mat-form-field>
+  <mat-toolbar class="toolbar">
+    <mat-form-field appearance="outline" class="toolbar__select">
+      <mat-label>Display: </mat-label>
+      <mat-select (selectionChange)="handleDisplayChange($event.value)" [value]="display">
+        <mat-option
+          *ngFor="let option of displayOptionList"
+          [value]="option">
+          {{option}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="toolbar__select">
+      <mat-label>Sort By: </mat-label>
+      <mat-select (selectionChange)="handleSortByChange($event.value)" [value]="sortBy">
+        <mat-option
+          *ngFor="let option of sortByOptionList"
+          [value]="option">
+          {{option}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="toolbar__select">
+      <mat-label>Show last: </mat-label>
+      <mat-select (selectionChange)="handleTimeframeChange($event.value)" [value]="timeframe">
+        <mat-option
+          *ngFor="let option of timeframeOptionList"
+          [value]="option">
+          {{option}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </mat-toolbar>
   <table mat-table [dataSource]="dataSource" matSort>
     <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Article name</th>
       <td mat-cell *matCellDef="let row"> {{row.name}} </td>
     </ng-container>
 
     <ng-container matColumnDef="blogName">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Blog </th>
       <td mat-cell *matCellDef="let row"> {{row.blogName}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="author">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Author </th>
+      <td mat-cell *matCellDef="let row"> {{row.author}} </td>
     </ng-container>
 
     <ng-container matColumnDef="createdAt">
@@ -36,5 +73,8 @@
     </tr>
   </table>
 
-  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+  <mat-paginator
+    [pageSizeOptions]="[5, 10, 25, 100]"
+    class="paginator"
+  ></mat-paginator>
 </div>
