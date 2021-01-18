@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { AccountComponent } from './pages/account/account.component';
 import { UserProfileComponent } from './pages/user-profile/user-profile.component';
 import { SettingsComponent } from './pages/settings/settings.component';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 
@@ -13,7 +14,8 @@ import { SettingsComponent } from './pages/settings/settings.component';
     UserProfileComponent,
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    SharedModule,
   ]
 })
 export class UserModule { }

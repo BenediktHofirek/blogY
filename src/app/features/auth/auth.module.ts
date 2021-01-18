@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from './services/auth.service';
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -10,7 +11,8 @@ import { RegisterComponent } from './pages/register/register.component';
     RegisterComponent,
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    SharedModule,
   ]
 })
 export class AuthModule {

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NavigationService } from './services/navigation.service';
 import { HeaderComponent } from './components/header/header.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -11,6 +12,7 @@ import { PageNotFoundComponent } from './components/page-not-found/page-not-foun
   ],
   imports: [
     CommonModule,
+    SharedModule,
   ],
   exports: [
     HeaderComponent,
