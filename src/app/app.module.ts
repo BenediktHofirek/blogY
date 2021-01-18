@@ -26,7 +26,6 @@ import { UserModule } from './features/user/user.module';
     SharedModule,
     UserModule,
     AppRoutingModule,
-    
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),

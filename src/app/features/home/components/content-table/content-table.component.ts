@@ -12,7 +12,7 @@ interface blogs {
   }
 }
 @Component({
-  selector: 'app-content-table',
+  selector: 'home-content-table',
   templateUrl: './content-table.component.html',
   styleUrls: ['./content-table.component.scss']
 })
