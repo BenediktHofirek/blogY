@@ -28,6 +28,7 @@ import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.compo
 import { HeaderComponent } from './header/header.component';
 import { SettingsComponent } from './settings/settings.component';
 import { ContentTableComponent } from './home/content-table/content-table.component';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 @NgModule({
   declarations: [
@@ -57,6 +58,7 @@ import { ContentTableComponent } from './home/content-table/content-table.compon
     AngularFireModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
+    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
   ],
   providers: [],
   bootstrap: [AppComponent]
