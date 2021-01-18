@@ -5,31 +5,27 @@ import { LoadingSpinnerComponent } from './components/loading-spinner/loading-sp
 
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
-//firebase
-import { AngularFireModule } from '@angular/fire';
-import { AngularFireDatabaseModule } from '@angular/fire/database';
-
-//angular material
-
-
-import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-import { environment } from 'src/environments/environment';
 
 @NgModule({
   declarations: [
     LoadingSpinnerComponent,
   ],
   imports: [
+    BrowserModule,
+    FormsModule,
+    ReactiveFormsModule,
+    BrowserAnimationsModule,
     CommonModule,
     MaterialModule,
   ],
   exports: [
     LoadingSpinnerComponent,
+
+    BrowserModule,
+    FormsModule,
+    ReactiveFormsModule,
+    BrowserAnimationsModule,
     MaterialModule,
   ]
 })
