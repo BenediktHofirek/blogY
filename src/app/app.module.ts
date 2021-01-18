@@ -25,10 +25,10 @@ import {MatNativeDateModule} from '@angular/material/core';
 import {MaterialModule} from './material-module';
 
 import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
-import { HeaderComponent } from './header/header.component';
 import { SettingsComponent } from './settings/settings.component';
 import { ContentTableComponent } from './home/content-table/content-table.component';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { CoreModule } from './core/core.module';
 
 @NgModule({
   declarations: [
@@ -42,11 +42,11 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
     LoginComponent,
     RegisterComponent,
     LoadingSpinnerComponent,
-    HeaderComponent,
     SettingsComponent,
     ContentTableComponent
   ],
   imports: [
+    CoreModule,
     MatNativeDateModule,
     MaterialModule,
     BrowserModule,
