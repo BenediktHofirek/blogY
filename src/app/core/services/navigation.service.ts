@@ -1,4 +1,3 @@
-import { typeWithParameters } from '@angular/compiler/src/render3/util';
 import { Injectable } from '@angular/core'
 import { Router, NavigationEnd, NavigationCancel } from '@angular/router'
 
