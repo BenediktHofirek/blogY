@@ -1,22 +1,16 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { AccountComponent } from './account/account.component';
-import { AuthGuard } from './auth-guard.service';
-import { ArticleComponent } from './blog/article/article.component';
-import { BlogComponent } from './blog/blog.component';
-import { HomeComponent } from './home/home.component';
-import { LoginComponent } from './login/login.component';
-import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
-import { RegisterComponent } from './register/register.component';
-import { SettingsComponent } from './settings/settings.component';
-import { UserComponent } from './user/user.component';
+import { AccountComponent } from './features/user/pages/account/account.component';
+import { AuthGuard } from './features/auth/services/auth-guard.service';
+import { HomeComponent } from './features/home/home.component';
+import { LoginComponent } from './features/auth/pages/login/login.component';
+import { PageNotFoundComponent } from './core/pages/page-not-found/page-not-found.component';
+import { RegisterComponent } from './features/auth/pages/register/register.component';
+import { SettingsComponent } from './features/user/pages/settings/settings.component';
+import { UserProfileComponent } from './features/user/pages/user-profile/user-profile.component';
 
 const routes: Routes = [
-  { path: 'user/:userId', component: UserComponent },
-  { path: 'blog', component: BlogComponent, children: [
-    { path: ':blogId', component: BlogComponent },
-    { path: ':blogId/article/:articleId', component: ArticleComponent },
-  ] },
+  { path: 'user/:userId', component: UserProfileComponent },
   { path: 'account', canActivate: [AuthGuard], component: AccountComponent },
   { path: 'settings', canActivate: [AuthGuard], component: SettingsComponent },
   { path: 'login', canActivate: [AuthGuard], component: LoginComponent },

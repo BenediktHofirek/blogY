@@ -4,14 +4,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HomeComponent } from './home/home.component';
-import { UserComponent } from './user/user.component';
-import { BlogComponent } from './blog/blog.component';
-import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
-import { ArticleComponent } from './blog/article/article.component';
-import { AccountComponent } from './account/account.component';
-import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 //firebase
@@ -22,40 +14,31 @@ import { environment } from '../environments/environment';
 //angular material
 import { MatFormFieldModule } from '@angular/material/form-field';
 import {MatNativeDateModule} from '@angular/material/core';
-import {MaterialModule} from './material-module';
 
-import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component';
-import { SettingsComponent } from './settings/settings.component';
-import { ContentTableComponent } from './home/content-table/content-table.component';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { CoreModule } from './core/core.module';
+import { AuthModule } from './features/auth/auth.module';
+import { HomeModule } from './features/home/home.module';
+import { SharedModule } from './shared/shared.module';
+import { UserModule } from './features/user/user.module';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
-    UserComponent,
-    BlogComponent,
-    PageNotFoundComponent,
-    ArticleComponent,
-    AccountComponent,
-    LoginComponent,
-    RegisterComponent,
-    LoadingSpinnerComponent,
-    SettingsComponent,
-    ContentTableComponent
   ],
   imports: [
+    AuthModule,
     CoreModule,
+    HomeModule,
+    SharedModule,
+    UserModule,
     MatNativeDateModule,
-    MaterialModule,
     BrowserModule,
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
     MatFormFieldModule,
-    AngularFireModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),

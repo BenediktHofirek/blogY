@@ -3,7 +3,7 @@ import { AngularFireAuth } from  "@angular/fire/auth";
 import { Router } from '@angular/router';
 import firebase from 'firebase';
 import { BehaviorSubject, Subscription, Observable } from 'rxjs';
-import { NavigationService } from "./navigation.service";
+import { NavigationService } from "../../../core/services/navigation.service";
 
 @Injectable({ providedIn: 'root' })
 export class AuthService implements OnDestroy {

@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import firebase from 'firebase';
-import { AuthService } from '../../../auth.service';
+import { AuthService } from '../../../features/auth/services/auth.service';
 
 @Component({
   selector: 'app-header',
