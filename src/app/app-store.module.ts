@@ -5,7 +5,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { AppEffects } from './store/effects/app.effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from '../environments/environment';
-import { articleMapReducer, articleMapKey, authorMapReducer, blogMapReducer, authorMapKey, blogMapKey } from './store/reducers/app.reducer';
+import { articleMapReducer, articleMapKey, userMapReducer, blogMapReducer, userMapKey, blogMapKey } from './store/reducers/app.reducer';
 
 @NgModule({
   declarations: [],
@@ -13,7 +13,7 @@ import { articleMapReducer, articleMapKey, authorMapReducer, blogMapReducer, aut
     CommonModule,
     StoreModule.forRoot({
       [articleMapKey]: articleMapReducer,
-      [authorMapKey]: authorMapReducer,
+      [userMapKey]: userMapReducer,
       [blogMapKey]: blogMapReducer,
     }),
     EffectsModule.forRoot([AppEffects]),

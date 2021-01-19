@@ -1,10 +1,12 @@
 import { createAction, props } from '@ngrx/store';
 
 export const appLoad = createAction('[App] Load');
-export const authorMapSuccess = createAction(
-  '[AuthorMap] Success',
+
+export const userMapLoad = createAction('UserMap Load');
+export const userMapSuccess = createAction(
+  '[UserMap] Success',
   props<{
-    authorMap: object,
+    userMap: object,
   }>()
 );
 

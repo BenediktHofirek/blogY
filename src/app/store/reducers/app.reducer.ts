@@ -1,16 +1,16 @@
 import { Action, createReducer, on, combineReducers } from '@ngrx/store';
 import * as AppActions from '../actions/app.actions';
 
-export const authorMapKey = 'authorMap';
-export const authorMapReducer = createReducer(
+export const userMapKey = 'userMap';
+export const userMapReducer = createReducer(
   {},
-  on(AppActions.authorMapSuccess, (
+  on(AppActions.userMapSuccess, (
     state,
     {
-      authorMap,
+      userMap,
     }) => ({
       ...state,
-      authorMap,
+      ...userMap,
      })),
 );
 

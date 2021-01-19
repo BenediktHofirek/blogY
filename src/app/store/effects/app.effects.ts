@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
-import { map, mergeMap, catchError, mergeAll, switchMap } from 'rxjs/operators';
-import { articleMapLoad, articleMapSuccess, blogMapLoad, blogMapSuccess } from '../actions/app.actions';
+import { map, mergeMap, catchError } from 'rxjs/operators';
+import { articleMapLoad, articleMapSuccess, blogMapLoad, blogMapSuccess, userMapLoad, userMapSuccess } from '../actions/app.actions';
  
 @Injectable()
 export class AppEffects {
@@ -369,12 +369,13 @@ export class AppEffects {
       mergeMap(() => [
         articleMapLoad(),
         blogMapLoad(),
+        userMapLoad(),
       ])
     )
   );
 
   loadArticleMap$ = createEffect(() => this.actions$.pipe(
-    ofType('BlogMap Load'),
+    ofType('ArticleMap Load'),
     mergeMap(() => of(this.articles)
       .pipe(
         map(articleMap => articleMapSuccess({ articleMap }),
@@ -392,6 +393,15 @@ export class AppEffects {
       )
     ))
   ));
- 
+
+  loadUserMap$ = createEffect(() => this.actions$.pipe(
+    ofType('UserMap Load'),
+    mergeMap(() => of(this.articles)
+      .pipe(
+        map(userMap => userMapSuccess({ userMap }),
+        catchError(() => 'EMPTY')
+      )
+    ))
+  ));
   
 }
