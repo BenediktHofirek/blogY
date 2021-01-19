@@ -8,6 +8,7 @@ export const authorMapSuccess = createAction(
   }>()
 );
 
+export const articleMapLoad = createAction('ArticleMap Load');
 export const articleMapSuccess = createAction(
   '[ArticleMap] Success',
   props<{
@@ -15,6 +16,7 @@ export const articleMapSuccess = createAction(
   }>()
 );
 
+export const blogMapLoad = createAction('BlogMap Load');
 export const blogMapSuccess = createAction(
   '[BlogMap] Success',
   props<{

@@ -1,6 +1,7 @@
 import { Action, createReducer, on, combineReducers } from '@ngrx/store';
 import * as AppActions from '../actions/app.actions';
 
+export const authorMapKey = 'authorMap';
 export const authorMapReducer = createReducer(
   {},
   on(AppActions.authorMapSuccess, (
@@ -13,6 +14,7 @@ export const authorMapReducer = createReducer(
      })),
 );
 
+export const articleMapKey = 'articleMap';
 export const articleMapReducer = createReducer(
   {},
   on(AppActions.articleMapSuccess, (
@@ -21,10 +23,11 @@ export const articleMapReducer = createReducer(
       articleMap,
     }) => ({
       ...state,
-      articleMap,
+      ...articleMap,
      })),
 );
 
+export const blogMapKey = 'blogMap';
 export const blogMapReducer = createReducer(
   {},
   on(AppActions.blogMapSuccess, (
@@ -33,26 +36,6 @@ export const blogMapReducer = createReducer(
       blogMap,
     }) => ({
       ...state,
-      blogMap,
+      ...blogMap,
      })),
-);
-
-export interface State {
-  articleMap: object,
-  authorMap: object,
-  blogMap: object,
-}
-
-export const initialState: State = {
-  articleMap: {},
-  authorMap: {},
-  blogMap: {},
-}
-
-export const appReducer = combineReducers(
-  {
-    articleMap: articleMapReducer,
-    authorMap: authorMapReducer,
-    blogMap: blogMapReducer,
-  }
 );
