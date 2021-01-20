@@ -19,6 +19,7 @@ export class AuthService implements OnDestroy {
     this.userSubscription = this.firebaseAuth.authState.subscribe((user) => {
       this.isSingedOut = false;
       if (this.validateUser(user)) {
+        console.log('user',user);
         this.userSubject.next(user);
       } else {
         this.userSubject.next(null);
