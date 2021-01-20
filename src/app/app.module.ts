@@ -7,7 +7,7 @@ import { AppStoreModule } from './app-store.module';
 
 //firebase
 import { AngularFireModule } from '@angular/fire';
-import { AngularFireDatabaseModule } from '@angular/fire/database';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { environment } from '../environments/environment';
 
 //app modules
@@ -30,7 +30,7 @@ import { UserModule } from './features/user/user.module';
     AppRoutingModule,
     AppStoreModule,
     AngularFireModule.initializeApp(environment.firebase),
-    AngularFireDatabaseModule,
+    AngularFirestoreModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
