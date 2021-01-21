@@ -4,6 +4,7 @@ import { AccountComponent } from './pages/account/account.component';
 import { SettingsComponent } from './pages/settings/settings.component';
 import { UserProfileComponent } from './pages/user-profile/user-profile.component';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { UserBlogsComponent } from './pages/user-blogs/user-blogs.component';
 
 
 
@@ -12,6 +13,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
     AccountComponent,
     SettingsComponent,
     UserProfileComponent,
+    UserBlogsComponent,
   ],
   imports: [
     CommonModule,

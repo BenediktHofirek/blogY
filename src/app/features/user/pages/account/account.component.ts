@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../../../auth/services/auth.service';
-import firebase from 'firebase';
-import { Router } from '@angular/router';
+import { AppState } from 'src/app/store/selectors/app.selector';
+import { Store } from '@ngrx/store';
+import { User } from 'src/app/store/models/app.models';
 
 @Component({
   selector: 'app-account',
@@ -9,18 +9,13 @@ import { Router } from '@angular/router';
   styleUrls: ['./account.component.scss']
 })
 export class AccountComponent implements OnInit {
-  public user: firebase.User | null | undefined;
+  user: User;
 
-  constructor(private authService: AuthService,
-              private router: Router) {
-    this.user = authService.getCurrentUser();
-    console.log(this.user);
-    if (!this.user) {
-      this.router.navigateByUrl('/login');
-    }
+  constructor(private store: Store<AppState>) {
+    this.user = this.store.select(selectCurrentUser);
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
   }
 
 }

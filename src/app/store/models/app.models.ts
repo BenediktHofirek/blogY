@@ -8,6 +8,9 @@ export interface User {
   id: string;
   email: string;
   username: string;
+  blogIdList: string[],
+  imageUrl: string,
+  description: string,
 }
 
 export interface Blog {

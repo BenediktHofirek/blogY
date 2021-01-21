@@ -53,4 +53,14 @@ export class AppEffects {
     ))
   ));
   
+
+  loadCurrentUser$ = createEffect(() => this.actions$.pipe(
+    ofType('CurrentUser Load'),
+    mergeMap(() => from(this.db.read(this.db.collectionMap.articles))
+      .pipe(
+        map(userMap => userMapSuccess({ userMap }),
+        catchError(() => 'EMPTY')
+      )
+    ))
+  ));
 }
