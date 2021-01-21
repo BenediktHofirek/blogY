@@ -34,7 +34,6 @@ passport.deserializeUser(function(id, cb) {
 
 // Create a new Express application.
 var app = express();
-// app.use(require('morgan')('combined'));
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require('express-session')({ secret: `${process.env.SECRET}`, resave: false, saveUninitialized: false }));
 app.use(passport.initialize());

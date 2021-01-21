@@ -1,4 +1,5 @@
 'use strict';
+
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable('Users', {
@@ -10,10 +11,12 @@ module.exports = {
       },
       username: {
         allowNull: false,
+        unique: true,
         type: Sequelize.STRING
       },
       email: {
         allowNull: false,
+        unique: true,
         type: Sequelize.STRING
       },
       photoUrl: {
@@ -23,11 +26,11 @@ module.exports = {
         type: Sequelize.TEXT,
       },
       createdAt: {
-        allowNull: false,
+        defaultValue: Sequelize.fn('NOW'),
         type: Sequelize.DATE
       },
       updatedAt: {
-        allowNull: false,
+        defaultValue: Sequelize.fn('NOW'),
         type: Sequelize.DATE
       }
     });
