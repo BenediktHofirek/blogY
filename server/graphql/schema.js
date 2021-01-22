@@ -1,8 +1,18 @@
-
-const models, { sequelize } = require('../database/models');
-const { QueryTypes } = require('sequelize');
 const graphql = require('graphql');
 const { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull } = graphql;
+
+const {
+  getBlogListQuery,
+  getBlogByIdQuery,
+  getUserListQuery,
+  getArticleListQuery,
+  getUserByIdQuery,
+  getUserByBlogIdQuery,
+  createUserMutation,
+  updateUserMutation,
+  deleteUserMutation,
+  deleteUserMutation,
+} = require('../database/querys/querys.js');
 
 const UserType = new GraphQLObjectType({
 	name: 'User',
@@ -17,21 +27,7 @@ const UserType = new GraphQLObjectType({
 		blogList: {
 			type: new GraphQLList(BlogType),
 			resolve(parent) {
-				return sequelize.query(`
-          SELECT
-            id,
-            author_id as "authorId",
-            name,
-            created_at as "createdAt",
-            updated_at as "updatedAt"
-          FROM blogs
-          WHERE author_id = :authorId
-        `, {
-          replacements: {
-            authorId: parent.id,
-          },
-          type: QueryTypes.SELECT
-        });
+				return getBlogListQuery(parent.id);
 			}
 		}
 	})
@@ -48,46 +44,16 @@ const BlogType = new GraphQLObjectType({
 		articleList: {
 			type: new GraphQLList(ArticleType),
 			resolve(parent) {
-				return sequelize.query(`
-          SELECT
-            id,
-            blog_id as "blogId",
-            name,
-            content,
-            created_at as "createdAt",
-            updated_at as "updatedAt"
-          FROM articles
-          WHERE blog_id = :blogId
-        `, {
-          replacements: {
-            blogId: parent.id,
-          },
-          type: QueryTypes.SELECT
-        });
+				return getArticleListQuery(parent.id);
 			}
     },
     author: {
 			type: UserType,
 			resolve(parent) {
-				return sequelize.query(`
-          SELECT 
-            id,
-            description,
-            email,
-            photo_url as "photoUrl",
-            username,
-            created_at as "createdAt",
-            updated_at as "updatedAt"
-          FROM users
-          WHERE id = :authorId
-        `, {
-          replacements: {
-            authorId: parent.authorId,
-          },
-          type: QueryTypes.SELECT,
-        }).then((result) => {
-          return result[0];
-        });
+        return getUserByIdQuery(parent.authorId)
+          .then((result) => {
+            return result[0];
+          });
 			}
     },
 	})
@@ -105,52 +71,19 @@ const ArticleType = new GraphQLObjectType({
     author: {
 			type: UserType,
 			resolve(parent) {
-				return sequelize.query(`
-          SELECT 
-            id,
-            description,
-            email,
-            photo_url as "photoUrl",
-            username,
-            created_at as "createdAt",
-            updated_at as "updatedAt"
-          FROM users
-          WHERE users.id = (
-              SELECT
-                author_id
-              FROM blogs
-              WHERE blogs.id = :blogId
-            )
-        `, {
-          replacements: {
-            blogId: parent.blogId,
-          },
-          type: QueryTypes.SELECT,
-        }).then((result) => {
-          return result[0];
-        });
+        return getUserByBlogIdQuery(parent.blogId)
+          .then((result) => {
+            return result[0];
+          });
 			}
     },
     blog: {
 			type: BlogType,
 			resolve(parent) {
-				return sequelize.query(`
-          SELECT 
-            id,
-            name,
-            author_id as "authorId",
-            created_at as "createdAt",
-            updated_at as "updatedAt"
-          FROM blogs
-          WHERE blogs.id = :blogId
-        `, {
-          replacements: {
-            blogId: parent.blogId,
-          },
-          type: QueryTypes.SELECT,
-        }).then((result) => {
-          return result[0];
-        });
+        return getBlogByIdQuery(parent.blogId)
+          .then((result) => {
+            return result[0];
+          });
 			}
     },
 	})
@@ -162,52 +95,28 @@ const RootQuery = new GraphQLObjectType({
     articles: {
 			type: new GraphQLList(ArticleType),
 			resolve(parent, args) {
-				return sequelize.query(`
-          SELECT 
-            id,
-            name,
-            content,
-            blog_id as "blogId",
-            created_at as "createdAt",
-            updated_at as "updatedAt"
-          FROM articles
-        `).then((result) => {
-          return result[0];
-        });
+        return getArticleListQuery()
+          .then((result) => {
+            return result[0];
+          });
 			}
 		},
 		blogs: {
 			type: new GraphQLList(BlogType),
 			resolve(parent, args) {
-				return sequelize.query(`
-          SELECT 
-            id,
-            name,
-            author_id as "authorId",
-            created_at as "createdAt",
-            updated_at as "updatedAt"
-          FROM blogs
-        `).then((result) => {
-          return result[0];
-        });
+        return getBlogListQuery()
+          .then((result) => {
+            return result[0];
+          });
 			}
 		},
 		users: {
 			type: new GraphQLList(UserType),
 			resolve(parent, args) {
-				return sequelize.query(`
-          SELECT 
-            id,
-            description,
-            email,
-            photo_url as "photoUrl",
-            username,
-            created_at as "createdAt",
-            updated_at as "updatedAt"
-          FROM users
-        `).then((result) => {
-          return result[0];
-        });
+        return getUserListQuery()
+          .then((result) => {
+            return result[0];
+          });
 			}
     },
     user: {
@@ -216,23 +125,10 @@ const RootQuery = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(GraphQLString) },
       },
 			resolve(parent, args) {
-				return sequelize.query(`
-          SELECT 
-            id,
-            description,
-            email,
-            photo_url as "photoUrl",
-            username,
-            created_at as "createdAt",
-            updated_at as "updatedAt"
-          FROM users
-          WHERE id = :userId
-        `, {
-          userId: args.id,
-        }).then((result) => {
-          console.log('result', result);
-          return result[0];
-        });
+        return getUserByIdQuery(args.id)
+          .then((result) => {
+            return result[0];
+          });
 			}
 		}
 	}
@@ -250,22 +146,8 @@ const Mutation = new GraphQLObjectType({
         description: { type: GraphQLString },
         photoUrl: { type: GraphQLString },
 			},
-			resolve: async function(parent, {
-        username,
-        password,
-        email,
-        description,
-        photoUrl,
-      }) {
-				const newUserBuild = models.user.build({
-          username,
-          password,
-          email,
-          description,
-          photoUrl,
-        });
-        const newUser = await newUserBuild.save();
-        return newUser;
+			resolve(parent, args) {
+				return createUserMutation(args);
 			}
     },
     updateUser: {
@@ -279,19 +161,10 @@ const Mutation = new GraphQLObjectType({
         photoUrl: { type: GraphQLString },
 			},
 			resolve: async function(parent, args) {
-				return sequelize.query(`
-          UPDATE users
-          SET
-            username = COALESCE(:username, username),
-            password = COALESCE(:password, password),
-            email = COALESCE(:email, email),
-            description = COALESCE(:description, description),
-            photo_url = COALESCE(:photoUrl, photo_url)
-          WHERE id = :id
-          RETURNING *
-        `, args).then((result) => {
-          return result[0];
-        });
+        return updateUserMutation(args)
+          .then((result) => {
+            return result[0];
+          });
 			}
 		},
     deleteUser: {
@@ -300,13 +173,10 @@ const Mutation = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(GraphQLID) },
 			},
 			resolve(parent, { id }) {
-				return sequelize.query(`
-          DELETE FROM users
-          WHERE id = :userId
-          RETURNING *
-        `,{ userId: id }).then((result) => {
-          return result[0];
-        });
+        return deleteUserMutation(id)
+          .then((result) => {
+            return result[0];
+          });
 			}
 		},
 	}
