@@ -1,5 +1,5 @@
 
-const { sequelize } = require('../database/models');
+const models, { sequelize } = require('../database/models');
 const { QueryTypes } = require('sequelize');
 const graphql = require('graphql');
 const { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull } = graphql;
@@ -209,63 +209,110 @@ const RootQuery = new GraphQLObjectType({
           return result[0];
         });
 			}
+    },
+    user: {
+      type: UserType,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) },
+      },
+			resolve(parent, args) {
+				return sequelize.query(`
+          SELECT 
+            id,
+            description,
+            email,
+            photo_url as "photoUrl",
+            username,
+            created_at as "createdAt",
+            updated_at as "updatedAt"
+          FROM users
+          WHERE id = :userId
+        `, {
+          userId: args.id,
+        }).then((result) => {
+          console.log('result', result);
+          return result[0];
+        });
+			}
 		}
 	}
 });
 
-// const Mutation = new GraphQLObjectType({
-// 	name: 'Mutation',
-// 	fields: {
-// 		addDocument: {
-// 			type: DocumentType,
-// 			args: {
-// 				title: { type: new GraphQLNonNull(GraphQLString) },
-// 				author: { type: GraphQLString },
-// 				dateCreated: { type: GraphQLString }
-// 			},
-// 			resolve(parent, args) {
-// 				const document = new Document({
-// 					title: args.title,
-// 					author: args.author,
-// 					dateCreated: args.dateCreated,
-// 					pages: []
-// 				});
-// 				const newDocument = document.save();
-// 				if (!newDocument) {
-// 					throw new Error('Cannot save document');
-// 				}
-// 				return newDocument;
-// 			}
-// 		},
-// 		addPage: {
-// 			type: PageType,
-// 			args: {
-// 				pageNr: { type: new GraphQLNonNull(GraphQLInt) },
-// 				text: { type: new GraphQLNonNull(GraphQLString) },
-// 				documentId: { type: new GraphQLNonNull(GraphQLString) }
-// 			},
-// 			resolve(parent, args) {
-// 				const page = new Page({
-// 					pageNr: args.pageNr,
-// 					text: args.text
-// 				});
-
-// 				const newPage = page.save();
-// 				if (!newPage) {
-// 					throw new Error('Cannot save page');
-// 				} else {
-// 					//add page _id to its parent document "pages<<array>>"
-// 					newPage.then((res) => {
-// 						return Document.updateOne({ _id: args.documentId }, { $push: { pages: res._id } });
-// 					});
-// 					return newPage;
-// 				}
-// 			}
-// 		}
-// 	}
-// });
+const Mutation = new GraphQLObjectType({
+	name: 'Mutation',
+	fields: {
+		createUser: {
+			type: UserType,
+			args: {
+        username: { type: new GraphQLNonNull(GraphQLString) },
+        password: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        description: { type: GraphQLString },
+        photoUrl: { type: GraphQLString },
+			},
+			resolve: async function(parent, {
+        username,
+        password,
+        email,
+        description,
+        photoUrl,
+      }) {
+				const newUserBuild = models.user.build({
+          username,
+          password,
+          email,
+          description,
+          photoUrl,
+        });
+        const newUser = await newUserBuild.save();
+        return newUser;
+			}
+    },
+    updateUser: {
+			type: UserType,
+			args: {
+        id: { type: new GraphQLNonNull(GraphQLID) },
+        username: { type: GraphQLString },
+        password: { type: GraphQLString },
+        email: { type: GraphQLString },
+        description: { type: GraphQLString },
+        photoUrl: { type: GraphQLString },
+			},
+			resolve: async function(parent, args) {
+				return sequelize.query(`
+          UPDATE users
+          SET
+            username = COALESCE(:username, username),
+            password = COALESCE(:password, password),
+            email = COALESCE(:email, email),
+            description = COALESCE(:description, description),
+            photo_url = COALESCE(:photoUrl, photo_url)
+          WHERE id = :id
+          RETURNING *
+        `, args).then((result) => {
+          return result[0];
+        });
+			}
+		},
+    deleteUser: {
+			type: UserType,
+			args: {
+        id: { type: new GraphQLNonNull(GraphQLID) },
+			},
+			resolve(parent, { id }) {
+				return sequelize.query(`
+          DELETE FROM users
+          WHERE id = :userId
+          RETURNING *
+        `,{ userId: id }).then((result) => {
+          return result[0];
+        });
+			}
+		},
+	}
+});
 
 module.exports = new GraphQLSchema({
 	query: RootQuery,
-	// mutation: Mutation
+	mutation: Mutation
 });

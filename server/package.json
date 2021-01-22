@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "npx pm2 start server.js --watch",
+    "stop": "npx pm2 stop all",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
