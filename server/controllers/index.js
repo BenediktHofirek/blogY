@@ -75,7 +75,7 @@ const getAllArticles = async (req, res) => {
       SELECT
         name,
         content,
-        created_at as "crateadAt",
+        created_at as "crateadAt", 
         updated_at as "updatedAt"
       FROM articles
     `);

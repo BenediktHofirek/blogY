@@ -1,16 +1,16 @@
-var express = require('express');
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
-var routes = require('./routes/routes.js');
-var dotenv = require('dotenv');
+const express = require('express');
+const { graphqlHTTP } = require('express-graphql');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const dotenv = require('dotenv');
 dotenv.config();
 
+const routes = require('./routes/routes.js');
+const schema = require('./graphql/schema.js');
+
 // Configure the local strategy for use by Passport.
-//
-// The local strategy require a `verify` function which receives the credentials
-// (`username` and `password`) submitted by the user.  The function must verify
-// that the password is correct and then invoke `cb` with a user object, which
-// will be set at `req.user` in route handlers after authentication.
 passport.use(new LocalStrategy(
 function(username, password, cb) {
   db.users.findByUsername(username, function(err, user) {
@@ -33,12 +33,13 @@ passport.deserializeUser(function(id, cb) {
 });
 
 // Create a new Express application.
-var app = express();
-app.use(require('body-parser').urlencoded({ extended: true }));
+const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(require('express-session')({ secret: `${process.env.SECRET}`, resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
-  
+app.use(cors());
+
 app.post('/login', 
   passport.authenticate('local'),
   function(req, res) {
@@ -50,6 +51,16 @@ app.get('/logout', function(req, res){
   req.logout();
   res.send(200);
 });
+
+app.use(
+  '/graphql',
+  bodyParser.json(),
+	graphqlHTTP({
+		schema,
+		graphiql: true
+	})
+);
+
 
 app.use(routes);
 
