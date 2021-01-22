@@ -11,10 +11,12 @@ module.exports = {
       },
       name: {
         allowNull: false,
+        unique: 'compositeArticle',
         type: Sequelize.STRING
       },
       blog_id: {
         allowNull: false,
+        unique: 'compositeArticle',
         type: Sequelize.INTEGER
       },
       content: {

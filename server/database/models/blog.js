@@ -23,8 +23,14 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   blog.init({
-    name: DataTypes.STRING,
-    author_id: DataTypes.INTEGER
+    name: {
+      type: DataTypes.STRING,
+      unique: 'compositeBlog',
+    },
+    author_id: {
+      type: DataTypes.STRING,
+      unique: 'compositeBlog',
+    },
   }, {
     sequelize,
     modelName: 'blog',

@@ -19,8 +19,14 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   article.init({
-    name: DataTypes.STRING,
-    blog_id: DataTypes.INTEGER,
+    name: {
+      type: DataTypes.STRING,
+      unique: 'compositeArticle',
+    },
+    blog_id: {
+      type: DataTypes.INTEGER,
+      unique: 'compositeArticle',
+    },
     content: DataTypes.TEXT
   }, {
     sequelize,
