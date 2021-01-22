@@ -5,7 +5,7 @@ const passport = require('passport');
 const dotenv = require('dotenv');
 
 const schema = require('./graphql/schema.js');
-const passportConfigFnc = require('./config/passport');
+const passportConfigFnc = require('./auth/passportjsConfig');
 
 dotenv.config();
 passportConfigFnc(passport);

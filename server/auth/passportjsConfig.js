@@ -1,6 +1,7 @@
 const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJwt = require('passport-jwt').ExtractJwt;
-const { sequelize } = require("../database/models/index.js");
+
+const { getUserQuery } = require('../database/querys/querys.js');
 
 const options = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -14,20 +15,7 @@ module.exports = (passport) => {
     passport.use(new JwtStrategy(options, function(jwt_payload, done) {
         console.log('JWT payload', jwt_payload);
 
-        sequelize.query(`
-          SELECT 
-            id,
-            description,
-            email,
-            photo_url as "photoUrl",
-            username,
-            created_at as "createdAt",
-            updated_at as "updatedAt"
-          FROM users
-          WHERE id = :userId
-        `, {
-          userId: jwt_payload.sub,
-        })
+        getUserQuery(jwt_payload)
         .then(([user]) => {
             console.log('resultJWT authentication', user);
             return done(null, user || false);
