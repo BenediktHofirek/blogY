@@ -46,10 +46,11 @@ app.post('/login',
   });
 
 app.get('/logout', function(req, res){
+  console.log('logout');
   req.logout();
   res.send(200);
 });
 
-app.get('/', routes);
+app.use(routes);
 
 app.listen(3000);

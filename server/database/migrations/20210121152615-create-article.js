@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Articles', {
+    await queryInterface.createTable('articles', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -13,7 +13,7 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
-      blogId: {
+      blog_id: {
         allowNull: false,
         type: Sequelize.INTEGER
       },
@@ -21,17 +21,17 @@ module.exports = {
         allowNull: false,
         type: Sequelize.TEXT
       },
-      createdAt: {
+      created_at: {
         defaultValue: Sequelize.fn('NOW'),
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         defaultValue: Sequelize.fn('NOW'),
         type: Sequelize.DATE
       }
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Articles');
+    await queryInterface.dropTable('articles');
   }
 };

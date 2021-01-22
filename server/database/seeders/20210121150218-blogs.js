@@ -1,26 +1,26 @@
 module.exports = {
   up: (queryInterface, Sequelize) => queryInterface.bulkInsert(
-    'Blogs',
+    'blogs',
     [
       {
-        "authorId": 1,
+        "author_id": 1,
         "name": "Cipromox"
       },
       {
-        "authorId": 2,
+        "author_id": 2,
         "name": "Steelfab"
       },
       {
-        "authorId": 3,
+        "author_id": 3,
         "name": "Ecraze"
       },
       {
-        "authorId": 4,
+        "author_id": 4,
         "name": "Manglo"
       }
     ],
     {},
   ),
 
-  down: (queryInterface, Sequelize) => queryInterface.bulkDelete('Blogs', null, {}),
+  down: (queryInterface, Sequelize) => queryInterface.bulkDelete('blogs', null, {}),
 };

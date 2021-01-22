@@ -2,7 +2,7 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Users', {
+    return queryInterface.createTable('users', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -19,23 +19,23 @@ module.exports = {
         unique: true,
         type: Sequelize.STRING
       },
-      photoUrl: {
+      photo_url: {
         type: Sequelize.TEXT,
       },
       description: {
         type: Sequelize.TEXT,
       },
-      createdAt: {
+      created_at: {
         defaultValue: Sequelize.fn('NOW'),
         type: Sequelize.DATE
       },
-      updatedAt: {
+      updated_at: {
         defaultValue: Sequelize.fn('NOW'),
         type: Sequelize.DATE
       }
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Users');
+    return queryInterface.dropTable('users');
   }
 };
