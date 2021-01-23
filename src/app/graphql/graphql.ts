@@ -80,6 +80,25 @@ export type MutationRegisterArgs = {
   password: Scalars['String'];
 };
 
+export type RegisterMutationMutationVariables = Exact<{
+  username: Scalars['String'];
+  email: Scalars['String'];
+  password: Scalars['String'];
+}>;
+
+
+export type RegisterMutationMutation = (
+  { __typename?: 'Mutation' }
+  & { register?: Maybe<(
+    { __typename?: 'Auth' }
+    & Pick<Auth, 'token' | 'tokenExpirationTime'>
+    & { user: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username' | 'email' | 'photoUrl' | 'description' | 'createdAt' | 'updatedAt'>
+    ) }
+  )> }
+);
+
 export type ArticlesQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -113,6 +132,34 @@ export type LoginQueryQuery = (
   )> }
 );
 
+export const RegisterMutationDocument = gql`
+    mutation RegisterMutation($username: String!, $email: String!, $password: String!) {
+  register(username: $username, email: $email, password: $password) {
+    token
+    tokenExpirationTime
+    user {
+      id
+      username
+      email
+      photoUrl
+      description
+      createdAt
+      updatedAt
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class RegisterMutationGQL extends Apollo.Mutation<RegisterMutationMutation, RegisterMutationMutationVariables> {
+    document = RegisterMutationDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
 export const ArticlesQueryDocument = gql`
     query ArticlesQuery {
   articles {

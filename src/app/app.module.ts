@@ -8,8 +8,8 @@ import { AppStoreModule } from './app-store.module';
 //apollo
 import { APOLLO_OPTIONS } from "apollo-angular";
 import { InMemoryCache } from "@apollo/client/core";
-import {ApolloLink} from '@apollo/client/core';
-import {HttpLink} from 'apollo-angular/http';
+import { ApolloLink } from '@apollo/client/core';
+import { HttpLink } from 'apollo-angular/http';
 
 //app modules
 import { CoreModule } from './core/core.module';

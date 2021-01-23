@@ -5,6 +5,7 @@ export interface AppState {
   articleMap: ArticleMap,
   blogMap: BlogMap,
   userMap: UserMap,
+  currentUser: User,
 }
  
 export const selectArticleMap = (state: AppState): ArticleMap => state.articleMap;

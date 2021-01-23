@@ -1,7 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
-import firebase from 'firebase';
+import { User } from 'src/app/store/models/app.models';
+import { AppState } from 'src/app/store/selectors/app.selector';
 import { AuthService } from '../../../features/auth/services/auth.service';
 
 @Component({
@@ -10,12 +12,12 @@ import { AuthService } from '../../../features/auth/services/auth.service';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  public user: firebase.User | null | undefined = undefined;
+  public user: User | null | undefined = undefined;
   private userSubscription: Subscription;
 
-  constructor(private authService: AuthService,
-              private router: Router) {
-    this.userSubscription = this.authService.userSubject.subscribe(user => {
+  constructor(private store: Store<AppState>,
+              private authService: AuthService) {
+    this.userSubscription = this.store.select((state: AppState) => state.currentUser).subscribe(user => {
       this.user = user;
     });
   }

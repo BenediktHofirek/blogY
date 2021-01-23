@@ -9,10 +9,10 @@ import { User } from 'src/app/store/models/app.models';
   styleUrls: ['./account.component.scss']
 })
 export class AccountComponent implements OnInit {
-  user: User;
+  user: User | undefined = undefined;
 
   constructor(private store: Store<AppState>) {
-    this.user = this.store.select(selectCurrentUser);
+    // this.user = this.store.select('currentUser');
   }
 
   ngOnInit() {

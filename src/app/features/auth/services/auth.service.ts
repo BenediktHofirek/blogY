@@ -6,6 +6,8 @@ import * as moment from 'moment';
 import { BehaviorSubject, Subscription, Observable } from 'rxjs';
 import { AppState } from 'src/app/store/selectors/app.selector';
 import { NavigationService } from "../../../core/services/navigation.service";
+import { LoginQueryGQL, RegisterMutationGQL } from 'src/app/graphql/graphql';
+
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -13,6 +15,8 @@ export class AuthService {
   private tokenExpirationTime = 0;
 
   constructor(private store: Store<AppState>,
+              private registerMutationGQL: RegisterMutationGQL,
+              private loginQueryGQL: LoginQueryGQL,
               private apollo: Apollo,
               private navigationService: NavigationService,
               private router: Router) {
@@ -41,19 +45,15 @@ export class AuthService {
   register(email: string, password: string, username: string) {
     this.apollo.client.resetStore();
     return new Promise<object | void>((resolve, reject) => { 
-      this.firebaseAuth
-        .createUserWithEmailAndPassword(email, password)
-        .then(
-          ({ user }) => {
-            if (user) {
-              user.sendEmailVerification();
-              user.updateProfile({
-                displayName: username,
-              }).then(() => {
-                this.navigationService.back();
-                resolve();
-              }).catch((error) => reject(error));
-            }
+      this.registerMutationGQL.mutate({
+          email,
+          username,
+          password
+      }).subscribe(
+          (user) => {
+            console.log('registerSuccess', user);
+            this.navigationService.back();
+            resolve();
           },
           (error) => { reject(error) }
         );
@@ -61,20 +61,27 @@ export class AuthService {
   }
   
   //Login user
-  login(email: string, password: string) {
+  //user can provide username or email, both works,
+  //while both are unique in database, 
+  //so we can query condition "WHERE email = usernameOrEmail OR username = usernameOrEmail"
+  login(
+    usernameOrEmail: string,
+    password: string
+  ) {
     this.apollo.client.resetStore();
     return new Promise<object | void>((resolve, reject) => { 
-      this.firebaseAuth
-        .signInWithEmailAndPassword(email, password)
-        .then(
-          ({ user }) => {
-            if (user) {
-              this.navigationService.back();
-            }
-            resolve();
-          },
-          (error) => { reject(error) }
-        );
+      this.loginQueryGQL.fetch({
+        email: usernameOrEmail,
+        username: usernameOrEmail,
+        password
+    }).subscribe(
+        (user) => {
+          console.log('loginSuccess', user);
+          this.navigationService.back();
+          resolve();
+        },
+        (error) => { reject(error) }
+      );
     });
   }
 
