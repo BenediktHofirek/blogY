@@ -17,6 +17,7 @@ const {
 const {
   generatePasswordHash,
   validatePassword,
+  issueJWT,
 } = require('../auth/utils.js');
 const { errorMap } = require('./errors.js');
 
@@ -62,6 +63,15 @@ const BlogType = new GraphQLObjectType({
           });
 			}
     },
+	})
+});
+
+const AuthType = new GraphQLObjectType({
+	name: 'AuthType',
+	fields: () => ({
+		token: { type: GraphQLString },
+		tokenExpirationTime: { type: GraphQLString },
+		user: { type: UserType },
 	})
 });
 
@@ -138,7 +148,7 @@ const RootQuery = new GraphQLObjectType({
 			}
     },
     login: {
-      type: UserType,
+      type: AuthType,
       args: {
         username: { type: GraphQLString },
         email: { type: GraphQLString },
@@ -150,13 +160,17 @@ const RootQuery = new GraphQLObjectType({
             if (!user) {
               throw new Error(errorMap.USER_NOT_FOUND);
             }
-            const isUserValid = validatePassword(password, user.password);
-            if (isUserValid) {
-              const tokenObject = utils.issueJWT(user.id, '1d');
-              res.status(200).json({ success: true, token: tokenObject.token, expiresIn: tokenObject.expires });
-          } else {
-            throw new Error(errorMap.WRONG_PASSWORD);
-          }
+            
+            if (validatePassword(password, user.password)) {
+              const tokenObject = issueJWT(user.id, '1d');
+              return { 
+                token: tokenObject.token,
+                tokenExpirationTime: tokenObject.expires,
+                user,
+              };
+            } else {
+              throw new Error(errorMap.WRONG_PASSWORD);
+            }
           });
 			}
 		}
@@ -166,8 +180,8 @@ const RootQuery = new GraphQLObjectType({
 const Mutation = new GraphQLObjectType({
 	name: 'Mutation',
 	fields: {
-		createUser: {
-			type: UserType,
+		register: {
+			type: AuthType,
 			args: {
         username: { type: new GraphQLNonNull(GraphQLString) },
         password: { type: new GraphQLNonNull(GraphQLString) },
@@ -189,8 +203,13 @@ const Mutation = new GraphQLObjectType({
           email,
           description,
           photoUrl
-        }).then((result) => {
-            return result[0];
+        }).then(([user]) => {
+            const tokenObject = issueJWT(user.id, '1d');
+            return { 
+              token: tokenObject.token,
+              tokenExpirationTime: tokenObject.expires,
+              user,
+            };
           });
 			}
     },
