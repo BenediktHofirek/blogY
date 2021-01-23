@@ -1,6 +1,10 @@
 const crypto = require('crypto');
 const jsonwebtoken = require('jsonwebtoken');
-const PRIV_KEY = process.env.PRIVATE_KEY.replace(/\\n/gm, '\n');
+const path = require('path');
+const fs = require('fs');
+
+const pathToKey = path.join(__dirname, '..', 'id_rsa_priv.pem');
+const PRIVATE_KEY = fs.readFileSync(pathToKey, 'utf8');
 
 /**
  * -------------- HELPER FUNCTIONS ----------------
@@ -54,12 +58,7 @@ function issueJWT(userId, expiration) {
     iat: Date.now()
   };
 
-  const signedToken = jsonwebtoken.sign(payload, PRIV_KEY, { expiresIn: expiration, algorithm: 'RS256' });
-
-  return {
-    token: signedToken,
-    expires: expiration
-  }
+  return jsonwebtoken.sign(payload, PRIVATE_KEY, { expiresIn: expiration, algorithm: 'RS256' });
 }
 
 module.exports = {

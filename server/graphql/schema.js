@@ -202,13 +202,14 @@ const Mutation = new GraphQLObjectType({
             username,
             password: passwordHash,
             email
-          }).then(([user]) => {
+          }).then(([[user]] ) => {
               console.log('after', user);
-              const tokenObject = issueJWT(user.id, '1d');
-              console.log('afterIssue', tokenObject);
+              const tokenExpirationTime = Date.now() + (24 * 60 * 60 * 1000); //now plus one day
+              const token = issueJWT(user.id, '1d');
+              
               resolve({ 
-                token: tokenObject.token,
-                tokenExpirationTime: tokenObject.expires,
+                token,
+                tokenExpirationTime,
                 user,
               });
             })

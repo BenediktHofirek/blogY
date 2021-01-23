@@ -1,11 +1,15 @@
 const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJwt = require('passport-jwt').ExtractJwt;
+const path = require('path');
+const fs = require('fs');
 
 const { getUserByIdQuery } = require('../database/queries/queries.js');
+const pathToKey = path.join(__dirname, '..', 'id_rsa_pub.pem');
+const PUBLIC_KEY = fs.readFileSync(pathToKey, 'utf8');
 
 const options = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: process.env.PUBLIC_KEY.replace(/\\n/gm, '\n'),
+  secretOrKey: PUBLIC_KEY,
   algorithms: ['RS256']
 };
 
