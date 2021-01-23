@@ -208,9 +208,9 @@ const Mutation = new GraphQLObjectType({
         if (!context.user) {
           throw new Error(errorMap.UNAUTHORIZED);
         }
-        const providedId = content.jwt.permissionList.includes['admin'] ?
-          args.id || context.jwt.id :
-          context.jwt.id;
+        const providedId = content.user.permissionList.includes['admin'] ?
+          args.id || context.user.id :
+          context.user.id;
         const passwordHash = generatePasswordHash(password);
 
 				return updateUserMutation({
@@ -234,9 +234,9 @@ const Mutation = new GraphQLObjectType({
         if (!context.user) {
           throw new Error(errorMap.UNAUTHORIZED);
         }
-        const providedId = content.jwt.permissionList.includes['admin'] ?
-          args.id || context.jwt.id :
-          context.jwt.id;
+        const providedId = content.user.permissionList.includes['admin'] ?
+          args.id || context.user.id :
+          context.user.id;
 
         return deleteUserMutation(providedId)
           .then((result) => {

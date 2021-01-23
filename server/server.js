@@ -21,12 +21,12 @@ app.use(cors());
 app.use(
   '/graphql',
 	graphqlHTTP(function(req, res) {
-    return passport.authenticate('jwt', {session: false}, (err, jwt) => {
-      console.log('jwt', jwt);
+    return passport.authenticate('jwt', {session: false}, (err, user) => {
+      console.log('user', user);
       return {
         schema,
         context: {
-          jwt,
+          user,
           req,
           res
         },

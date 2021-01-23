@@ -4,33 +4,36 @@ import { NavigationService } from '../../../core/services/navigation.service';
 import { AuthService } from './auth.service';
 import { Observable } from 'rxjs';
 import { map, skip } from 'rxjs/operators';
-import firebase from 'firebase';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/store/selectors/app.selector';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
     constructor(private router: Router,
         private authService: AuthService,
+        private store: Store<AppState>,
         private navigationService: NavigationService) {};
 
     canActivate(route: ActivatedRouteSnapshot,
                 state: RouterStateSnapshot): Observable<boolean> | boolean {
-        const currentUser = this.authService.getCurrentUser();
+        const isLoggedIn = this.authService.getJwtToken();
 
-        if (typeof currentUser !== 'undefined') {
-            return this.isAllowed(currentUser, state.url);
+        if (typeof isLoggedIn !== 'undefined') {
+            return this.isAllowed(isLoggedIn, state.url);
         }
 
-        return this.authService.userSubject.asObservable().pipe(
-            skip(1),
-            map((user: firebase.User | null | undefined) => {
-                return this.isAllowed(user, state.url);
-            })
-        );
+        return this.authService.getJwtTokenObservable()
+            .pipe(
+                skip(1),
+                map((jwt: string | object | null | undefined) => {
+                    return this.isAllowed(jwt, state.url);
+                })
+            );
     }
 
-    isAllowed(user: firebase.User | null | undefined, url: string): boolean {
+    isAllowed(jwt: string | object | null | undefined, url: string): boolean {
         if (url === '/login' || url === '/register') {
-            if (!user) {
+            if (!jwt) {
                 return true;
             }
             
@@ -38,7 +41,7 @@ export class AuthGuard implements CanActivate {
             return false;
         }
 
-        if (user) {
+        if (jwt) {
             return true;
         }
 

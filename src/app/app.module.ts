@@ -16,6 +16,8 @@ import { AuthModule } from './features/auth/auth.module';
 import { HomeModule } from './features/home/home.module';
 import { SharedModule } from './shared/shared.module';
 import { UserModule } from './features/user/user.module';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './features/auth/services/auth-interceptor';
 
 @NgModule({
   declarations: [
@@ -32,7 +34,13 @@ import { UserModule } from './features/user/user.module';
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

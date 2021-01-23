@@ -1,60 +1,38 @@
-import { Injectable, OnDestroy } from '@angular/core';
-import { AngularFireAuth } from  "@angular/fire/auth";
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import firebase from 'firebase';
+import { Store } from '@ngrx/store';
+import * as moment from 'moment';
 import { BehaviorSubject, Subscription, Observable } from 'rxjs';
+import { AppState } from 'src/app/store/selectors/app.selector';
 import { NavigationService } from "../../../core/services/navigation.service";
 
 @Injectable({ providedIn: 'root' })
-export class AuthService implements OnDestroy {
-  public userSubject: BehaviorSubject<firebase.User | null | undefined>;
-  private expirationTime = 3600000;
-  private userSubscription: Subscription;
-  private isSingedOut = false;
+export class AuthService {
+  private jwtSubject: BehaviorSubject<string | object | null | undefined>;
+  private tokenExpirationTime = 0;
 
-  constructor(private firebaseAuth: AngularFireAuth,
+  constructor(private store: Store<AppState>,
               private navigationService: NavigationService,
               private router: Router) {
-    this.userSubject = new BehaviorSubject<firebase.User | null | undefined>(undefined);
-    this.userSubscription = this.firebaseAuth.authState.subscribe((user) => {
-      this.isSingedOut = false;
-      if (this.validateUser(user)) {
-        console.log('user',user);
-        this.userSubject.next(user);
-      } else {
-        this.userSubject.next(null);
-      }
-    });
+    this.tokenExpirationTime = +(localStorage.getItem("tokenExpirationTime") || 0);
+    this.jwtSubject = new BehaviorSubject<string | object | null | undefined>(localStorage.getItem("jwt"));
   }
 
-  ngOnDestroy() {
-    this.userSubscription.unsubscribe();
+  getJwtTokenObservable() {
+    return this.jwtSubject.asObservable();
   }
 
-  validateUser(user: firebase.User | null | undefined): boolean {
-    return (new Date(user?.metadata.lastSignInTime || 0).getTime() + this.expirationTime) - Date.now() > 0
-  }
-
-  getCurrentUser() {
-    const currentUser = this.isSingedOut ? null : this.userSubject.getValue();
-    if (this.validateUser(currentUser)) {
-      return currentUser;
+  getJwtToken() {
+    const jwt = this.jwtSubject.getValue();
+    if (!this.validateToken() && jwt) {
+      return null;
     }
     
-    return currentUser;
+    return jwt;
   }
 
-  getToken(): Promise<any> {
-    const currentUser = this.getCurrentUser();
-    if (!currentUser) {
-      return new Promise(resolve => resolve(currentUser));
-    }
-
-    return currentUser.getIdToken();
-  }
-
-  isAuthenticated() {
-    return !!this.getCurrentUser();
+  validateToken() {
+    return moment(Date.now()).isBefore(moment(this.tokenExpirationTime));
   }
   
   //Create new user 
@@ -97,10 +75,10 @@ export class AuthService implements OnDestroy {
   }
 
   singOut() {
-    console.log('beforeLogout');
-    this.firebaseAuth.signOut().then(() => {
-      this.isSingedOut = true;
-      this.router.navigateByUrl('/login');
-    });
+    localStorage.removeItem("jwt");
+    localStorage.removeItem("tokerExpirationTime");
+    this.jwtSubject.next(null);
+    this.expirationTime = 0;
+    this.router.navigateByUrl('/login');
   }
 }
