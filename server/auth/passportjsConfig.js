@@ -5,7 +5,7 @@ const { getUserByIdQuery } = require('../database/queries/queries.js');
 
 const options = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: process.env.PUBLIC_KEY,
+  secretOrKey: process.env.PUBLIC_KEY.replace(/\\n/gm, '\n'),
   algorithms: ['RS256']
 };
 

@@ -18,24 +18,48 @@ app.use(express.urlencoded({extended: true}));
 app.use(passport.initialize());
 app.use(cors());
 
+// app.use((req, res, next) => {
+//   const context = {
+//     req,
+//     res
+//   };
+
+//   passport.authenticate('jwt', {session: false}, (err, user) => {
+//     return {
+//       schema,
+//       context: {
+//         user,
+//         req,
+//         res
+//       },
+//       customFormatErrorFn: (errName) => {
+//         return errorResponseMap[errName] || errName;
+//       },
+//       graphiql: process.env.NODE_ENV === 'development'
+//     }
+//   });
+// });
+
 app.use(
   '/graphql',
-	graphqlHTTP(function(req, res) {
-    return passport.authenticate('jwt', {session: false}, (err, user) => {
-      console.log('user', user);
-      return {
-        schema,
-        context: {
-          user,
-          req,
-          res
-        },
-        customFormatErrorFn: (errName) => {
-          return errorResponseMap[errName];
-        },
-        graphiql: process.env.NODE_ENV === 'development'
-      }
-    });
+	graphqlHTTP(function(req, res, next) {
+    let user;
+    passport.authenticate('jwt', {session: false}, (err, user) => {
+      user = user;
+    })(req, res, next);
+
+    return {
+      schema,
+      context: {
+        user,
+        req,
+        res
+      },
+      customFormatErrorFn: (errName) => {
+        return errorResponseMap[errName] || errName;
+      },
+      graphiql: process.env.NODE_ENV === 'development'
+    }
   })
 );
 

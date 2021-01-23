@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const jsonwebtoken = require('jsonwebtoken');
-const PRIV_KEY = process.env.PRIVATE_KEY;
+const PRIV_KEY = process.env.PRIVATE_KEY.replace(/\\n/gm, '\n');
 
 /**
  * -------------- HELPER FUNCTIONS ----------------
@@ -38,10 +38,10 @@ function generatePasswordHash(password) {
   var salt = crypto.randomBytes(32).toString('hex');
   var genHash = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
   
-  return JSON.stringify({
+  return {
     salt: salt,
     hash: genHash
-  });
+  };
 }
 
 

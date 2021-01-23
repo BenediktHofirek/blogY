@@ -165,13 +165,11 @@ function getArticleListQuery(blogId) {
 
 function createUserMutation(newUserMap) {
   return sequelize.query(`
-    INSERT INTO users (username, password, email, description, photo_url)
+    INSERT INTO users (username, password, email)
     VALUES (
       :username,
       :password,
-      :email,
-      :description,
-      :photoUrl
+      :email
     )
     RETURNING *
   `, {

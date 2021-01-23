@@ -12,7 +12,6 @@ const {
   createUserMutation,
   updateUserMutation,
   deleteUserMutation,
-  deleteUserMutation,
 } = require('../database/queries/queries.js');
 const {
   generatePasswordHash,
@@ -185,32 +184,36 @@ const Mutation = new GraphQLObjectType({
 			args: {
         username: { type: new GraphQLNonNull(GraphQLString) },
         password: { type: new GraphQLNonNull(GraphQLString) },
-        email: { type: new GraphQLNonNull(GraphQLString) },
-        description: { type: GraphQLString },
-        photoUrl: { type: GraphQLString },
+        email: { type: new GraphQLNonNull(GraphQLString) }
 			},
-			resolve(parent, {
+			resolve: function(parent, {
         username,
         password,
-        email,
-        description,
-        photoUrl
+        email
       }) {
-        const passwordHash = generatePasswordHash(password);
-				return createUserMutation({
-          username,
-          password: passwordHash,
-          email,
-          description,
-          photoUrl
-        }).then(([user]) => {
-            const tokenObject = issueJWT(user.id, '1d');
-            return { 
-              token: tokenObject.token,
-              tokenExpirationTime: tokenObject.expires,
-              user,
-            };
-          });
+        if (password.length > 32) {
+          throw new Error();
+        }
+        
+        const passwordHash = JSON.stringify(generatePasswordHash(password));
+        console.log('passwordLength', passwordHash.length);
+        return new Promise((resolve, reject) => {
+          createUserMutation({
+            username,
+            password: passwordHash,
+            email
+          }).then(([user]) => {
+              console.log('after', user);
+              const tokenObject = issueJWT(user.id, '1d');
+              console.log('afterIssue', tokenObject);
+              resolve({ 
+                token: tokenObject.token,
+                tokenExpirationTime: tokenObject.expires,
+                user,
+              });
+            })
+            .catch((err) => reject(err));
+        });
 			}
     },
     updateUser: {
