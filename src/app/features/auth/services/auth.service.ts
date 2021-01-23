@@ -13,7 +13,7 @@ import { currentUserSuccess } from 'src/app/store/actions/app.actions';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private jwtSubject: BehaviorSubject<string | object | null | undefined>;
+  private tokenSubject: BehaviorSubject<string | object | null | undefined>;
   private tokenExpirationTime = 0;
 
   constructor(private store: Store<AppState>,
@@ -23,15 +23,15 @@ export class AuthService {
               private navigationService: NavigationService,
               private router: Router) {
     this.tokenExpirationTime = +(localStorage.getItem("tokenExpirationTime") || 0);
-    this.jwtSubject = new BehaviorSubject<string | object | null | undefined>(localStorage.getItem("token"));
+    this.tokenSubject = new BehaviorSubject<string | object | null | undefined>(localStorage.getItem("token"));
   }
 
   getTokenObservable() {
-    return this.jwtSubject.asObservable();
+    return this.tokenSubject.asObservable();
   }
 
   getToken() {
-    const jwt = this.jwtSubject.getValue();
+    const jwt = this.tokenSubject.getValue();
     if (!this.validateToken() && jwt) {
       return null;
     }
@@ -52,11 +52,10 @@ export class AuthService {
           username,
           password
       }).subscribe(
-          (user) => {
-            console.log('registerSuccess', user);
-            this.navigationService.back();
-            resolve();
-          },
+        (resultMap) => {
+          this.authCallback(resultMap);
+          resolve();
+        },
           (error) => { reject(error) }
         );
     });
@@ -77,11 +76,8 @@ export class AuthService {
         username: usernameOrEmail,
         password
     }).subscribe(
-        ({ user, token }) => {
-          console.log('loginSuccess', user);
-          this.saveToken(token);
-          this.store.dispatch(currentUserSuccess(user));
-          this.navigationService.back();
+        (resultMap) => {
+          this.authCallback(resultMap);
           resolve();
         },
         (error) => { reject(error) }
@@ -89,17 +85,27 @@ export class AuthService {
     });
   }
 
+  authCallback({ user, token }) {
+    console.log('auth Success', user);
+    this.saveToken(token);
+    this.store.dispatch(currentUserSuccess(user));
+    this.navigationService.back();
+  }
+
   saveToken(token) {
     const decoded = JWT.decode(token, {complete: true});
+    const tokenExpirationTime = decoded.payload.expiresIn;
     console.log('token', decoded);
     localStorage.setItem('token', token);
-    localStorage.setItem('tokenExpirationTime', decoded.payload.expiresIn);
+    localStorage.setItem('tokenExpirationTime', tokenExpirationTime);
+    this.tokenSubject.next(token);
+    this.tokenExpirationTime = tokenExpirationTime;
   }
 
   singOut() {
     localStorage.removeItem("token");
     localStorage.removeItem("tokerExpirationTime");
-    this.jwtSubject.next(null);
+    this.tokenSubject.next(null);
     this.tokenExpirationTime = 0;
     this.apollo.client.resetStore();
     this.router.navigateByUrl('/login');
