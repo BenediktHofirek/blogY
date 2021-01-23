@@ -3,10 +3,12 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Apollo } from 'apollo-angular';
 import * as moment from 'moment';
+import JWT from 'jsonwebtoken';
 import { BehaviorSubject, Subscription, Observable } from 'rxjs';
 import { AppState } from 'src/app/store/selectors/app.selector';
 import { NavigationService } from "../../../core/services/navigation.service";
 import { LoginQueryGQL, RegisterMutationGQL } from 'src/app/graphql/graphql';
+import { currentUserSuccess } from 'src/app/store/actions/app.actions';
 
 
 @Injectable({ providedIn: 'root' })
@@ -21,7 +23,7 @@ export class AuthService {
               private navigationService: NavigationService,
               private router: Router) {
     this.tokenExpirationTime = +(localStorage.getItem("tokenExpirationTime") || 0);
-    this.jwtSubject = new BehaviorSubject<string | object | null | undefined>(localStorage.getItem("jwt"));
+    this.jwtSubject = new BehaviorSubject<string | object | null | undefined>(localStorage.getItem("token"));
   }
 
   getTokenObservable() {
@@ -75,8 +77,10 @@ export class AuthService {
         username: usernameOrEmail,
         password
     }).subscribe(
-        (user) => {
+        ({ user, token }) => {
           console.log('loginSuccess', user);
+          this.saveToken(token);
+          this.store.dispatch(currentUserSuccess(user));
           this.navigationService.back();
           resolve();
         },
@@ -85,8 +89,15 @@ export class AuthService {
     });
   }
 
+  saveToken(token) {
+    const decoded = JWT.decode(token, {complete: true});
+    console.log('token', decoded);
+    localStorage.setItem('token', token);
+    localStorage.setItem('tokenExpirationTime', decoded.payload.expiresIn);
+  }
+
   singOut() {
-    localStorage.removeItem("jwt");
+    localStorage.removeItem("token");
     localStorage.removeItem("tokerExpirationTime");
     this.jwtSubject.next(null);
     this.tokenExpirationTime = 0;

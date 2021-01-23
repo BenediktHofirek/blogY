@@ -29,14 +29,13 @@ type Blog {
 
 type Auth {
   token: String!
-  tokenExpirationTime: String!
   user: User!
 }
 
 # the schema allows the following query:
 type Query {
   articles: [Article]
-  login(username: String, email: String, password: String!): User
+  login(username: String, email: String, password: String!): Auth
 }
 
 # this schema allows the following mutation:

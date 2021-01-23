@@ -51,14 +51,13 @@ export type Blog = {
 export type Auth = {
   __typename?: 'Auth';
   token: Scalars['String'];
-  tokenExpirationTime: Scalars['String'];
   user: User;
 };
 
 export type Query = {
   __typename?: 'Query';
   articles?: Maybe<Array<Maybe<Article>>>;
-  login?: Maybe<User>;
+  login?: Maybe<Auth>;
 };
 
 
@@ -91,7 +90,7 @@ export type RegisterMutationMutation = (
   { __typename?: 'Mutation' }
   & { register?: Maybe<(
     { __typename?: 'Auth' }
-    & Pick<Auth, 'token' | 'tokenExpirationTime'>
+    & Pick<Auth, 'token'>
     & { user: (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username' | 'email' | 'photoUrl' | 'description' | 'createdAt' | 'updatedAt'>
@@ -127,8 +126,12 @@ export type LoginQueryQueryVariables = Exact<{
 export type LoginQueryQuery = (
   { __typename?: 'Query' }
   & { login?: Maybe<(
-    { __typename?: 'User' }
-    & Pick<User, 'id' | 'username' | 'email' | 'photoUrl' | 'description' | 'createdAt' | 'updatedAt'>
+    { __typename?: 'Auth' }
+    & Pick<Auth, 'token'>
+    & { user: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username' | 'email' | 'photoUrl' | 'description' | 'createdAt' | 'updatedAt'>
+    ) }
   )> }
 );
 
@@ -136,7 +139,6 @@ export const RegisterMutationDocument = gql`
     mutation RegisterMutation($username: String!, $email: String!, $password: String!) {
   register(username: $username, email: $email, password: $password) {
     token
-    tokenExpirationTime
     user {
       id
       username
@@ -194,13 +196,16 @@ export const ArticlesQueryDocument = gql`
 export const LoginQueryDocument = gql`
     query LoginQuery($username: String, $email: String, $password: String!) {
   login(username: $username, email: $email, password: $password) {
-    id
-    username
-    email
-    photoUrl
-    description
-    createdAt
-    updatedAt
+    token
+    user {
+      id
+      username
+      email
+      photoUrl
+      description
+      createdAt
+      updatedAt
+    }
   }
 }
     `;

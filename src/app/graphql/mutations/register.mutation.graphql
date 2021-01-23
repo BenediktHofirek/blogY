@@ -5,7 +5,6 @@ mutation RegisterMutation(
 ) {
   register(username: $username, email: $email, password: $password) {
     token
-    tokenExpirationTime
     user {
       id
       username
