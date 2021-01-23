@@ -1,6 +1,29 @@
 const { sequelize } = require('../models/index.js');
 const { QueryTypes } = require('sequelize');
 
+function getUserByCredentialsQuery({email, username}) {
+  return sequelize.query(`
+    SELECT 
+      id,
+      description,
+      email,
+      photo_url as "photoUrl",
+      username,
+      password,
+      created_at as "createdAt",
+      updated_at as "updatedAt"
+    FROM users
+    WHERE username = :username
+    OR password = :password
+  `, {
+    replacements: {
+      email,
+      username
+    },
+    type: QueryTypes.SELECT,
+  });
+}
+
 function getUserByIdQuery(userId) {
   return sequelize.query(`
     SELECT 
@@ -193,6 +216,7 @@ function deleteUserMutation(userId) {
 
 
 module.exports = {
+  getUserByCredentialsQuery,
   getUserByIdQuery,
   getBlogByIdQuery,
   getUserByBlogIdQuery,

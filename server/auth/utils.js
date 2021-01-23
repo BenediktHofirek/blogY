@@ -15,7 +15,8 @@ const PRIV_KEY = process.env.PRIVATE_KEY;
  * This function uses the crypto library to decrypt the hash using the salt and then compares
  * the decrypted hash/salt with the password that the user provided at login
  */
-function validPassword(password, hash, salt) {
+function validatePassword(password, hashedPassword) {
+    const { hash, salt } = JSON.parse(hashedPassword);
     var hashVerify = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
     return hash === hashVerify;
 }
@@ -30,40 +31,39 @@ function validPassword(password, hash, salt) {
  * ALTERNATIVE: It would also be acceptable to just use a hashing algorithm to make a hash of the plain text password.
  * You would then store the hashed password in the database and then re-hash it to verify later (similar to what we do here)
  */
-function genPassword(password) {
-    var salt = crypto.randomBytes(32).toString('hex');
-    var genHash = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
-    
-    return {
-      salt: salt,
-      hash: genHash
-    };
+function generatePasswordHash(password) {
+  if (!password) {
+    return password;
+  }
+  var salt = crypto.randomBytes(32).toString('hex');
+  var genHash = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
+  
+  return JSON.stringify({
+    salt: salt,
+    hash: genHash
+  });
 }
 
 
 /**
  * @param {*} user - The user object.  We need this to set the JWT `sub` payload property to the MongoDB user ID
  */
-function issueJWT(user) {
-  const _id = user._id;
-
-  const expiresIn = '1d';
-
+function issueJWT(userId, expiration) {
   const payload = {
-    sub: _id,
+    sub: userId,
     iat: Date.now()
   };
 
-  const signedToken = jsonwebtoken.sign(payload, PRIV_KEY, { expiresIn: expiresIn, algorithm: 'RS256' });
+  const signedToken = jsonwebtoken.sign(payload, PRIV_KEY, { expiresIn: expiration, algorithm: 'RS256' });
 
   return {
     token: "Bearer " + signedToken,
-    expires: expiresIn
+    expires: expiration
   }
 }
 
 module.exports = {
-  validPassword,
-  genPassword,
+  validatePassword,
+  generatePasswordHash,
   issueJWT,
 }

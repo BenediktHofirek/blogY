@@ -6,6 +6,7 @@ const dotenv = require('dotenv');
 
 const schema = require('./graphql/schema.js');
 const passportConfigFnc = require('./auth/passportjsConfig');
+const { errorResponseMap } = require('./graphql/errors.js');
 
 dotenv.config();
 passportConfigFnc(passport);
@@ -19,10 +20,23 @@ app.use(cors());
 
 app.use(
   '/graphql',
-	graphqlHTTP({
-		schema,
-		graphiql: process.env.NODE_ENV === 'development'
-	})
+	graphqlHTTP(function(req, res) {
+    return passport.authenticate('jwt', {session: false}, (err, jwt) => {
+      console.log('jwt', jwt);
+      return {
+        schema,
+        context: {
+          jwt,
+          req,
+          res
+        },
+        customFormatErrorFn: (errName) => {
+          return errorResponseMap[errName];
+        },
+        graphiql: process.env.NODE_ENV === 'development'
+      }
+    });
+  })
 );
 
 app.listen(3000);

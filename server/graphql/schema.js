@@ -7,12 +7,18 @@ const {
   getUserListQuery,
   getArticleListQuery,
   getUserByIdQuery,
+  getUserByCredentialsQuery,
   getUserByBlogIdQuery,
   createUserMutation,
   updateUserMutation,
   deleteUserMutation,
   deleteUserMutation,
-} = require('../database/querys/querys.js');
+} = require('../database/queries/queries.js');
+const {
+  generatePasswordHash,
+  validatePassword,
+} = require('../auth/utils.js');
+const { errorMap } = require('./errors.js');
 
 const UserType = new GraphQLObjectType({
 	name: 'User',
@@ -130,6 +136,29 @@ const RootQuery = new GraphQLObjectType({
             return result[0];
           });
 			}
+    },
+    login: {
+      type: UserType,
+      args: {
+        username: { type: GraphQLString },
+        email: { type: GraphQLString },
+        password: { type: new GraphQLNonNull(GraphQLString) },
+      },
+			resolve(parent, args, context) {
+        return getUserByCredentialsQuery(args)
+          .then(([user]) => {
+            if (!user) {
+              throw new Error(errorMap.USER_NOT_FOUND);
+            }
+            const isUserValid = validatePassword(password, user.password);
+            if (isUserValid) {
+              const tokenObject = utils.issueJWT(user.id, '1d');
+              res.status(200).json({ success: true, token: tokenObject.token, expiresIn: tokenObject.expires });
+          } else {
+            throw new Error(errorMap.WRONG_PASSWORD);
+          }
+          });
+			}
 		}
 	}
 });
@@ -146,23 +175,52 @@ const Mutation = new GraphQLObjectType({
         description: { type: GraphQLString },
         photoUrl: { type: GraphQLString },
 			},
-			resolve(parent, args) {
-				return createUserMutation(args);
+			resolve(parent, {
+        username,
+        password,
+        email,
+        description,
+        photoUrl
+      }) {
+        const passwordHash = generatePasswordHash(password);
+				return createUserMutation({
+          username,
+          password: passwordHash,
+          email,
+          description,
+          photoUrl
+        }).then((result) => {
+            return result[0];
+          });
 			}
     },
     updateUser: {
 			type: UserType,
 			args: {
-        id: { type: new GraphQLNonNull(GraphQLID) },
+        id: { type: GraphQLString },
         username: { type: GraphQLString },
         password: { type: GraphQLString },
         email: { type: GraphQLString },
         description: { type: GraphQLString },
         photoUrl: { type: GraphQLString },
 			},
-			resolve: async function(parent, args) {
-        return updateUserMutation(args)
-          .then((result) => {
+			resolve(parent, args, context) {
+        if (!context.user) {
+          throw new Error(errorMap.UNAUTHORIZED);
+        }
+        const providedId = content.jwt.permissionList.includes['admin'] ?
+          args.id || context.jwt.id :
+          context.jwt.id;
+        const passwordHash = generatePasswordHash(password);
+
+				return updateUserMutation({
+          id: providedId,
+          username: args.username,
+          password: passwordHash,
+          email: args.email,
+          description: args.description,
+          photoUrl: args.photoUrl
+        }).then((result) => {
             return result[0];
           });
 			}
@@ -172,8 +230,15 @@ const Mutation = new GraphQLObjectType({
 			args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
 			},
-			resolve(parent, { id }) {
-        return deleteUserMutation(id)
+			resolve(parent, args, context) {
+        if (!context.user) {
+          throw new Error(errorMap.UNAUTHORIZED);
+        }
+        const providedId = content.jwt.permissionList.includes['admin'] ?
+          args.id || context.jwt.id :
+          context.jwt.id;
+
+        return deleteUserMutation(providedId)
           .then((result) => {
             return result[0];
           });
