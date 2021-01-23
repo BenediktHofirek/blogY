@@ -16,13 +16,13 @@ export class AuthGuard implements CanActivate {
 
     canActivate(route: ActivatedRouteSnapshot,
                 state: RouterStateSnapshot): Observable<boolean> | boolean {
-        const isLoggedIn = this.authService.getJwtToken();
+        const isLoggedIn = this.authService.getToken();
 
         if (typeof isLoggedIn !== 'undefined') {
             return this.isAllowed(isLoggedIn, state.url);
         }
 
-        return this.authService.getJwtTokenObservable()
+        return this.authService.getTokenObservable()
             .pipe(
                 skip(1),
                 map((jwt: string | object | null | undefined) => {

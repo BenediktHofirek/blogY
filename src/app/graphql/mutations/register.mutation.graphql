@@ -1,0 +1,19 @@
+mutation RegisterMutation(
+  $username: String!, 
+  $email: String!, 
+  $password: String!
+) {
+  register(username: $username, email: $email, password: $password) {
+    token
+    tokenExpirationTime
+    user {
+      id
+      username
+      email
+      photoUrl
+      description
+      createdAt
+      updatedAt
+    }
+  }
+}

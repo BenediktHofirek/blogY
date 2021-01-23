@@ -1,0 +1,18 @@
+query ArticlesQuery {
+  articles {
+    id
+    name
+    blogId
+    content
+    createdAt
+    updatedAt
+    author {
+      id
+      username
+    }
+    blog {
+      id
+      name
+    }
+  }
+}

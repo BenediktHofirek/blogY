@@ -57,7 +57,7 @@ function issueJWT(userId, expiration) {
   const signedToken = jsonwebtoken.sign(payload, PRIV_KEY, { expiresIn: expiration, algorithm: 'RS256' });
 
   return {
-    token: "Bearer " + signedToken,
+    token: signedToken,
     expires: expiration
   }
 }

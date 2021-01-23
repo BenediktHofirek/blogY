@@ -1,0 +1,45 @@
+type User {
+  id: Int!
+  username: String!
+  email: String!
+  description: String
+  photoUrl: String
+  createdAt: String
+  updatedAt: String
+}
+
+type Article {
+  id: Int!
+  name: String!
+  blogId: Int!
+  content: String!
+  createdAt: String
+  updatedAt: String
+  author: User!
+  blog: Blog!
+}
+
+type Blog {
+  id: Int!
+  name: String!
+  userId: Int!
+  createdAt: String
+  updatedAt: String
+}
+
+type Auth {
+  token: String!
+  tokenExpirationTime: String!
+  user: User!
+}
+
+# the schema allows the following query:
+type Query {
+  articles: [Article]
+  login(username: String, email: String, password: String!): User
+}
+
+# this schema allows the following mutation:
+type Mutation {
+  register(username: String, email: String, password: String!): Auth
+}

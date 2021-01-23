@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
+import { Apollo } from 'apollo-angular';
 import * as moment from 'moment';
 import { BehaviorSubject, Subscription, Observable } from 'rxjs';
 import { AppState } from 'src/app/store/selectors/app.selector';
@@ -12,17 +13,18 @@ export class AuthService {
   private tokenExpirationTime = 0;
 
   constructor(private store: Store<AppState>,
+              private apollo: Apollo,
               private navigationService: NavigationService,
               private router: Router) {
     this.tokenExpirationTime = +(localStorage.getItem("tokenExpirationTime") || 0);
     this.jwtSubject = new BehaviorSubject<string | object | null | undefined>(localStorage.getItem("jwt"));
   }
 
-  getJwtTokenObservable() {
+  getTokenObservable() {
     return this.jwtSubject.asObservable();
   }
 
-  getJwtToken() {
+  getToken() {
     const jwt = this.jwtSubject.getValue();
     if (!this.validateToken() && jwt) {
       return null;
@@ -37,6 +39,7 @@ export class AuthService {
   
   //Create new user 
   register(email: string, password: string, username: string) {
+    this.apollo.client.resetStore();
     return new Promise<object | void>((resolve, reject) => { 
       this.firebaseAuth
         .createUserWithEmailAndPassword(email, password)
@@ -59,6 +62,7 @@ export class AuthService {
   
   //Login user
   login(email: string, password: string) {
+    this.apollo.client.resetStore();
     return new Promise<object | void>((resolve, reject) => { 
       this.firebaseAuth
         .signInWithEmailAndPassword(email, password)
@@ -78,7 +82,8 @@ export class AuthService {
     localStorage.removeItem("jwt");
     localStorage.removeItem("tokerExpirationTime");
     this.jwtSubject.next(null);
-    this.expirationTime = 0;
+    this.tokenExpirationTime = 0;
+    this.apollo.client.resetStore();
     this.router.navigateByUrl('/login');
   }
 }
