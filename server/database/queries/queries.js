@@ -1,7 +1,7 @@
 const { sequelize } = require('../models/index.js');
 const { QueryTypes } = require('sequelize');
 
-function getUserByCredentialsQuery({email, username}) {
+function getUserByCredentialsQuery({email, username, password}) {
   return sequelize.query(`
     SELECT 
       id,
@@ -18,7 +18,8 @@ function getUserByCredentialsQuery({email, username}) {
   `, {
     replacements: {
       email,
-      username
+      username,
+      password
     },
     type: QueryTypes.SELECT,
   });
@@ -213,15 +214,35 @@ function deleteUserMutation(userId) {
 }
 
 
+function extractQueryResult(query) {
+  return (...args) => new Promise((resolve, reject) => {
+    query(...args)
+      .then((queryResult) => {
+        let temp = queryResult;
+        while (Array.isArray(temp[0])) {
+          temp = temp[0];
+        }
+
+        const result = temp.length === 1 ?
+          temp[0] :
+          temp;
+
+        resolve(result);
+      })
+      .catch((err) => reject(err));
+  });
+}
+
+
 module.exports = {
-  getUserByCredentialsQuery,
-  getUserByIdQuery,
-  getBlogByIdQuery,
-  getUserByBlogIdQuery,
-  getUserListQuery,
-  getArticleListQuery,
-  getBlogListQuery,
-  createUserMutation,
-  updateUserMutation,
-  deleteUserMutation,
+  getUserByCredentialsQuery: extractQueryResult(getUserByCredentialsQuery),
+  getUserByIdQuery: extractQueryResult(getUserByIdQuery),
+  getBlogByIdQuery: extractQueryResult(getBlogByIdQuery),
+  getUserByBlogIdQuery: extractQueryResult(getUserByBlogIdQuery),
+  getUserListQuery: extractQueryResult(getUserListQuery),
+  getArticleListQuery: extractQueryResult(getArticleListQuery),
+  getBlogListQuery: extractQueryResult(getBlogListQuery),
+  createUserMutation: extractQueryResult(createUserMutation),
+  updateUserMutation: extractQueryResult(updateUserMutation),
+  deleteUserMutation: extractQueryResult(deleteUserMutation),
 }

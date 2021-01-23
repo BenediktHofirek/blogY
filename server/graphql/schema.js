@@ -196,7 +196,6 @@ const Mutation = new GraphQLObjectType({
         }
         
         const passwordHash = JSON.stringify(generatePasswordHash(password));
-        console.log('passwordLength', passwordHash.length);
         return new Promise((resolve, reject) => {
           createUserMutation({
             username,

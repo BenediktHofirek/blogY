@@ -53,7 +53,8 @@ export class AuthService {
           password
       }).subscribe(
         (resultMap) => {
-          this.authCallback(resultMap);
+          console.log('result', resultMap)
+          // this.authCallback(resultMap);
           resolve();
         },
           (error) => { reject(error) }
@@ -77,7 +78,7 @@ export class AuthService {
         password
     }).subscribe(
         (resultMap) => {
-          this.authCallback(resultMap);
+          // this.authCallback(resultMap);
           resolve();
         },
         (error) => { reject(error) }
@@ -85,26 +86,27 @@ export class AuthService {
     });
   }
 
-  authCallback({ user, token }) {
-    console.log('auth Success', user);
-    this.saveToken(token);
-    this.store.dispatch(currentUserSuccess(user));
-    this.navigationService.back();
-  }
+  // authCallback({ user, token }) {
+  //   console.log('auth Success', user);
+  //   this.saveToken(token);
+  //   this.store.dispatch(currentUserSuccess(user));
+  //   this.navigationService.back();
+  // }
 
-  saveToken(token) {
-    const decoded = JWT.decode(token, {complete: true});
-    const tokenExpirationTime = decoded.payload.expiresIn;
-    console.log('token', decoded);
-    localStorage.setItem('token', token);
-    localStorage.setItem('tokenExpirationTime', tokenExpirationTime);
-    this.tokenSubject.next(token);
-    this.tokenExpirationTime = tokenExpirationTime;
-  }
+  // saveToken(token) {
+  //   const decoded = JWT.decode(token, {complete: true});
+  //   const tokenExpirationTime = decoded.payload.expiresIn;
+  //   console.log('token', decoded);
+  //   localStorage.setItem('token', token);
+  //   localStorage.setItem('tokenExpirationTime', tokenExpirationTime);
+  //   this.tokenSubject.next(token);
+  //   this.tokenExpirationTime = tokenExpirationTime;
+  // }
 
   singOut() {
     localStorage.removeItem("token");
     localStorage.removeItem("tokerExpirationTime");
+    this.store.dispatch(currentUserSuccess({currentUser: null}));
     this.tokenSubject.next(null);
     this.tokenExpirationTime = 0;
     this.apollo.client.resetStore();

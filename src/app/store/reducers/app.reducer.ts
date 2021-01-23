@@ -39,8 +39,7 @@ export const blogMapReducer = createReducer(
 
 export const currentUserReducer = createReducer(
   {},
-  on(AppActions.currentUserSuccess, (
-    state,
+  on(AppActions.currentUserSuccess, (state,
     {
       currentUser,
     }) => ({

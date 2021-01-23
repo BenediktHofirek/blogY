@@ -38,6 +38,6 @@ export const currentUserLoad = createAction(
 export const currentUserSuccess = createAction(
   'CurrentUser Success',
   props<{
-    currentUser: User,
+    currentUser: User | null | undefined,
   }>()
 );
