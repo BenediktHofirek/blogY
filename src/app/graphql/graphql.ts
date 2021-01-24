@@ -25,6 +25,8 @@ export type User = {
   photoUrl?: Maybe<Scalars['String']>;
   createdAt?: Maybe<Scalars['String']>;
   updatedAt?: Maybe<Scalars['String']>;
+  blogList?: Maybe<Array<Maybe<Blog>>>;
+  articleList?: Maybe<Array<Maybe<Article>>>;
 };
 
 export type Article = {
@@ -43,9 +45,11 @@ export type Blog = {
   __typename?: 'Blog';
   id: Scalars['Int'];
   name: Scalars['String'];
-  userId: Scalars['Int'];
+  authorId: Scalars['Int'];
   createdAt?: Maybe<Scalars['String']>;
   updatedAt?: Maybe<Scalars['String']>;
+  author?: Maybe<User>;
+  articleList?: Maybe<Array<Maybe<Article>>>;
 };
 
 export type Auth = {
@@ -57,7 +61,15 @@ export type Auth = {
 export type Query = {
   __typename?: 'Query';
   articles?: Maybe<Array<Maybe<Article>>>;
+  blogs?: Maybe<Array<Maybe<Blog>>>;
+  users?: Maybe<Array<Maybe<User>>>;
+  user?: Maybe<User>;
   login?: Maybe<Auth>;
+};
+
+
+export type QueryUserArgs = {
+  id: Scalars['String'];
 };
 
 
@@ -116,6 +128,24 @@ export type ArticlesQueryQuery = (
   )>>> }
 );
 
+export type BlogsQueryQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type BlogsQueryQuery = (
+  { __typename?: 'Query' }
+  & { blogs?: Maybe<Array<Maybe<(
+    { __typename?: 'Blog' }
+    & Pick<Blog, 'id' | 'name' | 'authorId' | 'createdAt' | 'updatedAt'>
+    & { author?: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    )>, articleList?: Maybe<Array<Maybe<(
+      { __typename?: 'Article' }
+      & Pick<Article, 'id' | 'name'>
+    )>>> }
+  )>>> }
+);
+
 export type LoginQueryQueryVariables = Exact<{
   username?: Maybe<Scalars['String']>;
   email?: Maybe<Scalars['String']>;
@@ -133,6 +163,44 @@ export type LoginQueryQuery = (
       & Pick<User, 'id' | 'username' | 'email' | 'photoUrl' | 'description' | 'createdAt' | 'updatedAt'>
     ) }
   )> }
+);
+
+export type UserQueryQueryVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type UserQueryQuery = (
+  { __typename?: 'Query' }
+  & { user?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username' | 'email' | 'description' | 'photoUrl' | 'createdAt' | 'updatedAt'>
+    & { blogList?: Maybe<Array<Maybe<(
+      { __typename?: 'Blog' }
+      & Pick<Blog, 'id' | 'name'>
+    )>>>, articleList?: Maybe<Array<Maybe<(
+      { __typename?: 'Article' }
+      & Pick<Article, 'id' | 'name'>
+    )>>> }
+  )> }
+);
+
+export type UsersQueryQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type UsersQueryQuery = (
+  { __typename?: 'Query' }
+  & { users?: Maybe<Array<Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username' | 'email' | 'description' | 'photoUrl' | 'createdAt' | 'updatedAt'>
+    & { blogList?: Maybe<Array<Maybe<(
+      { __typename?: 'Blog' }
+      & Pick<Blog, 'id' | 'name'>
+    )>>>, articleList?: Maybe<Array<Maybe<(
+      { __typename?: 'Article' }
+      & Pick<Article, 'id' | 'name'>
+    )>>> }
+  )>>> }
 );
 
 export const RegisterMutationDocument = gql`
@@ -193,6 +261,36 @@ export const ArticlesQueryDocument = gql`
       super(apollo);
     }
   }
+export const BlogsQueryDocument = gql`
+    query BlogsQuery {
+  blogs {
+    id
+    name
+    authorId
+    createdAt
+    updatedAt
+    author {
+      id
+      username
+    }
+    articleList {
+      id
+      name
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class BlogsQueryGQL extends Apollo.Query<BlogsQueryQuery, BlogsQueryQueryVariables> {
+    document = BlogsQueryDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
 export const LoginQueryDocument = gql`
     query LoginQuery($username: String, $email: String, $password: String!) {
   login(username: $username, email: $email, password: $password) {
@@ -215,6 +313,70 @@ export const LoginQueryDocument = gql`
   })
   export class LoginQueryGQL extends Apollo.Query<LoginQueryQuery, LoginQueryQueryVariables> {
     document = LoginQueryDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UserQueryDocument = gql`
+    query UserQuery($id: String!) {
+  user(id: $id) {
+    id
+    username
+    email
+    description
+    photoUrl
+    createdAt
+    updatedAt
+    blogList {
+      id
+      name
+    }
+    articleList {
+      id
+      name
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UserQueryGQL extends Apollo.Query<UserQueryQuery, UserQueryQueryVariables> {
+    document = UserQueryDocument;
+    
+    constructor(apollo: Apollo.Apollo) {
+      super(apollo);
+    }
+  }
+export const UsersQueryDocument = gql`
+    query UsersQuery {
+  users {
+    id
+    username
+    email
+    description
+    photoUrl
+    createdAt
+    updatedAt
+    blogList {
+      id
+      name
+    }
+    articleList {
+      id
+      name
+    }
+  }
+}
+    `;
+
+  @Injectable({
+    providedIn: 'root'
+  })
+  export class UsersQueryGQL extends Apollo.Query<UsersQueryQuery, UsersQueryQueryVariables> {
+    document = UsersQueryDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

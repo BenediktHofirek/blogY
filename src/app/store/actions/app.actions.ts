@@ -31,13 +31,13 @@ export const blogMapSuccess = createAction(
 export const currentUserLoad = createAction(
   'CurrentUser Load',
   props<{
-    currentUserId: string,
+    id: string,
   }>()
 );
 
 export const currentUserSuccess = createAction(
   'CurrentUser Success',
   props<{
-    currentUser: User | null | undefined,
+    currentUser: User | object,
   }>()
 );

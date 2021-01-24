@@ -3,18 +3,20 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Apollo } from 'apollo-angular';
 import * as moment from 'moment';
-import JWT from 'jsonwebtoken';
+import { JwtHelperService as JwtHelper } from "@auth0/angular-jwt";
 import { BehaviorSubject, Subscription, Observable } from 'rxjs';
 import { AppState } from 'src/app/store/selectors/app.selector';
 import { NavigationService } from "../../../core/services/navigation.service";
-import { LoginQueryGQL, RegisterMutationGQL } from 'src/app/graphql/graphql';
-import { currentUserSuccess } from 'src/app/store/actions/app.actions';
+import { Auth, LoginQueryGQL, LoginQueryQuery, RegisterMutationGQL } from 'src/app/graphql/graphql';
+import { currentUserLoad, currentUserSuccess } from 'src/app/store/actions/app.actions';
+import { User, Token } from 'src/app/store/models/app.models';
 
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private tokenSubject: BehaviorSubject<string | object | null | undefined>;
   private tokenExpirationTime = 0;
+  private jwtHelper;
 
   constructor(private store: Store<AppState>,
               private registerMutationGQL: RegisterMutationGQL,
@@ -22,8 +24,24 @@ export class AuthService {
               private apollo: Apollo,
               private navigationService: NavigationService,
               private router: Router) {
-    this.tokenExpirationTime = +(localStorage.getItem("tokenExpirationTime") || 0);
-    this.tokenSubject = new BehaviorSubject<string | object | null | undefined>(localStorage.getItem("token"));
+    this.jwtHelper = new JwtHelper();
+
+    const tokenExpirationTime = +(localStorage.getItem("tokenExpirationTime") || 0);
+    if (this.validateToken(tokenExpirationTime)) {
+      this.tokenExpirationTime = tokenExpirationTime;
+      const token = localStorage.getItem("token");
+      this.tokenSubject = new BehaviorSubject<string | object | null | undefined>(token);
+
+      if (token) {
+        const userId = this.jwtHelper.decodeToken(token).id;
+        this.store.dispatch(currentUserLoad({ id: userId }));
+      } else {
+        this.store.dispatch(currentUserSuccess({ currentUser: {}}));
+      }  
+    } else {
+      this.tokenSubject = new BehaviorSubject<string | object | null | undefined>(null);
+      this.store.dispatch(currentUserSuccess({ currentUser: {}}));
+    }
   }
 
   getTokenObservable() {
@@ -31,16 +49,16 @@ export class AuthService {
   }
 
   getToken() {
-    const jwt = this.tokenSubject.getValue();
-    if (!this.validateToken() && jwt) {
+    const token = this.tokenSubject.getValue();
+    if (!this.validateToken(this.tokenExpirationTime) && token) {
       return null;
     }
     
-    return jwt;
+    return token;
   }
 
-  validateToken() {
-    return moment(Date.now()).isBefore(moment(this.tokenExpirationTime));
+  validateToken(tokenExpirationTime: number) {
+    return moment(Date.now()).isBefore(moment(tokenExpirationTime));
   }
   
   //Create new user 
@@ -52,9 +70,8 @@ export class AuthService {
           username,
           password
       }).subscribe(
-        (resultMap) => {
-          console.log('result', resultMap)
-          // this.authCallback(resultMap);
+        (result) => {
+          this.authCallback(result?.data?.register);
           resolve();
         },
           (error) => { reject(error) }
@@ -77,8 +94,8 @@ export class AuthService {
         username: usernameOrEmail,
         password
     }).subscribe(
-        (resultMap) => {
-          // this.authCallback(resultMap);
+        (result) => {
+          this.authCallback(result?.data?.login);
           resolve();
         },
         (error) => { reject(error) }
@@ -86,27 +103,28 @@ export class AuthService {
     });
   }
 
-  // authCallback({ user, token }) {
-  //   console.log('auth Success', user);
-  //   this.saveToken(token);
-  //   this.store.dispatch(currentUserSuccess(user));
-  //   this.navigationService.back();
-  // }
+  authCallback(data: any) {
+    if (data) {
+      const { user, token } : { user: User, token: string } = data;
+      this.apollo.client.resetStore();
+      this.saveToken(token);
+      this.store.dispatch(currentUserSuccess({ currentUser: user }));
+      this.navigationService.back();
+    }
+  }
 
-  // saveToken(token) {
-  //   const decoded = JWT.decode(token, {complete: true});
-  //   const tokenExpirationTime = decoded.payload.expiresIn;
-  //   console.log('token', decoded);
-  //   localStorage.setItem('token', token);
-  //   localStorage.setItem('tokenExpirationTime', tokenExpirationTime);
-  //   this.tokenSubject.next(token);
-  //   this.tokenExpirationTime = tokenExpirationTime;
-  // }
+  saveToken(token: string) {
+    const tokenExpirationTime = this.jwtHelper.decodeToken(token).exp;
+    localStorage.setItem('token', token);
+    localStorage.setItem('tokenExpirationTime', tokenExpirationTime);
+    this.tokenSubject.next(token);
+    this.tokenExpirationTime = tokenExpirationTime;
+  }
 
   singOut() {
     localStorage.removeItem("token");
     localStorage.removeItem("tokerExpirationTime");
-    this.store.dispatch(currentUserSuccess({currentUser: null}));
+    this.store.dispatch(currentUserSuccess({currentUser: {}}));
     this.tokenSubject.next(null);
     this.tokenExpirationTime = 0;
     this.apollo.client.resetStore();

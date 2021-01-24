@@ -10,7 +10,8 @@ export const userMapReducer = createReducer(
     {
       userMap,
     }) => ({
-      userMap,
+      ...state,
+      ...userMap,
      })),
 );
 
@@ -21,7 +22,8 @@ export const articleMapReducer = createReducer(
     {
       articleMap,
     }) => ({
-      articleMap,
+      ...state,
+      ...articleMap,
      })),
 );
 
@@ -32,7 +34,8 @@ export const blogMapReducer = createReducer(
     {
       blogMap,
     }) => ({
-      blogMap,
+      ...state,
+      ...blogMap,
      })),
 ); 
 
@@ -43,6 +46,6 @@ export const currentUserReducer = createReducer(
     {
       currentUser,
     }) => ({
-      currentUser,
+      ...currentUser,
      })),
 );

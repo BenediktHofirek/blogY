@@ -1,0 +1,17 @@
+query BlogsQuery {
+  blogs {
+    id
+    name
+    authorId
+    createdAt
+    updatedAt
+    author {
+      id
+      username
+    }
+    articleList {
+      id
+      name
+    }
+  }
+}

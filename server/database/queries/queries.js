@@ -237,7 +237,7 @@ function deleteUserMutation(userId) {
 }
 
 
-function extractQueryResult(query) {
+function extractQueryResult(query, isList = false) {
   return (...args) => new Promise((resolve, reject) => {
     query(...args)
       .then((queryResult) => {
@@ -246,7 +246,7 @@ function extractQueryResult(query) {
           temp = temp[0];
         }
 
-        const result = temp.length === 1 ?
+        const result = temp.length === 1 && !isList ?
           temp[0] :
           temp;
 
@@ -262,10 +262,10 @@ module.exports = {
   getUserByIdQuery: extractQueryResult(getUserByIdQuery),
   getBlogByIdQuery: extractQueryResult(getBlogByIdQuery),
   getUserByBlogIdQuery: extractQueryResult(getUserByBlogIdQuery),
-  getUserListQuery: extractQueryResult(getUserListQuery),
-  getArticleListQuery: extractQueryResult(getArticleListQuery),
-  getArticleListByAuthorQuery: extractQueryResult(getArticleListByAuthorQuery),
-  getBlogListQuery: extractQueryResult(getBlogListQuery),
+  getUserListQuery: extractQueryResult(getUserListQuery, true),
+  getArticleListQuery: extractQueryResult(getArticleListQuery, true),
+  getArticleListByAuthorQuery: extractQueryResult(getArticleListByAuthorQuery, true),
+  getBlogListQuery: extractQueryResult(getBlogListQuery, true),
   createUserMutation: extractQueryResult(createUserMutation),
   updateUserMutation: extractQueryResult(updateUserMutation),
   deleteUserMutation: extractQueryResult(deleteUserMutation),

@@ -1,0 +1,19 @@
+query UserQuery($id: String!) {
+  user(id: $id) {
+    id
+    username
+    email
+    description
+    photoUrl
+    createdAt
+    updatedAt
+    blogList {
+      id
+      name
+    }
+    articleList {
+      id
+      name
+    }
+  }
+}

@@ -3,7 +3,13 @@ export interface Article {
   created_at: string,
   name: string,
 }
- 
+
+export interface Token {
+  payload: {
+    expiresIn: string,
+    id: string,
+  }
+}
 export interface User {
   id: string;
   email: string;
