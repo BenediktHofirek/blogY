@@ -164,6 +164,29 @@ function getArticleListQuery(blogId) {
   `);
 }
 
+function getArticleListByAuthorQuery(authorId) {
+  return sequelize.query(`
+    SELECT
+      id,
+      blog_id as "blogId",
+      name,
+      content,
+      created_at as "createdAt",
+      updated_at as "updatedAt"
+    FROM articles
+    WHERE blog_id IN (
+        SELECT id
+        FROM blogs
+        WHERE author_id = :authorId
+      )
+  `, {
+    replacements: {
+      authorId,
+    },
+    type: QueryTypes.SELECT
+  });
+}
+
 function createUserMutation(newUserMap) {
   return sequelize.query(`
     INSERT INTO users (username, password, email)
@@ -241,6 +264,7 @@ module.exports = {
   getUserByBlogIdQuery: extractQueryResult(getUserByBlogIdQuery),
   getUserListQuery: extractQueryResult(getUserListQuery),
   getArticleListQuery: extractQueryResult(getArticleListQuery),
+  getArticleListByAuthorQuery: extractQueryResult(getArticleListByAuthorQuery),
   getBlogListQuery: extractQueryResult(getBlogListQuery),
   createUserMutation: extractQueryResult(createUserMutation),
   updateUserMutation: extractQueryResult(updateUserMutation),

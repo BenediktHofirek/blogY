@@ -6,6 +6,7 @@ const {
   getBlogByIdQuery,
   getUserListQuery,
   getArticleListQuery,
+  getArticleListByAuthorQuery,
   getUserByIdQuery,
   getUserByCredentialsQuery,
   getUserByBlogIdQuery,
@@ -35,7 +36,13 @@ const UserType = new GraphQLObjectType({
 			resolve(parent) {
 				return getBlogListQuery(parent.id);
 			}
-		}
+    },
+    articleList: {
+			type: new GraphQLList(ArticleType),
+			resolve(parent) {
+				return getArticleListByAuthorQuery(parent.id);
+			}
+    },
 	})
 });
 
@@ -56,10 +63,7 @@ const BlogType = new GraphQLObjectType({
     author: {
 			type: UserType,
 			resolve(parent) {
-        return getUserByIdQuery(parent.authorId)
-          .then((result) => {
-            return result[0];
-          });
+        return getUserByIdQuery(parent.authorId);
 			}
     },
 	})
@@ -86,19 +90,13 @@ const ArticleType = new GraphQLObjectType({
     author: {
 			type: UserType,
 			resolve(parent) {
-        return getUserByBlogIdQuery(parent.blogId)
-          .then((result) => {
-            return result[0];
-          });
+        return getUserByBlogIdQuery(parent.blogId);
 			}
     },
     blog: {
 			type: BlogType,
 			resolve(parent) {
-        return getBlogByIdQuery(parent.blogId)
-          .then((result) => {
-            return result[0];
-          });
+        return getBlogByIdQuery(parent.blogId);
 			}
     },
 	})
@@ -110,28 +108,19 @@ const RootQuery = new GraphQLObjectType({
     articles: {
 			type: new GraphQLList(ArticleType),
 			resolve(parent, args) {
-        return getArticleListQuery()
-          .then((result) => {
-            return result[0];
-          });
+        return getArticleListQuery();
 			}
 		},
 		blogs: {
 			type: new GraphQLList(BlogType),
 			resolve(parent, args) {
-        return getBlogListQuery()
-          .then((result) => {
-            return result[0];
-          });
+        return getBlogListQuery();
 			}
 		},
 		users: {
 			type: new GraphQLList(UserType),
 			resolve(parent, args) {
-        return getUserListQuery()
-          .then((result) => {
-            return result[0];
-          });
+        return getUserListQuery();
 			}
     },
     user: {
@@ -140,10 +129,7 @@ const RootQuery = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(GraphQLString) },
       },
 			resolve(parent, args) {
-        return getUserByIdQuery(args.id)
-          .then((result) => {
-            return result[0];
-          });
+        return getUserByIdQuery(args.id);
 			}
     },
     login: {
@@ -154,23 +140,24 @@ const RootQuery = new GraphQLObjectType({
         password: { type: new GraphQLNonNull(GraphQLString) },
       },
 			resolve(parent, args, context) {
-        return getUserByCredentialsQuery(args)
-          .then(([user]) => {
-            if (!user) {
-              throw new Error(errorMap.USER_NOT_FOUND);
-            }
-            
-            if (validatePassword(password, user.password)) {
-              const tokenObject = issueJWT(user.id, '1d');
-              return { 
-                token: tokenObject.token,
-                tokenExpirationTime: tokenObject.expires,
-                user,
-              };
-            } else {
-              throw new Error(errorMap.WRONG_PASSWORD);
-            }
-          });
+        return new Promise((resolve, reject) => {
+          getUserByCredentialsQuery(args)
+            .then((user) => {
+              if (!user) {
+                throw new Error(errorMap.USER_NOT_FOUND);
+              }
+              
+              if (validatePassword(password, user.password)) {
+                const token = issueJWT(user.id, '1d');
+                resolve({ 
+                  token,
+                  user,
+                });
+              } else {
+                throw new Error(errorMap.WRONG_PASSWORD);
+              }
+            }).catch((err) => reject(err));
+        });
 			}
 		}
 	}
@@ -201,8 +188,7 @@ const Mutation = new GraphQLObjectType({
             username,
             password: passwordHash,
             email
-          }).then(([[user]] ) => {
-              console.log('after', user);
+          }).then((user) => {
               const token = issueJWT(user.id, '1d');
               
               resolve({ 
@@ -240,9 +226,7 @@ const Mutation = new GraphQLObjectType({
           email: args.email,
           description: args.description,
           photoUrl: args.photoUrl
-        }).then((result) => {
-            return result[0];
-          });
+        });
 			}
 		},
     deleteUser: {
@@ -258,10 +242,7 @@ const Mutation = new GraphQLObjectType({
           args.id || context.user.id :
           context.user.id;
 
-        return deleteUserMutation(providedId)
-          .then((result) => {
-            return result[0];
-          });
+        return deleteUserMutation(providedId);
 			}
 		},
 	}
