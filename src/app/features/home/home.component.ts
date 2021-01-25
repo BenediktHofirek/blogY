@@ -10,16 +10,16 @@ import { AppState, selectArticleMap, selectAuthorMap } from 'src/app/store/selec
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  private authorMapSubscription: Observable<UserMap>;
+  // private authorMapSubscription: Observable<UserMap>;
   private authorMap: UserMap = {};
 
   constructor(
     private store: Store<AppState>,
   ) {
-    this.authorMapSubscription = this.store.select(selectAuthorMap);
-    this.authorMapSubscription.subscribe((authorMap: UserMap) => {
-      this.authorMap = authorMap;
-    });
+    // this.authorMapSubscription = this.store.select(selectAuthorMap);
+    // this.authorMapSubscription.subscribe((authorMap: UserMap) => {
+    //   this.authorMap = authorMap;
+    // });
    }
 
   ngOnInit(): void {

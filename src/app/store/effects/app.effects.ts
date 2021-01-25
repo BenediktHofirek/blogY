@@ -28,7 +28,7 @@ export class AppEffects {
   loadArticleMap$ = createEffect(() => this.actions$.pipe(
     ofType('ArticleMap Load'),
     mergeMap(() => 
-      this.articlesQueryGQL.fetch({},{fetchPolicy: 'no-cache'})
+      this.articlesQueryGQL.fetch()
       .pipe(
         map((result) => {
           const articleMap: any = {};
