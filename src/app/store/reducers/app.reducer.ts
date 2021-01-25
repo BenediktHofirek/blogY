@@ -1,7 +1,5 @@
 import { Action, createReducer, on, combineReducers } from '@ngrx/store';
 import * as AppActions from '../actions/app.actions';
-import { User, UserMap } from '../models/app.models';
-import { AppState } from '../selectors/app.selector';
 
 export const userMapReducer = createReducer(
   {},
