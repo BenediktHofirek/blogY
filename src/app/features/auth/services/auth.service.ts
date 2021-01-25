@@ -36,11 +36,11 @@ export class AuthService {
         const userId = this.jwtHelper.decodeToken(token).sub;
         this.store.dispatch(currentUserLoad({ id: userId }));
       } else {
-        this.store.dispatch(currentUserSuccess({ currentUser: {}}));
+        this.store.dispatch(currentUserSuccess({ currentUser: { isLoading: false }}));
       }  
     } else {
       this.tokenSubject = new BehaviorSubject<string | object | null | undefined>(null);
-      this.store.dispatch(currentUserSuccess({ currentUser: {}}));
+      this.store.dispatch(currentUserSuccess({ currentUser: { isLoading: false }}));
     }
   }
 

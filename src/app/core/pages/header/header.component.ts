@@ -12,18 +12,21 @@ import { AuthService } from '../../../features/auth/services/auth.service';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  public user: User | null | undefined = undefined;
+  public user: User | null | undefined;
   private userSubscription: Subscription;
 
   constructor(private store: Store<AppState>,
-              private router: Router,
+              private router: Router, //used in template
               private authService: AuthService) {
+    this.user = undefined;
     this.userSubscription = this.store.select((state: AppState) => state.currentUser)
       .subscribe(user => {
-        if (Object.values(user).length) {
-          this.user = user;
-        } else {
-          this.user = null;
+        if (!user.isLoading) {
+          if (user.id) {
+            this.user = user;
+          } else {
+            this.user = null;
+          }
         }
       });
   }

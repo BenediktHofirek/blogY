@@ -17,6 +17,7 @@ export interface User {
   blogIdList: string[],
   imageUrl: string,
   description: string,
+  isLoading?: boolean,
 }
 
 export interface Blog {

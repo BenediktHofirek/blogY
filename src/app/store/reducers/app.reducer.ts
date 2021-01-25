@@ -41,11 +41,11 @@ export const blogMapReducer = createReducer(
 
 
 export const currentUserReducer = createReducer(
-  {},
+  { isLoading: true },
   on(AppActions.currentUserSuccess, (state,
     {
       currentUser,
-    }) => ({
+    }: {currentUser: any}) => ({
       ...currentUser,
      })),
 );
