@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { appLoad } from './store/actions/app.actions';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -8,10 +6,9 @@ import { appLoad } from './store/actions/app.actions';
 })
 export class AppComponent implements OnInit {
  
-  constructor(private store: Store) {}
+  constructor() {}
 
   ngOnInit() {
-    this.store.dispatch(appLoad());
   }
   title = 'blogY';
 }

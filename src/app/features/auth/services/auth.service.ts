@@ -8,7 +8,7 @@ import { BehaviorSubject, Subscription, Observable } from 'rxjs';
 import { AppState } from 'src/app/store/selectors/app.selector';
 import { NavigationService } from "../../../core/services/navigation.service";
 import { Auth, LoginQueryGQL, LoginQueryQuery, RegisterMutationGQL } from 'src/app/graphql/graphql';
-import { currentUserLoad, currentUserSuccess } from 'src/app/store/actions/app.actions';
+import { articleMapLoad, currentUserLoad, currentUserSuccess } from 'src/app/store/actions/app.actions';
 import { User, Token } from 'src/app/store/models/app.models';
 
 
@@ -25,7 +25,6 @@ export class AuthService {
               private navigationService: NavigationService,
               private router: Router) {
     this.jwtHelper = new JwtHelper();
-
     const tokenExpirationTime = +(localStorage.getItem("tokenExpirationTime") || 0);
     if (this.validateToken(tokenExpirationTime)) {
       this.tokenExpirationTime = tokenExpirationTime;

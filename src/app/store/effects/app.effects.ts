@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { Apollo } from 'apollo-angular';
-import { from, of } from 'rxjs';
 import { map, mergeMap, catchError } from 'rxjs/operators';
 import { ArticlesQueryGQL, BlogsQueryGQL, UserQueryGQL, UsersQueryGQL } from 'src/app/graphql/graphql';
 import { articleMapLoad, articleMapSuccess, blogMapLoad, blogMapSuccess, currentUserSuccess, userMapLoad, userMapSuccess } from '../actions/app.actions';
@@ -10,7 +8,6 @@ import { articleMapLoad, articleMapSuccess, blogMapLoad, blogMapSuccess, current
 export class AppEffects {
   constructor(
     private actions$: Actions,
-    private apollo: Apollo,
     private articlesQueryGQL: ArticlesQueryGQL,
     private blogsQueryGQL: BlogsQueryGQL,
     private usersQueryGQL: UsersQueryGQL,
@@ -31,7 +28,7 @@ export class AppEffects {
   loadArticleMap$ = createEffect(() => this.actions$.pipe(
     ofType('ArticleMap Load'),
     mergeMap(() => 
-      this.articlesQueryGQL.fetch()
+      this.articlesQueryGQL.fetch({},{fetchPolicy: 'no-cache'})
       .pipe(
         map((result) => {
           const articleMap: any = {};
