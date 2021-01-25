@@ -5,12 +5,12 @@
 }
 
 .toolbar {
-  display: block;
-  float: left;
+  display: flex;
   
   &__select {
     display: block;
     width: 200px;
+    margin-right: 0.5rem;
     font-size: 0.9rem;
   }
 }
