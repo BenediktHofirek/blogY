@@ -33,7 +33,7 @@ export class AuthService {
       this.tokenSubject = new BehaviorSubject<string | object | null | undefined>(token);
 
       if (token) {
-        const userId = this.jwtHelper.decodeToken(token).id;
+        const userId = this.jwtHelper.decodeToken(token).sub;
         this.store.dispatch(currentUserLoad({ id: userId }));
       } else {
         this.store.dispatch(currentUserSuccess({ currentUser: {}}));
@@ -58,7 +58,7 @@ export class AuthService {
   }
 
   validateToken(tokenExpirationTime: number) {
-    return moment(Date.now()).isBefore(moment(tokenExpirationTime));
+    return moment(Date.now()).isBefore(moment(tokenExpirationTime * 1000));
   }
   
   //Create new user 
@@ -87,11 +87,9 @@ export class AuthService {
     usernameOrEmail: string,
     password: string
   ) {
-    this.apollo.client.resetStore();
     return new Promise<object | void>((resolve, reject) => { 
       this.loginQueryGQL.fetch({
-        email: usernameOrEmail,
-        username: usernameOrEmail,
+        usernameOrEmail,
         password
     }).subscribe(
         (result) => {
@@ -106,7 +104,6 @@ export class AuthService {
   authCallback(data: any) {
     if (data) {
       const { user, token } : { user: User, token: string } = data;
-      this.apollo.client.resetStore();
       this.saveToken(token);
       this.store.dispatch(currentUserSuccess({ currentUser: user }));
       this.navigationService.back();
@@ -127,7 +124,6 @@ export class AuthService {
     this.store.dispatch(currentUserSuccess({currentUser: {}}));
     this.tokenSubject.next(null);
     this.tokenExpirationTime = 0;
-    this.apollo.client.resetStore();
     this.router.navigateByUrl('/login');
   }
 }

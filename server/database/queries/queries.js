@@ -1,7 +1,7 @@
 const { sequelize } = require('../models/index.js');
 const { QueryTypes } = require('sequelize');
 
-function getUserByCredentialsQuery({email, username, password}) {
+function getUserByCredentialsQuery(usernameOrEmail) {
   return sequelize.query(`
     SELECT 
       id,
@@ -13,13 +13,11 @@ function getUserByCredentialsQuery({email, username, password}) {
       created_at as "createdAt",
       updated_at as "updatedAt"
     FROM users
-    WHERE username = :username
-    OR password = :password
+    WHERE username = :usernameOrEmail
+    OR email = :usernameOrEmail
   `, {
     replacements: {
-      email,
-      username,
-      password
+      usernameOrEmail,
     },
     type: QueryTypes.SELECT,
   });

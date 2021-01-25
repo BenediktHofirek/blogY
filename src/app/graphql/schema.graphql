@@ -42,7 +42,7 @@ type Query {
   blogs: [Blog]
   users: [User]
   user(id: String!): User
-  login(username: String, email: String, password: String!): Auth
+  login(usernameOrEmail: String!, password: String!): Auth
 }
 
 # this schema allows the following mutation:

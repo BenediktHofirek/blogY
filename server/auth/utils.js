@@ -55,7 +55,7 @@ function generatePasswordHash(password) {
 function issueJWT(userId, expiration) {
   const payload = {
     sub: userId,
-    iat: Date.now()
+    iat: Math.floor(Date.now() / 1000)
   };
 
   return jsonwebtoken.sign(payload, PRIVATE_KEY, { expiresIn: expiration, algorithm: 'RS256' });

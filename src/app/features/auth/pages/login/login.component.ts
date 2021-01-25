@@ -22,12 +22,12 @@ export class LoginComponent implements OnInit {
     }
 
     const {
-      email,
+      usernameOrEmail,
       password,
     } = form.value;
     
     this.isLoading = true;
-    this.authService.login(email, password).catch(
+    this.authService.login(usernameOrEmail, password).catch(
       error => {
         console.log('error', error);
         this.error = error.message;
@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit {
       }
     )
 
-    console.log(email, password);
+    console.log(usernameOrEmail, password);
     // form.reset();
   }
 

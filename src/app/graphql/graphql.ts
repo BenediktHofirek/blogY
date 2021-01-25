@@ -74,8 +74,7 @@ export type QueryUserArgs = {
 
 
 export type QueryLoginArgs = {
-  username?: Maybe<Scalars['String']>;
-  email?: Maybe<Scalars['String']>;
+  usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
 };
 
@@ -147,8 +146,7 @@ export type BlogsQueryQuery = (
 );
 
 export type LoginQueryQueryVariables = Exact<{
-  username?: Maybe<Scalars['String']>;
-  email?: Maybe<Scalars['String']>;
+  usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
 }>;
 
@@ -292,8 +290,8 @@ export const BlogsQueryDocument = gql`
     }
   }
 export const LoginQueryDocument = gql`
-    query LoginQuery($username: String, $email: String, $password: String!) {
-  login(username: $username, email: $email, password: $password) {
+    query LoginQuery($usernameOrEmail: String!, $password: String!) {
+  login(usernameOrEmail: $usernameOrEmail, password: $password) {
     token
     user {
       id

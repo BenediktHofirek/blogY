@@ -135,20 +135,19 @@ const RootQuery = new GraphQLObjectType({
     login: {
       type: AuthType,
       args: {
-        username: { type: GraphQLString },
-        email: { type: GraphQLString },
+        usernameOrEmail: { type: new GraphQLNonNull(GraphQLString) },
         password: { type: new GraphQLNonNull(GraphQLString) },
       },
-			resolve(parent, args, context) {
+			resolve(parent, { usernameOrEmail, password }, context) {
         return new Promise((resolve, reject) => {
-          getUserByCredentialsQuery(args)
+          getUserByCredentialsQuery(usernameOrEmail)
             .then((user) => {
               if (!user) {
                 throw new Error(errorMap.USER_NOT_FOUND);
               }
               
               if (validatePassword(password, user.password)) {
-                const token = issueJWT(user.id, '1d');
+                const token = issueJWT(user.id, '1m');
                 resolve({ 
                   token,
                   user,

@@ -88,7 +88,7 @@ export class AppEffects {
   loadCurrentUser$ = createEffect(() => this.actions$.pipe(
     ofType('CurrentUser Load'),
     mergeMap((loadAction: any) => 
-      this.userQueryGQL.fetch({ id: loadAction.payload.id })
+      this.userQueryGQL.fetch({ id: `${loadAction.id}` })
       .pipe(
         map((result) => {
           let currentUser: any = {};

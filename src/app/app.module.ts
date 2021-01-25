@@ -41,7 +41,7 @@ import { HttpHeaders } from '@angular/common/http';
           operation.setContext({
             headers: new HttpHeaders().set(
               'Authorization',
-              `Bearer ${localStorage.getItem('jwt')}`,
+              `Bearer ${localStorage.getItem('token')}`,
             ),
           });
           return forward(operation);
