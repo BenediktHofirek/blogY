@@ -2,4 +2,4 @@
 .env
 .env.prod
 *.pem
-/database/seeders/*
+database/seeders/*
