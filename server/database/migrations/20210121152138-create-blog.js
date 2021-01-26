@@ -5,9 +5,9 @@ module.exports = {
     await queryInterface.createTable('blogs', {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4
       },
       name: {
         allowNull: false,
@@ -17,13 +17,15 @@ module.exports = {
       author_id: {
         allowNull: false,
         unique: 'compositeBlog',
-        type: Sequelize.INTEGER
+        type: Sequelize.UUID
       },
       created_at: {
+        allowNull: false,
         defaultValue: Sequelize.fn('NOW'),
         type: Sequelize.DATE
       },
       updated_at: {
+        allowNull: false,
         defaultValue: Sequelize.fn('NOW'),
         type: Sequelize.DATE
       }

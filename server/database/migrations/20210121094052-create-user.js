@@ -5,9 +5,9 @@ module.exports = {
     return queryInterface.createTable('users', {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4
       },
       username: {
         allowNull: false,
@@ -23,6 +23,15 @@ module.exports = {
         unique: true,
         type: Sequelize.STRING
       },
+      first_name: {
+        type: Sequelize.STRING
+      },
+      last_name: {
+        type: Sequelize.STRING
+      },
+      birthdate: {
+        type: Sequelize.DATE
+      },
       photo_url: {
         type: Sequelize.TEXT,
       },
@@ -30,10 +39,12 @@ module.exports = {
         type: Sequelize.TEXT,
       },
       created_at: {
+        allowNull: false,
         defaultValue: Sequelize.fn('NOW'),
         type: Sequelize.DATE
       },
       updated_at: {
+        allowNull: false,
         defaultValue: Sequelize.fn('NOW'),
         type: Sequelize.DATE
       }

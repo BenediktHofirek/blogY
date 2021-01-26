@@ -1,4 +1,4 @@
-import { Component, OnDestroy, SimpleChanges } from '@angular/core';
+import { Component, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
@@ -16,9 +16,12 @@ import { contentTableKey } from './store/content-table.reducers';
   styleUrls: ['./content-table.component.scss']
 })
 
-export class ContentTableComponent implements OnDestroy {
+export class ContentTableComponent implements OnInit, OnDestroy {
   state: any;
   stateSubscription: Subscription;
+  querySubscription: any;
+  query: any;
+
   displayOptionList = [
     "articles",
     "authors",
@@ -51,24 +54,57 @@ export class ContentTableComponent implements OnDestroy {
               private store: Store) {
     this.stateSubscription = this.store.select((state: any) => state[contentTableKey]).subscribe((state: ContentTableState) => {
       this.state = state;
-      this.handleStateUpdate();
     });
+  }
+
+  ngOnInit() {
+    this.query = this.apollo.watchQuery<any>({
+      query: (<any>queriesMap)[`${this.state.display}Query`],
+      variables: {
+        offset: this.state.itemsPerPage * this.state.pageNumber,
+        limit: this.state.itemsPerPage,
+        filter: this.state.filter,
+        sortBy: this.state.sortBy,
+        orderBy: this.state.orderBy,
+        timeframe: this.state.timeframe,
+      },
+    });
+
+    this.querySubscription = this.query
+      .valueChanges
+      .subscribe(({ data }: {data: any}) => {
+        console.log('queryResult', Object.values(data)[0]);
+        this.dataSource = new MatTableDataSource(<any>Object.values(data)[0]);
+      });
+
+    this.fetchMore();
   }
 
   ngOnDestroy() {
     this.stateSubscription.unsubscribe();
+    this.querySubscription.unsubscribe();
   }
 
   handleChange(property: string, newValue: string | number) {
     console.log('change', property, newValue);
     this.store.dispatch(stateSuccess(<any>{ [property]: newValue }));
+    this.fetchMore();
   }
 
-  handleStateUpdate() {
-    // this.apollo.query<any>({
-    //   query: (<any>queriesMap)[`${this.state.display}Query`],
-    // }).subscribe(({ data }) => {
-    //   this.dataSource = new MatTableDataSource(<any>Object.values(data)[0]);
-    // });
+  fetchMore() {
+    this.query.fetchMore({
+      query: (<any>queriesMap)[`${this.state.display}Query`],
+      variables: {
+        offset: this.state.itemsPerPage * this.state.pageNumber,
+        limit: this.state.itemsPerPage,
+        filter: this.state.filter,
+        sortBy: this.state.sortBy,
+        orderBy: this.state.orderBy,
+        timeframe: this.state.timeframe,
+      },
+      updateQuery: (prev: any, { fetchMoreResult }: {fetchMoreResult: any}) => {
+        return fetchMoreResult;
+      }
+    });
   }
 }

@@ -130,26 +130,7 @@ function getBlogListQuery(authorId) {
   `);
 }
 
-function getArticleListQuery(blogId) {
-  if (typeof blogId !== 'undefined') {
-    return sequelize.query(`
-      SELECT
-        id,
-        blog_id as "blogId",
-        name,
-        content,
-        created_at as "createdAt",
-        updated_at as "updatedAt"
-      FROM articles
-      WHERE blog_id = :blogId
-    `, {
-      replacements: {
-        blogId,
-      },
-      type: QueryTypes.SELECT
-    });
-  }
-
+function getArticleListByBlogIdQuery(blogId) {
   return sequelize.query(`
     SELECT
       id,
@@ -159,10 +140,41 @@ function getArticleListQuery(blogId) {
       created_at as "createdAt",
       updated_at as "updatedAt"
     FROM articles
-  `);
+    WHERE blog_id = :blogId
+  `, {
+    replacements: {
+      blogId,
+    },
+    type: QueryTypes.SELECT
+  });
 }
 
-function getArticleListByAuthorQuery(authorId) {
+function getArticleListQuery({
+  offset,
+  limit,
+  filter,
+  sortBy,
+  sortOrder,
+  timeframe,
+}) {
+  return sequelize.query(`
+    SELECT
+      id,
+      blog_id as "blogId",
+      name,
+      content,
+      created_at as "createdAt",
+      updated_at as "updatedAt"
+    FROM articles
+  `, {
+    replacements: {
+      // blogId,
+    },
+    type: QueryTypes.SELECT
+  });
+}
+
+function getArticleListByAuthorIdQuery(authorId) {
   return sequelize.query(`
     SELECT
       id,
@@ -262,7 +274,8 @@ module.exports = {
   getUserByBlogIdQuery: extractQueryResult(getUserByBlogIdQuery),
   getUserListQuery: extractQueryResult(getUserListQuery, true),
   getArticleListQuery: extractQueryResult(getArticleListQuery, true),
-  getArticleListByAuthorQuery: extractQueryResult(getArticleListByAuthorQuery, true),
+  getArticleListByBlogIdQuery: extractQueryResult(getArticleListByBlogIdQuery, true),
+  getArticleListByAuthorIdQuery: extractQueryResult(getArticleListByAuthorIdQuery, true),
   getBlogListQuery: extractQueryResult(getBlogListQuery, true),
   createUserMutation: extractQueryResult(createUserMutation),
   updateUserMutation: extractQueryResult(updateUserMutation),

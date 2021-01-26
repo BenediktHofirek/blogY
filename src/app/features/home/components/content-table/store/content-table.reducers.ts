@@ -9,6 +9,8 @@ export default createReducer(
     sortBy: "newest",
     timeframe: "all",
     itemsPerPage: 10,
+    pageNumber: 0,
+    orderBy: "ASC",
     filter: "",
   },
   on(ContentTableActions.stateSuccess, (state,newState) => ({

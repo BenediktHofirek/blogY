@@ -6,7 +6,8 @@ const {
   getBlogByIdQuery,
   getUserListQuery,
   getArticleListQuery,
-  getArticleListByAuthorQuery,
+  getArticleListByAuthorIdQuery,
+  getArticleListByBlogIdQuery,
   getUserByIdQuery,
   getUserByCredentialsQuery,
   getUserByBlogIdQuery,
@@ -40,7 +41,7 @@ const UserType = new GraphQLObjectType({
     articleList: {
 			type: new GraphQLList(ArticleType),
 			resolve(parent) {
-				return getArticleListByAuthorQuery(parent.id);
+				return getArticleListByAuthorIdQuery(parent.id);
 			}
     },
 	})
@@ -57,7 +58,7 @@ const BlogType = new GraphQLObjectType({
 		articleList: {
 			type: new GraphQLList(ArticleType),
 			resolve(parent) {
-				return getArticleListQuery(parent.id);
+				return getArticleListByBlogIdQuery(parent.id);
 			}
     },
     author: {
@@ -108,7 +109,7 @@ const RootQuery = new GraphQLObjectType({
     articles: {
 			type: new GraphQLList(ArticleType),
 			resolve(parent, args) {
-        return getArticleListQuery();
+        return getArticleListQuery(args);
 			}
 		},
 		blogs: {

@@ -14,8 +14,6 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'blog_id',
         as: 'blog',
       });
-
-      // article.belongsTo(models.user, { through: models.blog });
     }
   };
   article.init({
