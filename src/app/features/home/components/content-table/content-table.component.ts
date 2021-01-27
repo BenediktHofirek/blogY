@@ -26,7 +26,7 @@ export class ContentTableComponent implements OnInit, OnDestroy {
     "authors",
     "blogs"
   ];
-  sortByOptionList = [
+  sortByOptionMap = [
     "newest",
     "mostRead",
     "highestRated"
@@ -40,9 +40,9 @@ export class ContentTableComponent implements OnInit, OnDestroy {
     "all",
   ];
   displayedColumnsMap = {
-    articles: ['name', 'authorName', 'blogName', 'createdAt'],
-    authors: ['name', 'author', 'createdAt'],
-    blogs: ['name', 'author', 'createdAt'],
+    articles: ['name', 'authorUsername', 'blogName', 'published'],// 'views', 'rating'],
+    authors: ['firstLastName', 'username', 'registered'],// 'averageViews', 'rating'],
+    blogs: ['name', 'authorUsername', 'created'],// 'averageViews', 'rating'],
   };
 
   itemsPerPageOptionList = [10,20,50,100];
