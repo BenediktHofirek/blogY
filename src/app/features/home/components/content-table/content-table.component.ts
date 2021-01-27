@@ -20,8 +20,6 @@ import { contentTableKey } from './store/content-table.reducers';
 export class ContentTableComponent implements OnInit, OnDestroy {
   state: any;
   stateSubscription: Subscription;
-  querySubscription: any;
-  query: any;
 
   displayOptionList = [
     "articles",
@@ -63,21 +61,11 @@ export class ContentTableComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.query = this.apollo.watchQuery<any>(this.getQuery(this.state));
-
-    this.fetchMore();
-  }
-
-  handleQueryResult({ data }: {data: any}) {
-    console.log('queryResult', data[this.getQueryResultName(this.state.display)], data);
-      const queryResult = data[this.getQueryResultName(this.state.display)];
-      this.dataSourceSubject.next(queryResult.articleList);
-      this.store.dispatch(stateSuccess({ collectionSize: queryResult.count }));
+    this.fetchData();
   }
 
   ngOnDestroy() {
     this.stateSubscription.unsubscribe();
-    this.querySubscription.unsubscribe();
     this.isLoadingSubscription.unsubscribe();
   }
 
@@ -100,7 +88,7 @@ export class ContentTableComponent implements OnInit, OnDestroy {
   handleChange(property: string, newValue: string | number) {
     console.log('change', property, newValue);
     this.store.dispatch(stateSuccess(<any>{ [property]: newValue }));
-    this.fetchMore();
+    this.fetchData();
   }
 
   handlePaginatorChange(
@@ -121,7 +109,7 @@ export class ContentTableComponent implements OnInit, OnDestroy {
       }));
     }
     
-    this.fetchMore();
+    this.fetchData();
   }
 
   getQuery({
@@ -150,32 +138,28 @@ export class ContentTableComponent implements OnInit, OnDestroy {
     return `${displayOption.slice(0,-1)}List`;
   }
 
-  fetchMore() {
+  fetchData() {
     console.log('fetching', this.state);
-    this.query.fetchMore({ 
-      ...this.getQuery(this.state),
-      updateQuery: (prev: any, { fetchMoreResult }: {fetchMoreResult: any}) => {
-        console.log('update');
-        return { type: 'fetch', result: fetchMoreResult};
-      }
-    });
-    console.log('afterFetch');
-    this.prefetch();
-  }
+    this.apollo.query({ 
+      ...this.getQuery(this.state)
+    }).subscribe(this.handleFetchResult.bind(this));
 
-  prefetch() {
-    console.log('PRE', this.state);
-    this.isLoading = true;
+    //prefetch next page
     this.apollo.query({ 
       ...this.getQuery({
         ...this.state,
         pageIndex: this.state.pageIndex + 1,
       }),
-      // updateQuery: (prev: any, { fetchMoreResult }: {fetchMoreResult: any}) => {
-      //   this.isLoading = false;
-      //   return { type: 'prefetch', result: fetchMoreResult};
-      // }
-    });
-    console.log('afterFetch');
+    }).subscribe(() => console.log('prefetch',this.getQuery({
+      ...this.state,
+      pageIndex: this.state.pageIndex + 1,
+    })));
+  }
+
+  handleFetchResult({ data }: {data: any}) {
+    console.log('queryResult', data[this.getQueryResultName(this.state.display)], data);
+      const queryResult = data[this.getQueryResultName(this.state.display)];
+      this.dataSourceSubject.next(queryResult.articleList);
+      this.store.dispatch(stateSuccess({ collectionSize: queryResult.count }));
   }
 }
