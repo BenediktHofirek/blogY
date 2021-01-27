@@ -12,9 +12,9 @@
     <mat-icon matSuffix>search</mat-icon>
   </mat-form-field>
   <mat-toolbar class="toolbar">
-    <!-- <mat-form-field appearance="outline" class="toolbar__select">
+    <mat-form-field appearance="outline" class="toolbar__select">
       <mat-label>Display: </mat-label>
-      <mat-select (selectionChange)="handleDisplayChange($event.value)" [value]="state.display">
+      <mat-select (selectionChange)="handleChange('display',$event.value)" [value]="state.display">
         <mat-option
           *ngFor="let option of displayOptionList"
           [value]="option">
@@ -22,9 +22,9 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
-    <mat-form-field appearance="outline" class="toolbar__select">
+    <!-- <mat-form-field appearance="outline" class="toolbar__select">
       <mat-label>Sort By: </mat-label>
-      <mat-select (selectionChange)="handleSortByChange($event.value)" [value]="state.sortBy">
+      <mat-select (selectionChange)="handleChange('sortBy',$event.value)" [value]="state.sortBy">
         <mat-option
           *ngFor="let option of sortByOptionList"
           [value]="option">
@@ -34,7 +34,7 @@
     </mat-form-field>
     <mat-form-field appearance="outline" class="toolbar__select">
       <mat-label>Show last: </mat-label>
-      <mat-select (selectionChange)="handleTimeframeChange($event.value)" [value]="state.timeframe">
+      <mat-select (selectionChange)="handleChange('timeframe',$event.value)" [value]="state.timeframe">
         <mat-option
           *ngFor="let option of timeframeOptionList"
           [value]="option">
@@ -43,7 +43,7 @@
       </mat-select>
     </mat-form-field> -->
   </mat-toolbar>
-  <!-- <table mat-table [dataSource]="dataSource" matSort>
+  <!-- <table mat-table [dataSource]="dataSource">
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Article name</th>
       <td mat-cell *matCellDef="let row"> {{row.name}} </td>

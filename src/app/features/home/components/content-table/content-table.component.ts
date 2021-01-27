@@ -48,7 +48,7 @@ export class ContentTableComponent implements OnInit, OnDestroy {
   };
 
   itemsPerPageOptionList = [10,20,50,100];
-
+  allDataCount: any;
   dataSource: any;
 
   constructor(private apollo: Apollo,
@@ -74,8 +74,10 @@ export class ContentTableComponent implements OnInit, OnDestroy {
     this.querySubscription = this.query
       .valueChanges
       .subscribe(({ data }: {data: any}) => {
-        console.log('queryResult', Object.values(data)[0]);
-        this.dataSource = new MatTableDataSource(<any>Object.values(data)[0]);
+        console.log('queryResult', data[this.getQueryResultName(this.state.display)], data);
+        const queryResult = data[this.getQueryResultName(this.state.display)];
+        this.dataSource = queryResult.articleList;
+        this.allDataCount = queryResult.count;
       });
 
     this.fetchMore();
@@ -97,7 +99,7 @@ export class ContentTableComponent implements OnInit, OnDestroy {
   handleChange(property: string, newValue: string | number) {
     console.log('change', property, newValue);
     this.store.dispatch(stateSuccess(<any>{ [property]: newValue }));
-    this.fetchMore();
+    // this.fetchMore();
   }
 
   handlePaginatorChange(event: any) {
@@ -108,6 +110,10 @@ export class ContentTableComponent implements OnInit, OnDestroy {
 
   getQueryName(displayOption: string) {
     return `${displayOption.slice(0,-1)}ListQuery`;
+  }
+
+  getQueryResultName(displayOption: string) {
+    return `${displayOption.slice(0,-1)}List`;
   }
 
   fetchMore() {
