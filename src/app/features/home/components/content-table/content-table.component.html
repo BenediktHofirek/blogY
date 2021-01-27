@@ -5,7 +5,7 @@
   >
     <mat-label>Search</mat-label>
     <input
-      (input)="handleChange('filter',$event.target.value)"
+      (input)="handleFilterChange($event.target.value)"
       matInput
       #filter
     >
@@ -43,7 +43,7 @@
       </mat-select>
     </mat-form-field> -->
   </mat-toolbar>
-  <table mat-table [dataSource]="dataSourceSubject | async">
+  <table mat-table [dataSource]="dataSource">
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef>Article name</th>
       <td mat-cell *matCellDef="let row"> {{row.name}} </td>
@@ -88,7 +88,7 @@
     [length]="state.collectionSize"
     [pageSize]="state.pageSize"
     [pageSizeOptions]="itemsPerPageOptionList"
-    [pageIndex]="state.pageIndex"
+    [pageIndex]="state.filter ? state.filterPageIndex : state.pageIndex"
     (page)="handlePaginatorChange($event)"
   >
   </mat-paginator>

@@ -47,14 +47,11 @@ export class ContentTableComponent implements OnInit, OnDestroy {
 
   itemsPerPageOptionList = [10,20,50,100];
   isLoading: boolean;
-  isLoadingSubscription: Subscription;
-  dataSourceSubject: Subject<any>;
+  dataSource: any;
 
   constructor(private apollo: Apollo,
               private store: Store) {
     this.isLoading = false;
-    this.dataSourceSubject = new Subject();
-    this.isLoadingSubscription = this.dataSourceSubject.subscribe(() => this.isLoading = false);
     this.stateSubscription = this.store.select((state: any) => state[contentTableKey]).subscribe((state: ContentTableState) => {
       this.state = state;
     });
@@ -66,7 +63,6 @@ export class ContentTableComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.stateSubscription.unsubscribe();
-    this.isLoadingSubscription.unsubscribe();
   }
 
   formatDate(date: string) {
@@ -91,21 +87,41 @@ export class ContentTableComponent implements OnInit, OnDestroy {
     this.fetchData();
   }
 
+  handleFilterChange(newValue: string) {
+    const payload: { filter: string, filterPageIndex?: number } = { 
+      filter: newValue,
+    };
+    console.log('state', this.state);
+    if (!newValue) {
+      payload.filterPageIndex = 0;
+    }
+    this.store.dispatch(stateSuccess(payload));
+    this.fetchData();
+  }
+
   handlePaginatorChange(
     {pageIndex: newPageIndex, pageSize: newPageSize}:
     {pageIndex: number, pageSize: number}
     ) {
     if (newPageSize !== this.state.pageSize) {
       this.isLoading = true;
-      this.store.dispatch(stateSuccess({ 
+      const payload : { [key: string]: number} = {
         pageSize: newPageSize,
         pageIndex: Math.floor(
           (this.state.pageIndex * this.state.pageSize) / newPageSize
         ),
-      }));
+      };
+
+      if (this.state.filter) {
+        payload.filterPageIndex = Math.floor(
+          (this.state.pageIndex * this.state.pageSize) / newPageSize
+        );
+      }
+
+      this.store.dispatch(stateSuccess(payload));
     } else {
       this.store.dispatch(stateSuccess({ 
-        pageIndex: newPageIndex,
+        [this.state.filter ? 'filterPageIndex' : 'pageIndex']: newPageIndex,
       }));
     }
     
@@ -116,16 +132,18 @@ export class ContentTableComponent implements OnInit, OnDestroy {
     display,
     pageSize,
     pageIndex,
+    filterPageIndex,
     filter,
     sortBy,
     orderBy,
     timeframe
   }: any) {
+    const currentPageIndex = filter ? filterPageIndex : pageIndex;
     return { 
       query: (<any>queriesMap)[`${display.slice(0,-1)}ListQuery`],
       variables: {
-        offset: pageSize * pageIndex + 1,
-        limit: (pageSize * pageIndex) + pageSize,
+        offset: pageSize * currentPageIndex + 1,
+        limit: (pageSize * currentPageIndex) + pageSize,
         filter: filter,
         sortBy: sortBy,
         orderBy: orderBy,
@@ -158,8 +176,9 @@ export class ContentTableComponent implements OnInit, OnDestroy {
 
   handleFetchResult({ data }: {data: any}) {
     console.log('queryResult', data[this.getQueryResultName(this.state.display)], data);
-      const queryResult = data[this.getQueryResultName(this.state.display)];
-      this.dataSourceSubject.next(queryResult.articleList);
-      this.store.dispatch(stateSuccess({ collectionSize: queryResult.count }));
+    const queryResult = data[this.getQueryResultName(this.state.display)];
+    this.dataSource = queryResult.articleList;
+    this.isLoading = false;
+    this.store.dispatch(stateSuccess({ collectionSize: queryResult.count }));
   }
 }

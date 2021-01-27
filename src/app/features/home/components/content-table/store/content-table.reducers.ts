@@ -10,6 +10,7 @@ export default createReducer(
     timeframe: "all",
     pageSize: 10,
     pageIndex: 0,
+    filterPageIndex: 0,
     orderBy: 'ASC',
     filter: "",
     collectionSize: 0,
