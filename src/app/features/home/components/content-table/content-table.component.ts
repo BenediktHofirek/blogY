@@ -82,7 +82,6 @@ export class ContentTableComponent implements OnInit, OnDestroy {
   }
 
   handleChange(property: string, newValue: string | number) {
-    console.log('change', property, newValue);
     this.store.dispatch(stateSuccess(<any>{ [property]: newValue }));
     this.fetchData();
   }
@@ -91,7 +90,7 @@ export class ContentTableComponent implements OnInit, OnDestroy {
     const payload: { filter: string, filterPageIndex?: number } = { 
       filter: newValue,
     };
-    console.log('state', this.state);
+   
     if (!newValue) {
       payload.filterPageIndex = 0;
     }
@@ -175,7 +174,6 @@ export class ContentTableComponent implements OnInit, OnDestroy {
   }
 
   handleFetchResult({ data }: {data: any}) {
-    console.log('queryResult', data[this.getQueryResultName(this.state.display)], data);
     const queryResult = data[this.getQueryResultName(this.state.display)];
     this.dataSource = queryResult.articleList;
     this.isLoading = false;
