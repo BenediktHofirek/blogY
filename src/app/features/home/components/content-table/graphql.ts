@@ -1,16 +1,39 @@
 import gql from "graphql-tag";
 
-const articlesQuery = gql`
-  query ArticlesQuery($_id: String!) {
-    document(_id: $_id) {
-      title
-      author
-      dateCreated
-      pages {
-        _id
-        pageNr
-        text
+const articleListQuery = gql`
+  query ArticleListQuery(
+      $offset: Int,
+      $limit: Int,
+      $filter: String,
+      $sortBy: String,
+      $orderBy: String,
+      $timeframe: Int
+    ) {
+    articleList(
+      offset: $offset,
+      limit: $limit,
+      filter: $filter,
+      sortBy: $sortBy,
+      orderBy: $orderBy,
+      timeframe: $timeframe
+    ) {
+      articleList {
+        id
+        name
+        blogId
+        content
+        createdAt
+        updatedAt
+        author {
+          id
+          username
+        }
+        blog {
+          id
+          name
+        }
       }
+      count
     }
   }
 `;
@@ -46,7 +69,7 @@ const authorsQuery = gql`
 `;
 
 export default { 
-  articlesQuery,
+  articleListQuery,
   authorsQuery,
   blogsQuery,
 };

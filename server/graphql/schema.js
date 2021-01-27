@@ -103,13 +103,32 @@ const ArticleType = new GraphQLObjectType({
 	})
 });
 
+const ArticleListType = new GraphQLObjectType({
+	name: 'ArticleList',
+	fields: () => ({
+    articleList: { type: new GraphQLList(ArticleType) },
+		count: { type: GraphQLInt }
+	})
+});
+
 const RootQuery = new GraphQLObjectType({
 	name: 'RootQueryType',
 	fields: {
-    articles: {
-			type: new GraphQLList(ArticleType),
+    articleList: {
+      type: ArticleListType,
+      args: {
+        offset: { type: GraphQLInt },
+        limit: { type: GraphQLInt },
+        filter: { type: GraphQLString },
+        sortBy: { type: GraphQLString },
+        orderBy: { type: GraphQLString },
+        timeframe: { type: GraphQLInt },
+			},
 			resolve(parent, args) {
-        return getArticleListQuery(args);
+        return getArticleListQuery(args)
+          .then(function(result) {
+            return result[0];
+          });
 			}
 		},
 		blogs: {

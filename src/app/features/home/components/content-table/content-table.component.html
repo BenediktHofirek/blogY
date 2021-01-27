@@ -72,7 +72,12 @@
     </tr>
   </table> -->
 
-  <div class="paginator">
-
-  </div>
+  <mat-paginator 
+    class="paginator"
+    [length]="state.collectionSize"
+    [pageSize]="state.itemsPerPage"
+    [pageSizeOptions]="itemsPerPageOptionList"
+    (page)="handlePaginatorChange($event)"
+  >
+  </mat-paginator>
 </div>

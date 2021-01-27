@@ -6,11 +6,11 @@ export const contentTableKey = 'contentTableSettings';
 export default createReducer(
   {
     display: "articles",
-    sortBy: "newest",
+    sortBy: "name",
     timeframe: "all",
     itemsPerPage: 10,
     pageNumber: 0,
-    orderBy: "ASC",
+    orderBy: 'ASC',
     filter: "",
   },
   on(ContentTableActions.stateSuccess, (state,newState) => ({

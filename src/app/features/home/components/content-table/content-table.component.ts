@@ -4,6 +4,7 @@ import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
 import { Store } from '@ngrx/store';
 import { Apollo } from 'apollo-angular';
+import moment from 'moment';
 import { Subscription } from 'rxjs';
 import queriesMap from './graphql';
 import { stateSuccess } from './store/content-table.actions';
@@ -59,14 +60,14 @@ export class ContentTableComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.query = this.apollo.watchQuery<any>({
-      query: (<any>queriesMap)[`${this.state.display}Query`],
+      query: (<any>queriesMap)[this.getQueryName(this.state.display)],
       variables: {
         offset: this.state.itemsPerPage * this.state.pageNumber,
         limit: this.state.itemsPerPage,
         filter: this.state.filter,
         sortBy: this.state.sortBy,
         orderBy: this.state.orderBy,
-        timeframe: this.state.timeframe,
+        timeframe: this.getTimeframeByOption(this.state.timeframe),
       },
     });
 
@@ -85,22 +86,40 @@ export class ContentTableComponent implements OnInit, OnDestroy {
     this.querySubscription.unsubscribe();
   }
 
+  getTimeframeByOption(option: string) {
+    if (option === 'all') {
+      return 0;
+    }
+
+    return moment().subtract(1, <any>option).unix();
+  }
+
   handleChange(property: string, newValue: string | number) {
     console.log('change', property, newValue);
     this.store.dispatch(stateSuccess(<any>{ [property]: newValue }));
     this.fetchMore();
   }
 
+  handlePaginatorChange(event: any) {
+    console.log('paginator', event);
+    // this.store.dispatch(stateSuccess(<any>{ [property]: newValue }));
+    // this.fetchMore();
+  }
+
+  getQueryName(displayOption: string) {
+    return `${displayOption.slice(0,-1)}ListQuery`;
+  }
+
   fetchMore() {
-    this.query.fetchMore({
-      query: (<any>queriesMap)[`${this.state.display}Query`],
+    this.query.fetchMore({ 
+      query: (<any>queriesMap)[this.getQueryName(this.state.display)],
       variables: {
         offset: this.state.itemsPerPage * this.state.pageNumber,
         limit: this.state.itemsPerPage,
         filter: this.state.filter,
         sortBy: this.state.sortBy,
         orderBy: this.state.orderBy,
-        timeframe: this.state.timeframe,
+        timeframe: this.getTimeframeByOption(this.state.timeframe),
       },
       updateQuery: (prev: any, { fetchMoreResult }: {fetchMoreResult: any}) => {
         return fetchMoreResult;

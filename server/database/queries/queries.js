@@ -154,21 +154,34 @@ function getArticleListQuery({
   limit,
   filter,
   sortBy,
-  sortOrder,
+  orderBy,
   timeframe,
 }) {
   return sequelize.query(`
     SELECT
-      id,
-      blog_id as "blogId",
-      name,
-      content,
-      created_at as "createdAt",
-      updated_at as "updatedAt"
+      (ARRAY_AGG(JSON_BUILD_OBJECT(
+        'id', id,
+        'blogId', blog_id,
+        'name', name,
+        'content', content,
+        'createdAt', created_at,
+        'updatedAt', updated_at
+      )))[:offset : :limit] as "articleList",
+      COUNT(*) as count
     FROM articles
+    WHERE LOWER(name) LIKE LOWER('' || '%')
+    AND created_at >= to_timestamp(:timeframe) 
+    ORDER BY
+      CASE WHEN :orderBy = 'ASC' THEN :sortBy END ASC,
+      CASE WHEN :orderBy = 'DESC' THEN :sortBy END DESC
   `, {
     replacements: {
-      // blogId,
+      offset,
+      limit,
+      filter,
+      sortBy,
+      orderBy,
+      timeframe,
     },
     type: QueryTypes.SELECT
   });

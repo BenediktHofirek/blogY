@@ -1,5 +1,5 @@
 type User {
-  id: Int!
+  id: ID!
   username: String!
   email: String!
   description: String
@@ -11,9 +11,9 @@ type User {
 }
 
 type Article {
-  id: Int!
+  id: ID!
   name: String!
-  blogId: Int!
+  blogId: ID!
   content: String!
   createdAt: String
   updatedAt: String
@@ -22,9 +22,9 @@ type Article {
 }
 
 type Blog {
-  id: Int!
+  id: ID!
   name: String!
-  authorId: Int!
+  authorId: ID!
   createdAt: String
   updatedAt: String
   author: User
@@ -35,10 +35,13 @@ type Auth {
   token: String!
   user: User!
 }
-
+  
 # the schema allows the following query:
 type Query {
-  user(id: String!): User
+  articles: [Article]
+  blogs: [Blog]
+  users: [User]
+  user(id: ID!): User
   login(usernameOrEmail: String!, password: String!): Auth
 }
 
