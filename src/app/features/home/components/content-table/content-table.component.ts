@@ -156,7 +156,6 @@ export class ContentTableComponent implements OnInit, OnDestroy {
   }
 
   fetchData() {
-    console.log('fetching', this.state);
     this.apollo.query({ 
       ...this.getQuery(this.state)
     }).subscribe(this.handleFetchResult.bind(this));
@@ -167,10 +166,7 @@ export class ContentTableComponent implements OnInit, OnDestroy {
         ...this.state,
         pageIndex: this.state.pageIndex + 1,
       }),
-    }).subscribe(() => console.log('prefetch',this.getQuery({
-      ...this.state,
-      pageIndex: this.state.pageIndex + 1,
-    })));
+    });
   }
 
   handleFetchResult({ data }: {data: any}) {
