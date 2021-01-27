@@ -8,18 +8,16 @@ export default createReducer(
     display: "articles",
     sortBy: "name",
     timeframe: "all",
-    itemsPerPage: 10,
-    pageNumber: 0,
+    pageSize: 10,
+    pageIndex: 0,
     orderBy: 'ASC',
     filter: "",
     collectionSize: 0,
   },
-  on(ContentTableActions.stateSuccess, (state,newState) => {
-    console.log('reducer', state, newState);
-    return {
+  on(ContentTableActions.stateSuccess, (state,newState) => ({
       ...state,
       ...newState,
-     }}),
+     })),
 );
 
 

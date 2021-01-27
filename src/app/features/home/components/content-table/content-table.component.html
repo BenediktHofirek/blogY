@@ -43,7 +43,7 @@
       </mat-select>
     </mat-form-field> -->
   </mat-toolbar>
-  <table mat-table [dataSource]="isLoading ? null : dataSource">
+  <table mat-table [dataSource]="dataSourceSubject | async">
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef>Article name</th>
       <td mat-cell *matCellDef="let row"> {{row.name}} </td>
@@ -56,12 +56,12 @@
 
     <ng-container matColumnDef="authorName">
       <th mat-header-cell *matHeaderCellDef> Author </th>
-      <td mat-cell *matCellDef="let row"> {{row.author.name}} </td>
+      <td mat-cell *matCellDef="let row"> {{row.author.username}} </td>
     </ng-container>
 
     <ng-container matColumnDef="createdAt">
       <th mat-header-cell *matHeaderCellDef> Published </th>
-      <td mat-cell *matCellDef="let row"> {{row.createdAt}} </td>
+      <td mat-cell *matCellDef="let row"> {{formatDate(row.createdAt)}} </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="getColumns()"></tr>
@@ -86,9 +86,9 @@
     *ngIf="!isLoading"
     class="paginator"
     [length]="state.collectionSize"
-    [pageSize]="state.itemsPerPage"
+    [pageSize]="state.pageSize"
     [pageSizeOptions]="itemsPerPageOptionList"
-    [pageIndex]="state.pageNumber"
+    [pageIndex]="state.pageIndex"
     (page)="handlePaginatorChange($event)"
   >
   </mat-paginator>
