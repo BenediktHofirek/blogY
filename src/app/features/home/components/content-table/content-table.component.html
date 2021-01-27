@@ -43,7 +43,7 @@
       </mat-select>
     </mat-form-field> -->
   </mat-toolbar>
-  <table mat-table [dataSource]="dataSource | async">
+  <table mat-table [dataSource]="isLoading ? null : dataSource">
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef>Article name</th>
       <td mat-cell *matCellDef="let row"> {{row.name}} </td>
@@ -72,11 +72,23 @@
     </tr>
   </table>
 
-  <mat-paginator 
+  <mat-card
+    *ngIf="isLoading"
+    style="display: flex; justify-content: center; align-items: center"
+  >
+    <mat-spinner 
+      color="primary" 
+    >
+    </mat-spinner>
+  </mat-card>
+
+  <mat-paginator
+    *ngIf="!isLoading"
     class="paginator"
     [length]="state.collectionSize"
     [pageSize]="state.itemsPerPage"
     [pageSizeOptions]="itemsPerPageOptionList"
+    [pageIndex]="state.pageNumber"
     (page)="handlePaginatorChange($event)"
   >
   </mat-paginator>

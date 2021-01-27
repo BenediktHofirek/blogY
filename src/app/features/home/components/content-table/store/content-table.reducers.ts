@@ -14,10 +14,12 @@ export default createReducer(
     filter: "",
     collectionSize: 0,
   },
-  on(ContentTableActions.stateSuccess, (state,newState) => ({
+  on(ContentTableActions.stateSuccess, (state,newState) => {
+    console.log('reducer', state, newState);
+    return {
       ...state,
       ...newState,
-     })),
+     }}),
 );
 
 

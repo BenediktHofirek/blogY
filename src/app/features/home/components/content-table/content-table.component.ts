@@ -2,11 +2,10 @@ import { Component, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
-import { Observable } from '@apollo/client/core';
 import { Store } from '@ngrx/store';
 import { Apollo } from 'apollo-angular';
 import moment from 'moment';
-import { Subject, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import queriesMap from './graphql';
 import { stateSuccess } from './store/content-table.actions';
 import { ContentTableState } from './store/content-table.models';
@@ -49,15 +48,15 @@ export class ContentTableComponent implements OnInit, OnDestroy {
   };
 
   itemsPerPageOptionList = [10,20,50,100];
-  dataSource: Subject<any>;
+  isLoading: boolean;
+  dataSource: any;
 
   constructor(private apollo: Apollo,
               private store: Store) {
+    this.isLoading = false;
     this.stateSubscription = this.store.select((state: any) => state[contentTableKey]).subscribe((state: ContentTableState) => {
       this.state = state;
     });
-
-    this.dataSource = new Subject();
   }
 
   ngOnInit() {
@@ -68,7 +67,7 @@ export class ContentTableComponent implements OnInit, OnDestroy {
       .subscribe(({ data }: {data: any}) => {
         console.log('queryResult', data[this.getQueryResultName(this.state.display)], data);
         const queryResult = data[this.getQueryResultName(this.state.display)];
-        this.dataSource.next(queryResult.articleList);
+        this.dataSource = queryResult.articleList;
         this.store.dispatch(stateSuccess({ collectionSize: queryResult.count }));
       });
 
@@ -98,10 +97,11 @@ export class ContentTableComponent implements OnInit, OnDestroy {
     this.fetchMore();
   }
 
-  handlePaginatorChange({pageIndex, pageSize}: {pageIndex: number, pageSize: number}) {
+  handlePaginatorChange(event: any) {
+    console.log('paginator', event);
     this.store.dispatch(stateSuccess({ 
-      pageNumber: pageIndex, 
-      itemsPerPage: pageSize,
+      pageNumber: event.pageIndex, 
+      itemsPerPage: event.pageSize,
     }));
     this.fetchMore();
   }
@@ -126,9 +126,11 @@ export class ContentTableComponent implements OnInit, OnDestroy {
 
   fetchMore() {
     console.log('fetching', this.state);
+    this.isLoading = true;
     this.query.fetchMore({ 
       ...this.getQuery(),
       updateQuery: (prev: any, { fetchMoreResult }: {fetchMoreResult: any}) => {
+        this.isLoading = false;
         return fetchMoreResult;
       }
     });
