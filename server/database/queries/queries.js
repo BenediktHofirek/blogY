@@ -168,12 +168,21 @@ function getArticleListQuery({
         'updatedAt', updated_at
       )))[:offset : :limit] as "articleList",
       COUNT(*) as count
-    FROM articles
+    FROM (
+    	select *
+    	from articles
+      order by 
+          CASE WHEN 'ASC' = :orderBy THEN (
+            CASE when 'name' = :sortBy then "name" end,
+            CASE when 'createdAt' = :sortBy then "created_at" end
+          ) end ASC,
+      		CASE WHEN 'DESC' = :orderBy THEN (
+      			CASE when 'name' = :sortBy then "name" end,
+      			CASE when 'createdAt' = :sortBy then "created_at" end
+      		) end DESC
+    ) as a
     WHERE LOWER(name) LIKE LOWER(:filter || '%')
-    AND created_at >= to_timestamp(:timeframe) 
-    ORDER BY
-      CASE WHEN :orderBy = 'ASC' THEN :sortBy END ASC,
-      CASE WHEN :orderBy = 'DESC' THEN :sortBy END DESC
+    AND created_at >= to_timestamp(:timeframe)
   `, {
     replacements: {
       offset,

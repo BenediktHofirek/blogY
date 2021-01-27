@@ -26,11 +26,21 @@ export class ContentTableComponent implements OnInit, OnDestroy {
     "authors",
     "blogs"
   ];
-  sortByOptionMap = [
-    "newest",
-    "mostRead",
-    "highestRated"
-  ];
+
+  sortByOptionMap = {
+    articles: [
+      {
+        name: 'Name',
+        value: 'name',
+      },{
+        name: 'Published',
+        value: 'createdAt',
+      },
+    ],
+    authors: [],
+    blogs: [],
+  };
+  
   timeframeOptionList = [
     "day",
     "week",
@@ -75,6 +85,10 @@ export class ContentTableComponent implements OnInit, OnDestroy {
     }
 
     return moment().subtract(1, <any>option).unix();
+  }
+
+  getSortByOptionList() {
+    return this.sortByOptionMap[<"articles" | "authors" | "blogs">this.state.display];
   }
 
   getColumns() {

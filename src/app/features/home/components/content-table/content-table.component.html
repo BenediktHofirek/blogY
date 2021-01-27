@@ -22,13 +22,26 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
-    <!-- <mat-form-field appearance="outline" class="toolbar__select">
+    <mat-form-field appearance="outline" class="toolbar__select">
       <mat-label>Sort By: </mat-label>
       <mat-select (selectionChange)="handleChange('sortBy',$event.value)" [value]="state.sortBy">
         <mat-option
-          *ngFor="let option of sortByOptionList"
-          [value]="option">
-          {{option}}
+          *ngFor="let option of getSortByOptionList()"
+          [value]="option.value">
+          {{option.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="toolbar__select">
+      <mat-label> Order: </mat-label>
+      <mat-select (selectionChange)="handleChange('orderBy',$event.value)" [value]="state.orderBy">
+        <mat-option
+          value="DESC">
+          Descending
+        </mat-option>
+        <mat-option
+          value="ASC">
+          Ascending
         </mat-option>
       </mat-select>
     </mat-form-field>
@@ -41,7 +54,7 @@
           {{option}}
         </mat-option>
       </mat-select>
-    </mat-form-field> -->
+    </mat-form-field>
   </mat-toolbar>
   <table mat-table [dataSource]="dataSource">
 
