@@ -169,7 +169,7 @@ function getArticleListQuery({
       )))[:offset : :limit] as "articleList",
       COUNT(*) as count
     FROM articles
-    WHERE LOWER(name) LIKE LOWER('' || '%')
+    WHERE LOWER(name) LIKE LOWER(:filter || '%')
     AND created_at >= to_timestamp(:timeframe) 
     ORDER BY
       CASE WHEN :orderBy = 'ASC' THEN :sortBy END ASC,

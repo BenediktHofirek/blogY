@@ -2,10 +2,11 @@ import { Component, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
+import { Observable } from '@apollo/client/core';
 import { Store } from '@ngrx/store';
 import { Apollo } from 'apollo-angular';
 import moment from 'moment';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import queriesMap from './graphql';
 import { stateSuccess } from './store/content-table.actions';
 import { ContentTableState } from './store/content-table.models';
@@ -42,42 +43,33 @@ export class ContentTableComponent implements OnInit, OnDestroy {
     "all",
   ];
   displayedColumnsMap = {
-    articles: ['name', 'blogName', 'createdAt'],
+    articles: ['name', 'authorName', 'blogName', 'createdAt'],
     authors: ['name', 'author', 'createdAt'],
     blogs: ['name', 'author', 'createdAt'],
   };
 
   itemsPerPageOptionList = [10,20,50,100];
-  allDataCount: any;
-  dataSource: any;
+  dataSource: Subject<any>;
 
   constructor(private apollo: Apollo,
               private store: Store) {
     this.stateSubscription = this.store.select((state: any) => state[contentTableKey]).subscribe((state: ContentTableState) => {
       this.state = state;
     });
+
+    this.dataSource = new Subject();
   }
 
   ngOnInit() {
-    this.query = this.apollo.watchQuery<any>({
-      query: (<any>queriesMap)[this.getQueryName(this.state.display)],
-      variables: {
-        offset: this.state.itemsPerPage * this.state.pageNumber,
-        limit: this.state.itemsPerPage,
-        filter: this.state.filter,
-        sortBy: this.state.sortBy,
-        orderBy: this.state.orderBy,
-        timeframe: this.getTimeframeByOption(this.state.timeframe),
-      },
-    });
+    this.query = this.apollo.watchQuery<any>(this.getQuery());
 
     this.querySubscription = this.query
       .valueChanges
       .subscribe(({ data }: {data: any}) => {
         console.log('queryResult', data[this.getQueryResultName(this.state.display)], data);
         const queryResult = data[this.getQueryResultName(this.state.display)];
-        this.dataSource = queryResult.articleList;
-        this.allDataCount = queryResult.count;
+        this.dataSource.next(queryResult.articleList);
+        this.store.dispatch(stateSuccess({ collectionSize: queryResult.count }));
       });
 
     this.fetchMore();
@@ -96,20 +88,36 @@ export class ContentTableComponent implements OnInit, OnDestroy {
     return moment().subtract(1, <any>option).unix();
   }
 
+  getColumns() {
+    return this.displayedColumnsMap[<"articles" | "authors" | "blogs">this.state.display];
+  }
+
   handleChange(property: string, newValue: string | number) {
     console.log('change', property, newValue);
     this.store.dispatch(stateSuccess(<any>{ [property]: newValue }));
-    // this.fetchMore();
+    this.fetchMore();
   }
 
-  handlePaginatorChange(event: any) {
-    console.log('paginator', event);
-    // this.store.dispatch(stateSuccess(<any>{ [property]: newValue }));
-    // this.fetchMore();
+  handlePaginatorChange({pageIndex, pageSize}: {pageIndex: number, pageSize: number}) {
+    this.store.dispatch(stateSuccess({ 
+      pageNumber: pageIndex, 
+      itemsPerPage: pageSize,
+    }));
+    this.fetchMore();
   }
 
-  getQueryName(displayOption: string) {
-    return `${displayOption.slice(0,-1)}ListQuery`;
+  getQuery() {
+    return { 
+      query: (<any>queriesMap)[`${this.state.display.slice(0,-1)}ListQuery`],
+      variables: {
+        offset: this.state.itemsPerPage * this.state.pageNumber + 1,
+        limit: (this.state.itemsPerPage * this.state.pageNumber) + this.state.itemsPerPage,
+        filter: this.state.filter,
+        sortBy: this.state.sortBy,
+        orderBy: this.state.orderBy,
+        timeframe: this.getTimeframeByOption(this.state.timeframe),
+      }
+    };
   }
 
   getQueryResultName(displayOption: string) {
@@ -117,16 +125,9 @@ export class ContentTableComponent implements OnInit, OnDestroy {
   }
 
   fetchMore() {
+    console.log('fetching', this.state);
     this.query.fetchMore({ 
-      query: (<any>queriesMap)[this.getQueryName(this.state.display)],
-      variables: {
-        offset: this.state.itemsPerPage * this.state.pageNumber,
-        limit: this.state.itemsPerPage,
-        filter: this.state.filter,
-        sortBy: this.state.sortBy,
-        orderBy: this.state.orderBy,
-        timeframe: this.getTimeframeByOption(this.state.timeframe),
-      },
+      ...this.getQuery(),
       updateQuery: (prev: any, { fetchMoreResult }: {fetchMoreResult: any}) => {
         return fetchMoreResult;
       }

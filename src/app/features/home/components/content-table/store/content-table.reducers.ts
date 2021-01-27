@@ -12,6 +12,7 @@ export default createReducer(
     pageNumber: 0,
     orderBy: 'ASC',
     filter: "",
+    collectionSize: 0,
   },
   on(ContentTableActions.stateSuccess, (state,newState) => ({
       ...state,
