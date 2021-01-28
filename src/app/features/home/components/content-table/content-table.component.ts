@@ -23,7 +23,7 @@ export class ContentTableComponent implements OnInit, OnDestroy {
 
   displayOptionList = [
     "articles",
-    "authors",
+    "users",
     "blogs"
   ];
 
@@ -31,14 +31,36 @@ export class ContentTableComponent implements OnInit, OnDestroy {
     articles: [
       {
         name: 'Name',
-        value: 'name',
+        id: 'name',
       },{
         name: 'Published',
-        value: 'createdAt',
+        id: 'createdAt',
       },
     ],
-    authors: [],
-    blogs: [],
+    users: [
+      {
+        name: 'Username',
+        id: 'username',
+      },{
+        name: 'First name',
+        id: 'firstName',
+      },{
+        name: 'Last name',
+        id: 'lastName',
+      },{
+        name: 'Registered',
+        id: 'createdAt',
+      },
+    ],
+    blogs: [
+      {
+        name: 'Name',
+        id: 'name',
+      },{
+        name: 'Published',
+        id: 'createdAt',
+      },
+    ],
   };
   
   timeframeOptionList = [
@@ -51,7 +73,7 @@ export class ContentTableComponent implements OnInit, OnDestroy {
   ];
   displayedColumnsMap = {
     articles: ['name', 'authorUsername', 'blogName', 'published'],// 'views', 'rating'],
-    authors: ['firstLastName', 'username', 'registered'],// 'averageViews', 'rating'],
+    users: ['username','firstName','lasteName', 'registered'],// 'averageViews', 'rating'],
     blogs: ['name', 'authorUsername', 'created'],// 'averageViews', 'rating'],
   };
 
@@ -88,11 +110,11 @@ export class ContentTableComponent implements OnInit, OnDestroy {
   }
 
   getSortByOptionList() {
-    return this.sortByOptionMap[<"articles" | "authors" | "blogs">this.state.display];
+    return this.sortByOptionMap[<"articles" | "users" | "blogs">this.state.display];
   }
 
   getColumns() {
-    return this.displayedColumnsMap[<"articles" | "authors" | "blogs">this.state.display];
+    return this.displayedColumnsMap[<"articles" | "users" | "blogs">this.state.display];
   }
 
   handleChange(property: string, newValue: string | number) {
@@ -100,8 +122,19 @@ export class ContentTableComponent implements OnInit, OnDestroy {
     this.fetchData();
   }
 
+  handleDisplayChange(newDisplay: "articles" | "users" | "blogs") {
+    this.store.dispatch(stateSuccess({
+      display: newDisplay,
+      pageIndex: 0,
+      filter: '',
+      sortBy: this.sortByOptionMap[newDisplay][0].id,
+      filterPageIndex: 0,
+    }));
+    this.fetchData();
+  }
+
   handleFilterChange(newValue: string) {
-    const payload: { filter: string, filterPageIndex?: number } = { 
+    const payload: ContentTableState = { 
       filter: newValue,
     };
    
@@ -178,14 +211,15 @@ export class ContentTableComponent implements OnInit, OnDestroy {
     this.apollo.query({ 
       ...this.getQuery({
         ...this.state,
-        pageIndex: this.state.pageIndex + 1,
+        pageIndex: this.state[this.state.filter ? 'filterPageIndex' : 'pageIndex'] + 1,
       }),
     });
   }
 
   handleFetchResult({ data }: {data: any}) {
-    const queryResult = data[this.getQueryResultName(this.state.display)];
-    this.dataSource = queryResult.articleList;
+    const resultName = this.getQueryResultName(this.state.display);
+    const queryResult = data[resultName];
+    this.dataSource = queryResult[resultName];
     this.isLoading = false;
     this.store.dispatch(stateSuccess({ collectionSize: queryResult.count }));
   }

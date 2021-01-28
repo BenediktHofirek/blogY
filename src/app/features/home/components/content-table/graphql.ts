@@ -17,6 +17,7 @@ const articleListQuery = gql`
       orderBy: $orderBy,
       timeframe: $timeframe
     ) {
+      count
       articleList {
         id
         name
@@ -33,36 +34,74 @@ const articleListQuery = gql`
           name
         }
       }
-      count
     }
   }
 `;
 
-const blogsQuery = gql`
-  query BlogsQuery($_id: String!) {
-    document(_id: $_id) {
-      title
-      author
-      dateCreated
-      pages {
-        _id
-        pageNr
-        text
+const blogListQuery = gql`
+  query BlogListQuery(
+      $offset: Int,
+      $limit: Int,
+      $filter: String,
+      $sortBy: String,
+      $orderBy: String,
+      $timeframe: Int
+    ) {
+    blogList(
+      offset: $offset,
+      limit: $limit,
+      filter: $filter,
+      sortBy: $sortBy,
+      orderBy: $orderBy,
+      timeframe: $timeframe
+    ) {
+      count
+      blogList {
+        id
+        name
+        authorId
+        createdAt
+        updatedAt
+        articleList {
+          id
+          name
+        }
+        author {
+          id
+          username
+          firstName
+          lastName
+        }
       }
     }
   }
 `;
 
-const authorsQuery = gql`
-  query AuthorsQuery($_id: String!) {
-    document(_id: $_id) {
-      title
-      author
-      dateCreated
-      pages {
-        _id
-        pageNr
-        text
+const userListQuery = gql`
+  query UserListQuery(
+      $offset: Int,
+      $limit: Int,
+      $filter: String,
+      $sortBy: String,
+      $orderBy: String,
+      $timeframe: Int
+    ) {
+    userList(
+      offset: $offset,
+      limit: $limit,
+      filter: $filter,
+      sortBy: $sortBy,
+      orderBy: $orderBy,
+      timeframe: $timeframe
+    ) {
+      count
+      userList {
+        id
+        firstName
+        lastName
+        username
+        createdAt
+        updatedAt
       }
     }
   }
@@ -70,6 +109,6 @@ const authorsQuery = gql`
 
 export default { 
   articleListQuery,
-  authorsQuery,
-  blogsQuery,
+  blogListQuery,
+  userListQuery,
 };

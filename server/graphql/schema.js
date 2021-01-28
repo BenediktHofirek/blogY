@@ -2,6 +2,7 @@ const graphql = require('graphql');
 const { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull } = graphql;
 
 const {
+  getBlogListByAuthorIdQuery,
   getBlogListQuery,
   getBlogByIdQuery,
   getUserListQuery,
@@ -27,6 +28,8 @@ const UserType = new GraphQLObjectType({
 	fields: () => ({
 		id: { type: GraphQLID },
 		username: { type: GraphQLString },
+		firstName: { type: GraphQLString },
+		lastName: { type: GraphQLString },
 		email: { type: GraphQLString },
 		description: { type: GraphQLString },
 		photoUrl: { type: GraphQLString },
@@ -35,7 +38,7 @@ const UserType = new GraphQLObjectType({
 		blogList: {
 			type: new GraphQLList(BlogType),
 			resolve(parent) {
-				return getBlogListQuery(parent.id);
+				return getBlogListByAuthorIdQuery(parent.id);
 			}
     },
     articleList: {
@@ -111,6 +114,23 @@ const ArticleListType = new GraphQLObjectType({
 	})
 });
 
+const BlogListType = new GraphQLObjectType({
+	name: 'BlogList',
+	fields: () => ({
+    blogList: { type: new GraphQLList(BlogType) },
+		count: { type: GraphQLInt }
+	})
+});
+
+const UserListType = new GraphQLObjectType({
+	name: 'UserList',
+	fields: () => ({
+    userList: { type: new GraphQLList(UserType) },
+		count: { type: GraphQLInt }
+	})
+});
+
+
 const RootQuery = new GraphQLObjectType({
 	name: 'RootQueryType',
 	fields: {
@@ -131,18 +151,40 @@ const RootQuery = new GraphQLObjectType({
           });
 			}
 		},
-		blogs: {
-			type: new GraphQLList(BlogType),
+		blogList: {
+      type: BlogListType,
+      args: {
+        offset: { type: GraphQLInt },
+        limit: { type: GraphQLInt },
+        filter: { type: GraphQLString },
+        sortBy: { type: GraphQLString },
+        orderBy: { type: GraphQLString },
+        timeframe: { type: GraphQLInt },
+			},
 			resolve(parent, args) {
-        return getBlogListQuery();
+        return getBlogListQuery(args)
+          .then(function(result) {
+            return result[0];
+          });
 			}
 		},
-		users: {
-			type: new GraphQLList(UserType),
+		userList: {
+      type: UserListType,
+      args: {
+        offset: { type: GraphQLInt },
+        limit: { type: GraphQLInt },
+        filter: { type: GraphQLString },
+        sortBy: { type: GraphQLString },
+        orderBy: { type: GraphQLString },
+        timeframe: { type: GraphQLInt },
+			},
 			resolve(parent, args) {
-        return getUserListQuery();
+        return getUserListQuery(args)
+          .then(function(result) {
+            return result[0];
+          });
 			}
-    },
+		},
     user: {
       type: UserType,
       args: {

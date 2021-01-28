@@ -68,18 +68,55 @@ function getUserByBlogIdQuery(blogId) {
   });
 }
 
-function getUserListQuery() {
+function getUserListQuery({
+  offset,
+  limit,
+  filter,
+  sortBy,
+  orderBy,
+  timeframe,
+}) {
   return sequelize.query(`
-    SELECT 
-      id,
-      description,
-      email,
-      photo_url as "photoUrl",
-      username,
-      created_at as "createdAt",
-      updated_at as "updatedAt"
-    FROM users
-  `);
+    SELECT
+      (ARRAY_AGG(JSON_BUILD_OBJECT(
+        'id', id,
+        'firstName', first_name,
+        'lastName', last_name,
+        'username', username,
+        'createdAt', created_at,
+        'updatedAt', updated_at
+      )))[:offset : :limit] as "userList",
+      COUNT(*) as count
+    FROM (
+    	select *
+    	from users
+      order by 
+          CASE WHEN 'ASC' = :orderBy THEN (
+            CASE when 'username' = :sortBy then "username" end,
+            CASE when 'firstName' = :sortBy then "first_name" end
+            CASE when 'lastName' = :sortBy then "last_name" end,
+            CASE when 'createdAt' = :sortBy then "created_at" end
+          ) end ASC,
+      		CASE WHEN 'DESC' = :orderBy THEN (
+      			CASE when 'username' = :sortBy then "username" end,
+            CASE when 'firstName' = :sortBy then "first_name" end
+            CASE when 'lastName' = :sortBy then "last_name" end,
+            CASE when 'createdAt' = :sortBy then "created_at" end
+      		) end DESC
+    ) as a
+    WHERE LOWER(username) LIKE LOWER(:filter || '%')
+    AND created_at >= to_timestamp(:timeframe)
+  `, {
+    replacements: {
+      offset,
+      limit,
+      filter,
+      sortBy,
+      orderBy,
+      timeframe,
+    },
+    type: QueryTypes.SELECT
+  });
 }
 
 function getBlogByIdQuery(blogId) {
@@ -100,25 +137,7 @@ function getBlogByIdQuery(blogId) {
   });
 }
 
-function getBlogListQuery(authorId) {
-  if (typeof authorId !== 'undefined') {
-    return sequelize.query(`
-      SELECT
-        id,
-        author_id as "authorId",
-        name,
-        created_at as "createdAt",
-        updated_at as "updatedAt"
-      FROM blogs
-      WHERE author_id = :authorId
-    `, {
-      replacements: {
-        authorId,
-      },
-      type: QueryTypes.SELECT
-    });
-  }
-
+function getBlogListByAuthorIdQuery(authorId) {
   return sequelize.query(`
     SELECT
       id,
@@ -127,7 +146,13 @@ function getBlogListQuery(authorId) {
       created_at as "createdAt",
       updated_at as "updatedAt"
     FROM blogs
-  `);
+    WHERE author_id = :authorId
+  `, {
+    replacements: {
+      authorId,
+    },
+    type: QueryTypes.SELECT
+  });
 }
 
 function getArticleListByBlogIdQuery(blogId) {
@@ -171,6 +196,52 @@ function getArticleListQuery({
     FROM (
     	select *
     	from articles
+      order by 
+          CASE WHEN 'ASC' = :orderBy THEN (
+            CASE when 'name' = :sortBy then "name" end,
+            CASE when 'createdAt' = :sortBy then "created_at" end
+          ) end ASC,
+      		CASE WHEN 'DESC' = :orderBy THEN (
+      			CASE when 'name' = :sortBy then "name" end,
+      			CASE when 'createdAt' = :sortBy then "created_at" end
+      		) end DESC
+    ) as a
+    WHERE LOWER(name) LIKE LOWER(:filter || '%')
+    AND created_at >= to_timestamp(:timeframe)
+  `, {
+    replacements: {
+      offset,
+      limit,
+      filter,
+      sortBy,
+      orderBy,
+      timeframe,
+    },
+    type: QueryTypes.SELECT
+  });
+}
+
+function getBlogListQuery({
+  offset,
+  limit,
+  filter,
+  sortBy,
+  orderBy,
+  timeframe,
+}) {
+  return sequelize.query(`
+    SELECT
+      (ARRAY_AGG(JSON_BUILD_OBJECT(
+        'id', id,
+        'authorId', author_id,
+        'name', name,
+        'createdAt', created_at,
+        'updatedAt', updated_at
+      )))[:offset : :limit] as "blogList",
+      COUNT(*) as count
+    FROM (
+    	select *
+    	from blogs
       order by 
           CASE WHEN 'ASC' = :orderBy THEN (
             CASE when 'name' = :sortBy then "name" end,
@@ -299,6 +370,7 @@ module.exports = {
   getArticleListByBlogIdQuery: extractQueryResult(getArticleListByBlogIdQuery, true),
   getArticleListByAuthorIdQuery: extractQueryResult(getArticleListByAuthorIdQuery, true),
   getBlogListQuery: extractQueryResult(getBlogListQuery, true),
+  getBlogListByAuthorIdQuery: extractQueryResult(getBlogListByAuthorIdQuery, true),
   createUserMutation: extractQueryResult(createUserMutation),
   updateUserMutation: extractQueryResult(updateUserMutation),
   deleteUserMutation: extractQueryResult(deleteUserMutation),
