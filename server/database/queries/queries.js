@@ -23,7 +23,10 @@ function getUserByCredentialsQuery(usernameOrEmail) {
   });
 }
 
-function getUserByIdQuery(userId) {
+function getUserQuery({
+  userId = '',
+  username = ''
+}) {
   return sequelize.query(`
     SELECT 
       id,
@@ -34,10 +37,12 @@ function getUserByIdQuery(userId) {
       created_at as "createdAt",
       updated_at as "updatedAt"
     FROM users
-    WHERE id = :userId
+    WHERE '' != :username AND username = :username
+    OR '' != :userId AND id::text = :userId
   `, {
     replacements: {
       userId,
+      username,
     },
     type: QueryTypes.SELECT,
   });
@@ -155,6 +160,68 @@ function getBlogListByAuthorIdQuery(authorId) {
   });
 }
 
+function getArticleQuery({
+  articleName,
+  blogName,
+  username
+}) {
+  return sequelize.query(`
+    SELECT
+      id,
+      blog_id as "blogId",
+      name,
+      content,
+      created_at as "createdAt",
+      updated_at as "updatedAt"
+    FROM articles
+    WHERE name = :articleName
+    AND blog_id = (
+      SELECT id
+      FROM blogs
+      WHERE name = :blogName
+      AND author_id = (
+        SELECT id
+        FROM users
+        WHERE username = :username
+      )
+    )
+  `, {
+    replacements: {
+      articleName,
+      blogName,
+      username
+    },
+    type: QueryTypes.SELECT
+  });
+}
+
+function getBlogQuery({
+  blogName,
+  username
+}) {
+  return sequelize.query(`
+    SELECT
+      id,
+      author_id as "authorId",
+      name,
+      created_at as "createdAt",
+      updated_at as "updatedAt"
+    FROM blogs
+    WHERE name = :blogName
+    AND author_id = (
+      SELECT id
+      FROM users
+      WHERE username = :username
+    )
+  `, {
+    replacements: {
+      blogName,
+      username
+    },
+    type: QueryTypes.SELECT
+  });
+}
+
 function getArticleListByBlogIdQuery(blogId) {
   return sequelize.query(`
     SELECT
@@ -181,6 +248,7 @@ function getArticleListQuery({
   sortBy,
   orderBy,
   timeframe,
+  blogId = '',
 }) {
   return sequelize.query(`
     SELECT
@@ -194,9 +262,10 @@ function getArticleListQuery({
       )))[:offset : :limit] as "articleList",
       COUNT(*) as count
     FROM (
-    	select *
-    	from articles
-      order by 
+    	SELECT *
+      FROM articles
+      WHERE '' = :blogId or blog_id::text = :blogId
+      ORDER BY
           CASE WHEN 'ASC' = :orderBy THEN (
             CASE when 'name' = :sortBy then "name" end,
             CASE when 'createdAt' = :sortBy then "created_at" end
@@ -205,7 +274,7 @@ function getArticleListQuery({
       			CASE when 'name' = :sortBy then "name" end,
       			CASE when 'createdAt' = :sortBy then "created_at" end
       		) end DESC
-    ) as a
+    ) AS a
     WHERE LOWER(name) LIKE LOWER(:filter || '%')
     AND created_at >= to_timestamp(:timeframe)
   `, {
@@ -216,6 +285,7 @@ function getArticleListQuery({
       sortBy,
       orderBy,
       timeframe,
+      blogId,
     },
     type: QueryTypes.SELECT
   });
@@ -228,6 +298,7 @@ function getBlogListQuery({
   sortBy,
   orderBy,
   timeframe,
+  userId = '',
 }) {
   return sequelize.query(`
     SELECT
@@ -240,9 +311,10 @@ function getBlogListQuery({
       )))[:offset : :limit] as "blogList",
       COUNT(*) as count
     FROM (
-    	select *
-    	from blogs
-      order by 
+    	SELECT *
+      FROM blogs
+      WHERE '' = :userId or author_id::text = :userId
+      ORDER BY
           CASE WHEN 'ASC' = :orderBy THEN (
             CASE when 'name' = :sortBy then "name" end,
             CASE when 'createdAt' = :sortBy then "created_at" end
@@ -251,7 +323,7 @@ function getBlogListQuery({
       			CASE when 'name' = :sortBy then "name" end,
       			CASE when 'createdAt' = :sortBy then "created_at" end
       		) end DESC
-    ) as a
+    ) AS a
     WHERE LOWER(name) LIKE LOWER(:filter || '%')
     AND created_at >= to_timestamp(:timeframe)
   `, {
@@ -262,6 +334,7 @@ function getBlogListQuery({
       sortBy,
       orderBy,
       timeframe,
+      userId,
     },
     type: QueryTypes.SELECT
   });
@@ -362,10 +435,12 @@ function extractQueryResult(query, isList = false) {
 
 module.exports = {
   getUserByCredentialsQuery: extractQueryResult(getUserByCredentialsQuery),
-  getUserByIdQuery: extractQueryResult(getUserByIdQuery),
+  getUserQuery: extractQueryResult(getUserQuery),
   getBlogByIdQuery: extractQueryResult(getBlogByIdQuery),
   getUserByBlogIdQuery: extractQueryResult(getUserByBlogIdQuery),
   getUserListQuery: extractQueryResult(getUserListQuery, true),
+  getBlogQuery: extractQueryResult(getBlogQuery, true),
+  getArticleQuery: extractQueryResult(getArticleQuery, true),
   getArticleListQuery: extractQueryResult(getArticleListQuery, true),
   getArticleListByBlogIdQuery: extractQueryResult(getArticleListByBlogIdQuery, true),
   getArticleListByAuthorIdQuery: extractQueryResult(getArticleListByAuthorIdQuery, true),

@@ -5,7 +5,7 @@ import { AuthService } from './auth.service';
 import { Observable } from 'rxjs';
 import { map, skip } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { AppState } from 'src/app/store/selectors/app.selector';
+import { AppState } from 'src/app/store/models/app.models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {

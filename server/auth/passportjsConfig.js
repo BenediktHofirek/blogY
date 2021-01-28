@@ -3,7 +3,7 @@ const ExtractJwt = require('passport-jwt').ExtractJwt;
 const path = require('path');
 const fs = require('fs');
 
-const { getUserByIdQuery } = require('../database/queries/queries.js');
+const { getUserQuery } = require('../database/queries/queries.js');
 const pathToKey = path.join(__dirname, '..', 'id_rsa_pub.pem');
 const PUBLIC_KEY = fs.readFileSync(pathToKey, 'utf8');
 
@@ -18,7 +18,7 @@ module.exports = (passport) => {
     // The JWT payload is passed into the verify callback
     passport.use(new JwtStrategy(options, function(jwt_payload, done) {
 
-        getUserByIdQuery(jwt_payload.sub)
+        getUserQuery({ userId: jwt_payload.sub })
           .then((user) => {
               return done(null, user || false);
           })

@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { User } from 'src/app/store/models/app.models';
-import { AppState } from 'src/app/store/selectors/app.selector';
+import { AppState } from 'src/app/store/models/app.models';
 import { AuthService } from '../../../features/auth/services/auth.service';
 
 @Component({

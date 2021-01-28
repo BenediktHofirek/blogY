@@ -1,8 +1,4 @@
-export interface Article {
-  author_id: string,
-  created_at: string,
-  name: string,
-}
+import { ContentTableState } from "src/app/features/home/components/content-table/store/content-table.models";
 
 export interface Token {
   payload: {
@@ -20,21 +16,7 @@ export interface User {
   isLoading?: boolean,
 }
 
-export interface Blog {
-  id: string,
-  author_id: string,
-  created_at: string,
-  name: string,
-}
-
-export interface BlogMap {
-  [key: string]: Blog
-}
-
-export interface ArticleMap {
-  [key: string]: Article
-}
-
-export interface UserMap {
-  [key: string]: User
+export interface AppState {
+  contentTableSettings: ContentTableState,
+  currentUser: User,
 }

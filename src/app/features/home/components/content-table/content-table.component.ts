@@ -106,6 +106,7 @@ export class ContentTableComponent implements OnInit, OnDestroy {
 
   handleRowClick(row: any) {
     let url = '/';
+    console.log('row', row);
     switch(row.__typename) {
       case "Article":
         url = `/user/${row.author.username}/blog/${row.blog.name}/article/${row.name}`;

@@ -5,10 +5,10 @@ import { Apollo } from 'apollo-angular';
 import * as moment from 'moment';
 import { JwtHelperService as JwtHelper } from "@auth0/angular-jwt";
 import { BehaviorSubject, Subscription, Observable } from 'rxjs';
-import { AppState } from 'src/app/store/selectors/app.selector';
+import { AppState } from 'src/app/store/models/app.models';
 import { NavigationService } from "../../../core/services/navigation.service";
-import { Auth, LoginQueryGQL, LoginQueryQuery, RegisterMutationGQL } from 'src/app/graphql/graphql';
-import { articleMapLoad, currentUserLoad, currentUserSuccess } from 'src/app/store/actions/app.actions';
+import { Auth, LoginQueryGQL, RegisterMutationGQL } from 'src/app/graphql/graphql';
+import { currentUserLoad, currentUserSuccess } from 'src/app/store/actions/app.actions';
 import { User, Token } from 'src/app/store/models/app.models';
 
 

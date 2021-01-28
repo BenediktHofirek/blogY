@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { Routes, RouterModule, PreloadAllModules } from '@angular/router';
 import { AccountComponent } from './features/user/pages/account/account.component';
 import { AuthGuard } from './features/auth/services/auth-guard.service';
 import { HomeComponent } from './features/home/home.component';
@@ -8,13 +8,15 @@ import { PageNotFoundComponent } from './core/pages/page-not-found/page-not-foun
 import { RegisterComponent } from './features/auth/pages/register/register.component';
 import { SettingsComponent } from './features/user/pages/settings/settings.component';
 import { UserProfileComponent } from './features/user/pages/user-profile/user-profile.component';
-import { UserBlogsComponent } from './features/user/pages/user-blogs/user-blogs.component';
 
 const routes: Routes = [
-  { path: 'user/:userId', component: UserProfileComponent },
+  { 
+    path: 'user/:username/blog/:blogName', 
+    loadChildren: async () => (await import('./features/blog/blog.module')).BlogModule 
+  },
+  { path: 'user/:username', pathMatch: 'full', component: UserProfileComponent },
   { path: 'account', canActivate: [AuthGuard], component: AccountComponent },
   { path: 'settings', canActivate: [AuthGuard], component: SettingsComponent },
-  { path: 'blogs', canActivate: [AuthGuard], component: UserBlogsComponent },
   { path: 'login', canActivate: [AuthGuard], component: LoginComponent },
   { path: 'register', canActivate: [AuthGuard], component: RegisterComponent },
   { path: '', component: HomeComponent },
@@ -24,7 +26,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

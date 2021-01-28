@@ -2,6 +2,8 @@ const graphql = require('graphql');
 const { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull } = graphql;
 
 const {
+  getArticleQuery,
+  getBlogQuery,
   getBlogListByAuthorIdQuery,
   getBlogListQuery,
   getBlogByIdQuery,
@@ -9,7 +11,7 @@ const {
   getArticleListQuery,
   getArticleListByAuthorIdQuery,
   getArticleListByBlogIdQuery,
-  getUserByIdQuery,
+  getUserQuery,
   getUserByCredentialsQuery,
   getUserByBlogIdQuery,
   createUserMutation,
@@ -67,7 +69,7 @@ const BlogType = new GraphQLObjectType({
     author: {
 			type: UserType,
 			resolve(parent) {
-        return getUserByIdQuery(parent.authorId);
+        return getUserQuery({ userId: parent.authorId });
 			}
     },
 	})
@@ -143,6 +145,7 @@ const RootQuery = new GraphQLObjectType({
         sortBy: { type: GraphQLString },
         orderBy: { type: GraphQLString },
         timeframe: { type: GraphQLInt },
+        blogId: { type: GraphQLID },
 			},
 			resolve(parent, args) {
         return getArticleListQuery(args)
@@ -160,6 +163,7 @@ const RootQuery = new GraphQLObjectType({
         sortBy: { type: GraphQLString },
         orderBy: { type: GraphQLString },
         timeframe: { type: GraphQLInt },
+        userId: { type: GraphQLID },
 			},
 			resolve(parent, args) {
         return getBlogListQuery(args)
@@ -185,13 +189,44 @@ const RootQuery = new GraphQLObjectType({
           });
 			}
 		},
+    article: {
+      type: ArticleType,
+      args: {
+        articleName: { type: new GraphQLNonNull(GraphQLString) },
+        blogName: { type: new GraphQLNonNull(GraphQLString) },
+        username: { type: new GraphQLNonNull(GraphQLString) },
+      },
+			resolve(parent, args) {
+        return getArticleQuery(args)
+          .then(function(result) {
+            return result[0];
+          });
+			}
+    },
+    blog: {
+      type: BlogType,
+      args: {
+        blogName: { type: new GraphQLNonNull(GraphQLString) },
+        username: { type: new GraphQLNonNull(GraphQLString) },
+      },
+			resolve(parent, args) {
+        return getBlogQuery(args)
+          .then(function(result) {
+            return result[0];
+          });
+			}
+    },
     user: {
       type: UserType,
       args: {
-        id: { type: new GraphQLNonNull(GraphQLString) },
+        username: { type: GraphQLString },
+        userId: { type: GraphQLID },
       },
 			resolve(parent, args) {
-        return getUserByIdQuery(args.id);
+        if(!args.userId && !args.username) {
+          throw new Error('Specify userId or username');
+        }
+        return getUserQuery(args);
 			}
     },
     login: {
