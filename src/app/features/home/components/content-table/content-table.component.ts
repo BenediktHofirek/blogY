@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Apollo } from 'apollo-angular';
 import moment from 'moment';
@@ -82,6 +83,7 @@ export class ContentTableComponent implements OnInit, OnDestroy {
   dataSource: any;
 
   constructor(private apollo: Apollo,
+              private router: Router,
               private store: Store) {
     this.isLoading = false;
     this.stateSubscription = this.store.select((state: any) => state[contentTableKey]).subscribe((state: ContentTableState) => {
@@ -95,6 +97,24 @@ export class ContentTableComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.stateSubscription.unsubscribe();
+  }
+
+  handleRowClick(row: any) {
+    let url = '/';
+    switch(row.__typename) {
+      case "Article":
+        url = `/user/${row.author.username}/blog/${row.blog.name}/article/${row.name}`;
+        break;
+      case "Blog":
+        url = `/user/${row.author.username}/blog/${row.name}`;
+        break;
+      case "User":
+        url = `/user/${row.username}`;
+        break;
+      default: break;
+    }
+    console.log('url', url);
+    this.router.navigateByUrl(url);
   }
 
   formatDate(date: string) {
@@ -220,6 +240,7 @@ export class ContentTableComponent implements OnInit, OnDestroy {
     const resultName = this.getQueryResultName(this.state.display);
     const queryResult = data[resultName];
     this.dataSource = queryResult[resultName];
+    console.log(this.dataSource);
     this.isLoading = false;
     this.store.dispatch(stateSuccess({ collectionSize: queryResult.count }));
   }

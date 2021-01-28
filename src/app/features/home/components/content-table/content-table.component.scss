@@ -26,6 +26,11 @@ table {
   float: left;
   width: 100%;
   user-select: none;
+
+  & tr:hover {
+    cursor: pointer;
+    background-color: lightgrey;
+  }
 }
 
 .paginator {
