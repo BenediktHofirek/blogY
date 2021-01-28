@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Apollo } from 'apollo-angular';
 import { articleListQuery, blogQuery } from '../../graphql';
-import { Blog } from '../../../../core/models/models';
+import { Article, Blog } from '../../../../core/models/models';
 
 @Component({
   selector: 'app-blog',
@@ -10,6 +10,7 @@ import { Blog } from '../../../../core/models/models';
   styleUrls: ['./blog.component.scss']
 })
 export class BlogComponent implements OnInit {
+  articleList: [Article];
   blog: Blog;
   userUsername: any;
   blogName: any;

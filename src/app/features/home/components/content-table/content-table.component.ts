@@ -106,7 +106,6 @@ export class ContentTableComponent implements OnInit, OnDestroy {
 
   handleRowClick(row: any) {
     let url = '/';
-    console.log('row', row);
     switch(row.__typename) {
       case "Article":
         url = `/user/${row.author.username}/blog/${row.blog.name}/article/${row.name}`;
@@ -123,6 +122,8 @@ export class ContentTableComponent implements OnInit, OnDestroy {
   }
 
   formatDate(date: string) {
+    console.log('date', date, moment(date).format());
+    console.log(this.dataSource);
     return moment(date).format('DD. MM. YYYY');
   }
 
