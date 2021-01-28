@@ -86,14 +86,19 @@ export class ContentTableComponent implements OnInit, OnDestroy {
               private router: Router,
               private store: Store) {
     this.isLoading = false;
-    this.stateSubscription = this.store.select((state: any) => state[contentTableKey]).subscribe((state: ContentTableState) => {
-      this.state = state;
+    this.stateSubscription = this.store.select((state: any) => state[contentTableKey]).subscribe((state: any) => {
+        const isFetching = Object.keys(state)
+          .filter(key => key !== 'collectionSize' && key !== 'type')
+          .some(key => !this.state || state[key] !== this.state[key]);
+        
+        this.state = state;
+        if (isFetching) {
+          this.fetchData();
+        }
     });
   }
 
-  ngOnInit() {
-    this.fetchData();
-  }
+  ngOnInit() {}
 
   ngOnDestroy() {
     this.stateSubscription.unsubscribe();
@@ -113,7 +118,6 @@ export class ContentTableComponent implements OnInit, OnDestroy {
         break;
       default: break;
     }
-    console.log('url', url);
     this.router.navigateByUrl(url);
   }
 
@@ -139,7 +143,6 @@ export class ContentTableComponent implements OnInit, OnDestroy {
 
   handleChange(property: string, newValue: string | number) {
     this.store.dispatch(stateSuccess(<any>{ [property]: newValue }));
-    this.fetchData();
   }
 
   handleDisplayChange(newDisplay: "articles" | "users" | "blogs") {
@@ -150,7 +153,6 @@ export class ContentTableComponent implements OnInit, OnDestroy {
       sortBy: this.sortByOptionMap[newDisplay][0].id,
       filterPageIndex: 0,
     }));
-    this.fetchData();
   }
 
   handleFilterChange(newValue: string) {
@@ -162,7 +164,6 @@ export class ContentTableComponent implements OnInit, OnDestroy {
       payload.filterPageIndex = 0;
     }
     this.store.dispatch(stateSuccess(payload));
-    this.fetchData();
   }
 
   handlePaginatorChange(
@@ -191,7 +192,6 @@ export class ContentTableComponent implements OnInit, OnDestroy {
       }));
     }
     
-    this.fetchData();
   }
 
   getQuery({
@@ -240,7 +240,6 @@ export class ContentTableComponent implements OnInit, OnDestroy {
     const resultName = this.getQueryResultName(this.state.display);
     const queryResult = data[resultName];
     this.dataSource = queryResult[resultName];
-    console.log(this.dataSource);
     this.isLoading = false;
     this.store.dispatch(stateSuccess({ collectionSize: queryResult.count }));
   }
