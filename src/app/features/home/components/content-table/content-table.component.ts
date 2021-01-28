@@ -57,7 +57,7 @@ export class ContentTableComponent implements OnInit, OnDestroy {
         name: 'Name',
         id: 'name',
       },{
-        name: 'Published',
+        name: 'Created',
         id: 'createdAt',
       },
     ],
@@ -73,7 +73,7 @@ export class ContentTableComponent implements OnInit, OnDestroy {
   ];
   displayedColumnsMap = {
     articles: ['name', 'authorUsername', 'blogName', 'published'],// 'views', 'rating'],
-    users: ['username','firstName','lasteName', 'registered'],// 'averageViews', 'rating'],
+    users: ['username','firstName','lastName', 'registered'],// 'averageViews', 'rating'],
     blogs: ['name', 'authorUsername', 'created'],// 'averageViews', 'rating'],
   };
 

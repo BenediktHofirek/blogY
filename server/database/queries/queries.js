@@ -93,13 +93,13 @@ function getUserListQuery({
       order by 
           CASE WHEN 'ASC' = :orderBy THEN (
             CASE when 'username' = :sortBy then "username" end,
-            CASE when 'firstName' = :sortBy then "first_name" end
+            CASE when 'firstName' = :sortBy then "first_name" end,
             CASE when 'lastName' = :sortBy then "last_name" end,
             CASE when 'createdAt' = :sortBy then "created_at" end
           ) end ASC,
       		CASE WHEN 'DESC' = :orderBy THEN (
       			CASE when 'username' = :sortBy then "username" end,
-            CASE when 'firstName' = :sortBy then "first_name" end
+            CASE when 'firstName' = :sortBy then "first_name" end,
             CASE when 'lastName' = :sortBy then "last_name" end,
             CASE when 'createdAt' = :sortBy then "created_at" end
       		) end DESC
