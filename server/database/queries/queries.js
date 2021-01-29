@@ -14,7 +14,7 @@ function extractQueryResult(query, isList = false) {
         const result = temp.length === 1 && !isList ?
           temp[0] :
           temp;
-
+        
         resolve(result);
       })
       .catch((err) => reject(err));
@@ -22,8 +22,8 @@ function extractQueryResult(query, isList = false) {
 }
 
 module.exports = {
-  getUserByCredentialsQuery: extractQueryResult(userQueries.getUserByCredentialsQuery),
-  getUserQuery: extractQueryResult(userQueries.getUserQuery),
+  getUserByCredentialsQuery: userQueries.getUserByCredentialsQuery,
+  getUserQuery: userQueries.getUserQuery,
   getBlogByIdQuery: extractQueryResult(blogQueries.getBlogByIdQuery),
   getUserByBlogIdQuery: extractQueryResult(userQueries.getUserByBlogIdQuery),
   getUserListQuery: extractQueryResult(userQueries.getUserListQuery),

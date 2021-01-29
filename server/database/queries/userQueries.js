@@ -20,6 +20,8 @@ function getUserByCredentialsQuery(usernameOrEmail) {
       usernameOrEmail,
     },
     type: QueryTypes.SELECT,
+  }).then((result) => {
+    return (result && result[0]) || null;
   });
 }
 
@@ -45,6 +47,8 @@ function getUserQuery({
       username,
     },
     type: QueryTypes.SELECT,
+  }).then((result) => {
+    return (result && result[0]) || null;
   });
 }
 

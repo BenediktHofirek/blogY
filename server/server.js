@@ -3,10 +3,10 @@ const { graphqlHTTP } = require('express-graphql');
 const cors = require('cors');
 const passport = require('passport');
 const dotenv = require('dotenv');
+const { formatError } = require('graphql');
 
 const schema = require('./graphql/schema.js');
 const passportConfigFnc = require('./auth/passportjsConfig');
-const { errorResponseMap } = require('./graphql/errors.js');
 
 dotenv.config();
 passportConfigFnc(passport);
@@ -26,7 +26,7 @@ app.use(
       console.log('USERee', user, err);
       user = user;
     })(req, res, next);
-
+    
     return {
       schema,
       context: {
@@ -34,8 +34,8 @@ app.use(
         req,
         res
       },
-      customFormatErrorFn: (errName) => {
-        return errorResponseMap[errName] || errName;
+      customFormatErrorFn: (error) => {
+        return formatError(error);
       },
       graphiql: process.env.NODE_ENV === 'development'
     }

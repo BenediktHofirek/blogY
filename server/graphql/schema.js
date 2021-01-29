@@ -226,20 +226,19 @@ const RootQuery = new GraphQLObjectType({
         return new Promise((resolve, reject) => {
           getUserByCredentialsQuery(usernameOrEmail)
             .then((user) => {
+              console.log(user);
               if (!user) {
-                throw new Error(errorMap.USER_NOT_FOUND);
-              }
-              
-              if (validatePassword(password, user.password)) {
+                reject(errorMap.USER_NOT_FOUND);
+              }else if (validatePassword(password, user.password)) {
                 const token = issueJWT(user.id, '1m');
                 resolve({ 
                   token,
                   user,
                 });
               } else {
-                throw new Error(errorMap.WRONG_PASSWORD);
+                reject(errorMap.WRONG_PASSWORD);
               }
-            }).catch((err) => reject(err));
+            }).catch((err) => { reject(errorMap.USER_NOT_FOUND); });
         });
 			}
 		}
@@ -319,7 +318,7 @@ const Mutation = new GraphQLObjectType({
 			},
 			resolve(parent, args, context) {
         if (!context.user) {
-          throw new Error(errorMap.UNAUTHORIZED);
+          throw new Error(errorMap.UNAUTHORIZED);  
         }
         const providedId = content.user.permissionList.includes['admin'] ?
           args.id || context.user.id :
