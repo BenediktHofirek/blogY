@@ -121,9 +121,7 @@ export class ContentTableComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl(url);
   }
 
-  formatDate(date: string) {
-    console.log('date', date, moment(date).format());
-    console.log(this.dataSource);
+  formatDate(date: number) {
     return moment(date).format('DD. MM. YYYY');
   }
 

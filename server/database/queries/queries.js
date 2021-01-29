@@ -10,13 +10,13 @@ function getUserByCredentialsQuery(usernameOrEmail) {
       photo_url as "photoUrl",
       username,
       password,
-      created_at as "createdAt",
-      updated_at as "updatedAt"
+      TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
+      TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
     FROM users
-    WHERE username = :usernameOrEmail
-    OR email = :usernameOrEmail
+    WHERE username = $usernameOrEmail
+    OR email = $usernameOrEmail
   `, {
-    replacements: {
+    bind: {
       usernameOrEmail,
     },
     type: QueryTypes.SELECT,
@@ -34,13 +34,13 @@ function getUserQuery({
       email,
       photo_url as "photoUrl",
       username,
-      created_at as "createdAt",
-      updated_at as "updatedAt"
+      TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
+      TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
     FROM users
-    WHERE '' != :username AND username = :username
-    OR '' != :userId AND id::text = :userId
+    WHERE '' != $username AND username = $username
+    OR '' != $userId AND id::text = $userId
   `, {
-    replacements: {
+    bind: {
       userId,
       username,
     },
@@ -56,17 +56,17 @@ function getUserByBlogIdQuery(blogId) {
       email,
       photo_url as "photoUrl",
       username,
-      created_at as "createdAt",
-      updated_at as "updatedAt"
+      TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
+      TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
     FROM users
     WHERE users.id = (
         SELECT
           author_id
         FROM blogs
-        WHERE blogs.id = :blogId
+        WHERE blogs.id = $blogId
       )
   `, {
-    replacements: {
+    bind: {
       blogId,
     },
     type: QueryTypes.SELECT,
@@ -88,31 +88,31 @@ function getUserListQuery({
         'firstName', first_name,
         'lastName', last_name,
         'username', username,
-        'createdAt', created_at,
-        'updatedAt', updated_at
-      )))[:offset : :limit] as "userList",
+        'createdAt', TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS'),
+        'updatedAt', TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS')
+      )))[$offset : $limit] as "userList",
       COUNT(*) as count
     FROM (
     	select *
     	from users
       order by 
-          CASE WHEN 'ASC' = :orderBy THEN (
-            CASE when 'username' = :sortBy then "username" end,
-            CASE when 'firstName' = :sortBy then "first_name" end,
-            CASE when 'lastName' = :sortBy then "last_name" end,
-            CASE when 'createdAt' = :sortBy then "created_at" end
+          CASE WHEN 'ASC' = $orderBy THEN (
+            CASE when 'username' = $sortBy then "username" end,
+            CASE when 'firstName' = $sortBy then "first_name" end,
+            CASE when 'lastName' = $sortBy then "last_name" end,
+            CASE when 'createdAt' = $sortBy then "created_at" end
           ) end ASC,
-      		CASE WHEN 'DESC' = :orderBy THEN (
-      			CASE when 'username' = :sortBy then "username" end,
-            CASE when 'firstName' = :sortBy then "first_name" end,
-            CASE when 'lastName' = :sortBy then "last_name" end,
-            CASE when 'createdAt' = :sortBy then "created_at" end
+      		CASE WHEN 'DESC' = $orderBy THEN (
+      			CASE when 'username' = $sortBy then "username" end,
+            CASE when 'firstName' = $sortBy then "first_name" end,
+            CASE when 'lastName' = $sortBy then "last_name" end,
+            CASE when 'createdAt' = $sortBy then "created_at" end
       		) end DESC
     ) as a
-    WHERE LOWER(username) LIKE LOWER(:filter || '%')
-    AND created_at >= to_timestamp(:timeframe)
+    WHERE LOWER(username) LIKE LOWER($filter || '%')
+    AND created_at >= to_timestamp($timeframe)
   `, {
-    replacements: {
+    bind: {
       offset,
       limit,
       filter,
@@ -130,12 +130,12 @@ function getBlogByIdQuery(blogId) {
       id,
       name,
       author_id as "authorId",
-      created_at as "createdAt",
-      updated_at as "updatedAt"
+      TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
+      TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
     FROM blogs
-    WHERE id = :blogId
+    WHERE id = $blogId
   `, {
-    replacements: {
+    bind: {
       blogId,
     },
     type: QueryTypes.SELECT,
@@ -148,13 +148,59 @@ function getBlogListByAuthorIdQuery(authorId) {
       id,
       author_id as "authorId",
       name,
-      created_at as "createdAt",
-      updated_at as "updatedAt"
+      TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
+      TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
     FROM blogs
-    WHERE author_id = :authorId
+    WHERE author_id = $authorId
   `, {
-    replacements: {
+    bind: {
       authorId,
+    },
+    type: QueryTypes.SELECT
+  });
+}
+
+function getBlogQuery({
+  blogName,
+  username
+}) {
+  return sequelize.query(`
+    SELECT
+      id,
+      author_id as "authorId",
+      name,
+      TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
+      TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
+    FROM blogs
+    WHERE name = $blogName
+    AND author_id = (
+      SELECT id
+      FROM users
+      WHERE username = $username
+    )
+  `, {
+    bind: {
+      blogName,
+      username
+    },
+    type: QueryTypes.SELECT
+  });
+}
+
+function getArticleListByBlogIdQuery(blogId) {
+  return sequelize.query(`
+    SELECT
+      id,
+      blog_id as "blogId",
+      name,
+      content,
+      TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
+      TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
+    FROM articles
+    WHERE blog_id = $blogId
+  `, {
+    bind: {
+      blogId,
     },
     type: QueryTypes.SELECT
   });
@@ -171,71 +217,25 @@ function getArticleQuery({
       blog_id as "blogId",
       name,
       content,
-      created_at as "createdAt",
-      updated_at as "updatedAt"
+      TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
+      TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
     FROM articles
-    WHERE name = :articleName
+    WHERE name = $articleName
     AND blog_id = (
       SELECT id
       FROM blogs
-      WHERE name = :blogName
+      WHERE name = $blogName
       AND author_id = (
         SELECT id
         FROM users
-        WHERE username = :username
+        WHERE username = $username
       )
     )
   `, {
-    replacements: {
+    bind: {
       articleName,
       blogName,
       username
-    },
-    type: QueryTypes.SELECT
-  });
-}
-
-function getBlogQuery({
-  blogName,
-  username
-}) {
-  return sequelize.query(`
-    SELECT
-      id,
-      author_id as "authorId",
-      name,
-      created_at as "createdAt",
-      updated_at as "updatedAt"
-    FROM blogs
-    WHERE name = :blogName
-    AND author_id = (
-      SELECT id
-      FROM users
-      WHERE username = :username
-    )
-  `, {
-    replacements: {
-      blogName,
-      username
-    },
-    type: QueryTypes.SELECT
-  });
-}
-
-function getArticleListByBlogIdQuery(blogId) {
-  return sequelize.query(`
-    SELECT
-      id,
-      blog_id as "blogId",
-      name,
-      content,
-      created_at as "createdAt",
-      updated_at as "updatedAt"
-    FROM articles
-    WHERE blog_id = :blogId
-  `, {
-    replacements: {
-      blogId,
     },
     type: QueryTypes.SELECT
   });
@@ -257,28 +257,28 @@ function getArticleListQuery({
         'blogId', blog_id,
         'name', name,
         'content', content,
-        'createdAt', created_at,
-        'updatedAt', updated_at
-      )))[:offset : :limit] as "articleList",
+        'createdAt', TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS'),
+        'updatedAt', TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS')
+      )))[$offset : $limit] as "articleList",
       COUNT(*) as count
     FROM (
     	SELECT *
       FROM articles
-      WHERE '' = :blogId or blog_id::text = :blogId
+      WHERE '' = $blogId or blog_id::text = $blogId
       ORDER BY
-          CASE WHEN 'ASC' = :orderBy THEN (
-            CASE when 'name' = :sortBy then "name" end,
-            CASE when 'createdAt' = :sortBy then "created_at" end
+          CASE WHEN 'ASC' = $orderBy THEN (
+            CASE when 'name' = $sortBy then "name" end,
+            CASE when 'createdAt' = $sortBy then "created_at" end
           ) end ASC,
-      		CASE WHEN 'DESC' = :orderBy THEN (
-      			CASE when 'name' = :sortBy then "name" end,
-      			CASE when 'createdAt' = :sortBy then "created_at" end
+      		CASE WHEN 'DESC' = $orderBy THEN (
+      			CASE when 'name' = $sortBy then "name" end,
+      			CASE when 'createdAt' = $sortBy then "created_at" end
       		) end DESC
     ) AS a
-    WHERE LOWER(name) LIKE LOWER(:filter || '%')
-    AND created_at >= to_timestamp(:timeframe)
+    WHERE LOWER(name) LIKE LOWER($filter || '%')
+    AND created_at >= to_timestamp($timeframe)
   `, {
-    replacements: {
+    bind: {
       offset,
       limit,
       filter,
@@ -306,28 +306,28 @@ function getBlogListQuery({
         'id', id,
         'authorId', author_id,
         'name', name,
-        'createdAt', created_at,
-        'updatedAt', updated_at
-      )))[:offset : :limit] as "blogList",
+        'createdAt', TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS'),
+        'updatedAt', TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS')
+      )))[$offset : $limit] as "blogList",
       COUNT(*) as count
     FROM (
     	SELECT *
       FROM blogs
-      WHERE '' = :userId or author_id::text = :userId
+      WHERE '' = $userId or author_id::text = $userId
       ORDER BY
-          CASE WHEN 'ASC' = :orderBy THEN (
-            CASE when 'name' = :sortBy then "name" end,
-            CASE when 'createdAt' = :sortBy then "created_at" end
+          CASE WHEN 'ASC' = $orderBy THEN (
+            CASE when 'name' = $sortBy then "name" end,
+            CASE when 'createdAt' = $sortBy then "created_at" end
           ) end ASC,
-      		CASE WHEN 'DESC' = :orderBy THEN (
-      			CASE when 'name' = :sortBy then "name" end,
-      			CASE when 'createdAt' = :sortBy then "created_at" end
+      		CASE WHEN 'DESC' = $orderBy THEN (
+      			CASE when 'name' = $sortBy then "name" end,
+      			CASE when 'createdAt' = $sortBy then "created_at" end
       		) end DESC
     ) AS a
-    WHERE LOWER(name) LIKE LOWER(:filter || '%')
-    AND created_at >= to_timestamp(:timeframe)
+    WHERE LOWER(name) LIKE LOWER($filter || '%')
+    AND created_at >= to_timestamp($timeframe)
   `, {
-    replacements: {
+    bind: {
       offset,
       limit,
       filter,
@@ -347,16 +347,16 @@ function getArticleListByAuthorIdQuery(authorId) {
       blog_id as "blogId",
       name,
       content,
-      created_at as "createdAt",
-      updated_at as "updatedAt"
+      TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
+      TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
     FROM articles
     WHERE blog_id IN (
         SELECT id
         FROM blogs
-        WHERE author_id = :authorId
+        WHERE author_id = $authorId
       )
   `, {
-    replacements: {
+    bind: {
       authorId,
     },
     type: QueryTypes.SELECT
@@ -367,13 +367,13 @@ function createUserMutation(newUserMap) {
   return sequelize.query(`
     INSERT INTO users (username, password, email)
     VALUES (
-      :username,
-      :password,
-      :email
+      $username,
+      $password,
+      $email
     )
     RETURNING *
   `, {
-    replacements: {
+    bind: {
       ...newUserMap,
     },
     type: QueryTypes.INSERT,
@@ -384,15 +384,15 @@ function updateUserMutation(alteredUserMap) {
   return sequelize.query(`
     UPDATE users
     SET
-      username = COALESCE(:username, username),
+      username = COALESCE($username, username),
       password = COALESCE(:password, password),
       email = COALESCE(:email, email),
       description = COALESCE(:description, description),
       photo_url = COALESCE(:photoUrl, photo_url)
-    WHERE id = :id
+    WHERE id = $id
     RETURNING *
   `, {
-    replacements: {
+    bind: {
       ...alteredUserMap,
     },
     type: QueryTypes.UPDATE,
@@ -402,10 +402,10 @@ function updateUserMutation(alteredUserMap) {
 function deleteUserMutation(userId) {
   return sequelize.query(`
       DELETE FROM users
-      WHERE id = :userId
+      WHERE id = $userId
       RETURNING *
   `, {
-    replacements: {
+    bind: {
       userId,
     },
     type: QueryTypes.DELETE,

@@ -150,6 +150,7 @@ const RootQuery = new GraphQLObjectType({
 			resolve(parent, args) {
         return getArticleListQuery(args)
           .then(function(result) {
+            console.log(result[0].articleList[0]);
             return result[0];
           });
 			}
@@ -199,6 +200,7 @@ const RootQuery = new GraphQLObjectType({
 			resolve(parent, args) {
         return getArticleQuery(args)
           .then(function(result) {
+            console.log('article', typeof result[0].createdAt, result[0]);
             return result[0];
           });
 			}
