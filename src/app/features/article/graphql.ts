@@ -13,20 +13,6 @@ export const articleQuery = gql`
     ) {
       id
       name
-      content
-      createdAt
-      updatedAt
-      author {
-        id
-        firstName
-        lastName
-        username
-        photoUrl
-      }
-      blog {
-        id
-        name
-      }
     }
   }
 `;

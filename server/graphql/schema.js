@@ -18,11 +18,13 @@ const {
   updateUserMutation,
   deleteUserMutation,
 } = require('../database/queries/queries.js');
+
 const {
   generatePasswordHash,
   validatePassword,
   issueJWT,
 } = require('../auth/utils.js');
+
 const { errorMap } = require('./errors.js');
 
 const UserType = new GraphQLObjectType({
@@ -148,11 +150,7 @@ const RootQuery = new GraphQLObjectType({
         blogId: { type: GraphQLID },
 			},
 			resolve(parent, args) {
-        return getArticleListQuery(args)
-          .then(function(result) {
-            console.log(result[0].articleList[0]);
-            return result[0];
-          });
+        return getArticleListQuery(args);
 			}
 		},
 		blogList: {
@@ -167,10 +165,7 @@ const RootQuery = new GraphQLObjectType({
         userId: { type: GraphQLID },
 			},
 			resolve(parent, args) {
-        return getBlogListQuery(args)
-          .then(function(result) {
-            return result[0];
-          });
+        return getBlogListQuery(args);
 			}
 		},
 		userList: {
@@ -184,10 +179,7 @@ const RootQuery = new GraphQLObjectType({
         timeframe: { type: GraphQLInt },
 			},
 			resolve(parent, args) {
-        return getUserListQuery(args)
-          .then(function(result) {
-            return result[0];
-          });
+        return getUserListQuery(args);
 			}
 		},
     article: {
@@ -198,11 +190,7 @@ const RootQuery = new GraphQLObjectType({
         username: { type: new GraphQLNonNull(GraphQLString) },
       },
 			resolve(parent, args) {
-        return getArticleQuery(args)
-          .then(function(result) {
-            console.log('article', typeof result[0].createdAt, result[0]);
-            return result[0];
-          });
+        return getArticleQuery(args);
 			}
     },
     blog: {
@@ -212,10 +200,7 @@ const RootQuery = new GraphQLObjectType({
         username: { type: new GraphQLNonNull(GraphQLString) },
       },
 			resolve(parent, args) {
-        return getBlogQuery(args)
-          .then(function(result) {
-            return result[0];
-          });
+        return getBlogQuery(args);
 			}
     },
     user: {
