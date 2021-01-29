@@ -11,8 +11,8 @@ import { UserProfileComponent } from './features/user/pages/user-profile/user-pr
 
 const routes: Routes = [
   { 
-    path: 'user/:username/blog/:blogName', 
-    loadChildren: async () => (await import('./features/blog/blog.module')).BlogModule 
+    path: 'user/:username/blog', 
+    loadChildren: async () => (await import('./features/content/content.module')).ContentModule 
   },
   { path: 'user/:username', pathMatch: 'full', component: UserProfileComponent },
   { path: 'account', canActivate: [AuthGuard], component: AccountComponent },
