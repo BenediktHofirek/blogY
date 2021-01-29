@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Apollo } from 'apollo-angular';
-import { articleQuery } from '../../graphql';
-import { Article } from '../../../../core/models/models';
+import { Article } from '../../core/models/models';
+import { articleQuery } from './graphql';
 
 @Component({
   selector: 'app-article',
