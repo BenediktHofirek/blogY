@@ -19,9 +19,17 @@ module.exports = {
         unique: 'compositeArticle',
         type: Sequelize.UUID
       },
-      content: {
+      html: {
         allowNull: false,
-        type: Sequelize.TEXT
+        type: Sequelize.TEXT,
+      },
+      source: {
+        allowNull: false,
+        type: Sequelize.JSON,
+      },
+      isPublished: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
       },
       created_at: {
         allowNull: false,

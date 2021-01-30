@@ -22,7 +22,6 @@ const articleListQuery = gql`
         id
         name
         blogId
-        content
         createdAt
         updatedAt
         author {

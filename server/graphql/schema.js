@@ -1,5 +1,7 @@
 const graphql = require('graphql');
 const { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull } = graphql;
+const { GraphQLJSON, GraphQLJSONObject } = require('graphql-type-json');
+const QuillDeltaToHtmlConverter = require('quill-delta-to-html').QuillDeltaToHtmlConverter;
 
 const {
   getArticleQuery,
@@ -17,6 +19,7 @@ const {
   createUserMutation,
   updateUserMutation,
   deleteUserMutation,
+  articleUpdateMutation,
 } = require('../database/queries/queries.js');
 
 const {
@@ -92,7 +95,8 @@ const ArticleType = new GraphQLObjectType({
 		id: { type: GraphQLID },
 		blogId: { type: GraphQLID },
 		name: { type: GraphQLString },
-		content: { type: GraphQLString },
+		source: { type: GraphQLJSON },
+		html: { type: GraphQLString },
 		createdAt: { type: GraphQLString },
     updatedAt: { type: GraphQLString },
     author: {
@@ -294,9 +298,9 @@ const Mutation = new GraphQLObjectType({
 			},
 			resolve(parent, args, context) {
         if (!context.user) {
-          throw new Error(errorMap.UNAUTHORIZED);
+          return errorMap.UNAUTHORIZED;
         }
-        const providedId = content.user.permissionList.includes['admin'] ?
+        const providedId = context.user.permissionList.includes['admin'] ?
           args.id || context.user.id :
           context.user.id;
         const passwordHash = generatePasswordHash(password);
@@ -326,7 +330,35 @@ const Mutation = new GraphQLObjectType({
 
         return deleteUserMutation(providedId);
 			}
-		},
+    },
+    articleUpdate: {
+      type: ArticleType,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLID) },
+        name: { type: GraphQLString },
+        source: { type: GraphQLJSON },
+      },
+			resolve: async function(parent, {
+        id,
+        name,
+        source
+      }, context) {
+        if (!context.user) {
+          return errorMap.UNAUTHORIZED;
+        }
+
+        //html is automatically sanitized
+        const html = new QuillDeltaToHtmlConverter(source.ops, {}).convert();
+        const result = await articleUpdateMutation({
+          id,
+          name,
+          source,
+          html,
+        });
+        console.log('result', result);
+        return result;
+			}
+    },
 	}
 });
 

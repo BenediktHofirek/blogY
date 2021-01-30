@@ -7,7 +7,8 @@ function getArticleListByBlogIdQuery(blogId) {
       id,
       blog_id as "blogId",
       name,
-      content,
+      source, 
+      html,
       TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
       TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
     FROM articles
@@ -30,7 +31,8 @@ function getArticleQuery({
       id,
       blog_id as "blogId",
       name,
-      content,
+      source, 
+      html,
       TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
       TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
     FROM articles
@@ -70,7 +72,8 @@ function getArticleListQuery({
         'id', id,
         'blogId', blog_id,
         'name', name,
-        'content', content,
+        'source', source,
+        'html', html,
         'createdAt', TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS'),
         'updatedAt', TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS')
       )))[$offset : $limit] as "articleList",
@@ -111,7 +114,8 @@ function getArticleListByAuthorIdQuery(authorId) {
       id,
       blog_id as "blogId",
       name,
-      content,
+      source, 
+      html,
       TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
       TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
     FROM articles
@@ -128,6 +132,38 @@ function getArticleListByAuthorIdQuery(authorId) {
   });
 }
 
+function articleUpdateMutation({
+  id,
+  name = null,
+  source = null,
+  html = null
+}) {
+  return sequelize.query(`
+    UPDATE articles
+    SET
+      name = COALESCE($name, name),
+      source = COALESCE($source, source),
+      html = COALESCE($html, html)
+    WHERE id = $id
+    RETURNING 
+      id,
+      blog_id as "blogId",
+      name,
+      source, 
+      html,
+      TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
+      TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
+  `, {
+    bind: {
+      id,
+      name,
+      source,
+      html
+    },
+    type: QueryTypes.SELECT
+  });
+}
+
 
 
 module.exports = {
@@ -135,4 +171,5 @@ module.exports = {
   getArticleListQuery,
   getArticleListByBlogIdQuery,
   getArticleListByAuthorIdQuery,
+  articleUpdateMutation,
 }

@@ -2,26 +2,28 @@ const { sequelize } = require('../models/index.js');
 const { QueryTypes } = require('sequelize');
 
 function getUserByCredentialsQuery(usernameOrEmail) {
-  return sequelize.query(`
-    SELECT 
-      id,
-      description,
-      email,
-      photo_url as "photoUrl",
-      username,
-      password,
-      TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
-      TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
-    FROM users
-    WHERE username = $usernameOrEmail
-    OR email = $usernameOrEmail
-  `, {
-    bind: {
-      usernameOrEmail,
-    },
-    type: QueryTypes.SELECT,
-  }).then((result) => {
-    return (result && result[0]) || null;
+  return new Promise((resolve, reject) => {
+    sequelize.query(`
+      SELECT 
+        id,
+        description,
+        email,
+        photo_url as "photoUrl",
+        username,
+        password,
+        TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
+        TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
+      FROM users
+      WHERE username = $usernameOrEmail
+      OR email = $usernameOrEmail
+    `, {
+      bind: {
+        usernameOrEmail,
+      },
+      type: QueryTypes.SELECT,
+    }).then((result) => {
+      resolve((result && result[0]) || null);
+    }).catch((err) => reject(err))
   });
 }
 
@@ -29,26 +31,28 @@ function getUserQuery({
   userId = '',
   username = ''
 }) {
-  return sequelize.query(`
-    SELECT 
-      id,
-      description,
-      email,
-      photo_url as "photoUrl",
-      username,
-      TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
-      TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
-    FROM users
-    WHERE '' != $username AND username = $username
-    OR '' != $userId AND id::text = $userId
-  `, {
-    bind: {
-      userId,
-      username,
-    },
-    type: QueryTypes.SELECT,
-  }).then((result) => {
-    return (result && result[0]) || null;
+  return new Promise((resolve, reject) => {
+    sequelize.query(`
+      SELECT 
+        id,
+        description,
+        email,
+        photo_url as "photoUrl",
+        username,
+        TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
+        TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
+      FROM users
+      WHERE '' != $username AND username = $username
+      OR '' != $userId AND id::text = $userId
+    `, {
+      bind: {
+        userId,
+        username,
+      },
+      type: QueryTypes.SELECT,
+    }).then((result) => {
+      resolve((result && result[0]) || null);
+    }).catch((err) => reject(err))
   });
 }
 
@@ -150,10 +154,10 @@ function updateUserMutation(alteredUserMap) {
     UPDATE users
     SET
       username = COALESCE($username, username),
-      password = COALESCE(:password, password),
-      email = COALESCE(:email, email),
-      description = COALESCE(:description, description),
-      photo_url = COALESCE(:photoUrl, photo_url)
+      password = COALESCE($password, password),
+      email = COALESCE($email, email),
+      description = COALESCE($description, description),
+      photo_url = COALESCE($photoUrl, photo_url)
     WHERE id = $id
     RETURNING *
   `, {

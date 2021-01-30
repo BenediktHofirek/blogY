@@ -5,7 +5,8 @@ export interface Article {
   createdAt: string,
   updatedAt: string,
   name: string,
-  content: string,
+  source: JSON,
+  html: string,
   author: User,
   blog: Blog,
 }

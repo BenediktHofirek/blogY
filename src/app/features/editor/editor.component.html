@@ -11,6 +11,16 @@
 <div *ngIf="!isLoading && !isUserAllowed()">
   Sorry, you are not allowed to edit this article
 </div>
-<div #editor>
+<div #editor class="editor">
     
 </div>
+<button
+  class="saveButton"
+  mat-raised-button
+  [disabled]="!isContentChanged"
+  color="primary"
+  (click)="handleSave()"
+>
+  Save
+</button>
+

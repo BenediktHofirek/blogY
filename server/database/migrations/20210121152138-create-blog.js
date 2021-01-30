@@ -19,6 +19,9 @@ module.exports = {
         unique: 'compositeBlog',
         type: Sequelize.UUID
       },
+      description: {
+        type: Sequelize.TEXT,
+      },
       created_at: {
         allowNull: false,
         defaultValue: Sequelize.fn('NOW'),

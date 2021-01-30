@@ -13,7 +13,7 @@ export const articleQuery = gql`
     ) {
       id
       name
-      content
+      html
       createdAt
       updatedAt
       author {

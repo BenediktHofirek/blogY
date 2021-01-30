@@ -26,11 +26,13 @@ c.define('blog', function(author_id) {
 });
 
 c.define('article', function(blog_id) {
+  const content = c.sentences(10, 35);
   return {
     id: c.uuid,
     name: c.populate_one_of(["{{first_name}}", "{{last_name}}", "{{word}}"]),
     blog_id,
-    content: c.sentences(10, 35),
+    source: JSON.stringify({ ops: [{ insert: content }]}),
+    html: `<div>${content}</div>`
   };
 });
 
@@ -103,7 +105,7 @@ function createString(objectList) {
   objectList.forEach((o) => {
     result += '{';
     Object.entries(o).forEach(([key, value]) => {
-      if (key === 'password') {
+      if (key === 'password' || key === 'source') {
         result += key + ': \'' + value + '\',';
       } else {
         result += `${key}: \"${value}\",`;

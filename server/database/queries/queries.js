@@ -37,4 +37,5 @@ module.exports = {
   createUserMutation: extractQueryResult(userQueries.createUserMutation),
   updateUserMutation: extractQueryResult(userQueries.updateUserMutation),
   deleteUserMutation: extractQueryResult(userQueries.deleteUserMutation),
+  articleUpdateMutation: extractQueryResult(articleQueries.articleUpdateMutation),
 }
