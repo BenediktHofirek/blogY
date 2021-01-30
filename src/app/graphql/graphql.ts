@@ -18,7 +18,7 @@ export type Scalars = {
 
 export type User = {
   __typename?: 'User';
-  id: Scalars['Int'];
+  id: Scalars['ID'];
   username: Scalars['String'];
   email: Scalars['String'];
   description?: Maybe<Scalars['String']>;
@@ -31,9 +31,9 @@ export type User = {
 
 export type Article = {
   __typename?: 'Article';
-  id: Scalars['Int'];
+  id: Scalars['ID'];
   name: Scalars['String'];
-  blogId: Scalars['Int'];
+  blogId: Scalars['ID'];
   content: Scalars['String'];
   createdAt?: Maybe<Scalars['String']>;
   updatedAt?: Maybe<Scalars['String']>;
@@ -43,9 +43,9 @@ export type Article = {
 
 export type Blog = {
   __typename?: 'Blog';
-  id: Scalars['Int'];
+  id: Scalars['ID'];
   name: Scalars['String'];
-  authorId: Scalars['Int'];
+  authorId: Scalars['ID'];
   createdAt?: Maybe<Scalars['String']>;
   updatedAt?: Maybe<Scalars['String']>;
   author?: Maybe<User>;
@@ -60,16 +60,13 @@ export type Auth = {
 
 export type Query = {
   __typename?: 'Query';
-  articles?: Maybe<Array<Maybe<Article>>>;
-  blogs?: Maybe<Array<Maybe<Blog>>>;
-  users?: Maybe<Array<Maybe<User>>>;
   user?: Maybe<User>;
   login?: Maybe<Auth>;
 };
 
 
 export type QueryUserArgs = {
-  id: Scalars['String'];
+  userId: Scalars['ID'];
 };
 
 
@@ -109,42 +106,6 @@ export type RegisterMutationMutation = (
   )> }
 );
 
-export type ArticlesQueryQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type ArticlesQueryQuery = (
-  { __typename?: 'Query' }
-  & { articles?: Maybe<Array<Maybe<(
-    { __typename?: 'Article' }
-    & Pick<Article, 'id' | 'name' | 'blogId' | 'content' | 'createdAt' | 'updatedAt'>
-    & { author: (
-      { __typename?: 'User' }
-      & Pick<User, 'id' | 'username'>
-    ), blog: (
-      { __typename?: 'Blog' }
-      & Pick<Blog, 'id' | 'name'>
-    ) }
-  )>>> }
-);
-
-export type BlogsQueryQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type BlogsQueryQuery = (
-  { __typename?: 'Query' }
-  & { blogs?: Maybe<Array<Maybe<(
-    { __typename?: 'Blog' }
-    & Pick<Blog, 'id' | 'name' | 'authorId' | 'createdAt' | 'updatedAt'>
-    & { author?: Maybe<(
-      { __typename?: 'User' }
-      & Pick<User, 'id' | 'username'>
-    )>, articleList?: Maybe<Array<Maybe<(
-      { __typename?: 'Article' }
-      & Pick<Article, 'id' | 'name'>
-    )>>> }
-  )>>> }
-);
-
 export type LoginQueryQueryVariables = Exact<{
   usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
@@ -164,7 +125,7 @@ export type LoginQueryQuery = (
 );
 
 export type UserQueryQueryVariables = Exact<{
-  id: Scalars['String'];
+  userId: Scalars['ID'];
 }>;
 
 
@@ -181,24 +142,6 @@ export type UserQueryQuery = (
       & Pick<Article, 'id' | 'name'>
     )>>> }
   )> }
-);
-
-export type UsersQueryQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type UsersQueryQuery = (
-  { __typename?: 'Query' }
-  & { users?: Maybe<Array<Maybe<(
-    { __typename?: 'User' }
-    & Pick<User, 'id' | 'username' | 'email' | 'description' | 'photoUrl' | 'createdAt' | 'updatedAt'>
-    & { blogList?: Maybe<Array<Maybe<(
-      { __typename?: 'Blog' }
-      & Pick<Blog, 'id' | 'name'>
-    )>>>, articleList?: Maybe<Array<Maybe<(
-      { __typename?: 'Article' }
-      & Pick<Article, 'id' | 'name'>
-    )>>> }
-  )>>> }
 );
 
 export const RegisterMutationDocument = gql`
@@ -223,67 +166,6 @@ export const RegisterMutationDocument = gql`
   })
   export class RegisterMutationGQL extends Apollo.Mutation<RegisterMutationMutation, RegisterMutationMutationVariables> {
     document = RegisterMutationDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
-export const ArticlesQueryDocument = gql`
-    query ArticlesQuery {
-  articles {
-    id
-    name
-    blogId
-    content
-    createdAt
-    updatedAt
-    author {
-      id
-      username
-    }
-    blog {
-      id
-      name
-    }
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class ArticlesQueryGQL extends Apollo.Query<ArticlesQueryQuery, ArticlesQueryQueryVariables> {
-    document = ArticlesQueryDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
-export const BlogsQueryDocument = gql`
-    query BlogsQuery {
-  blogs {
-    id
-    name
-    authorId
-    createdAt
-    updatedAt
-    author {
-      id
-      username
-    }
-    articleList {
-      id
-      name
-    }
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class BlogsQueryGQL extends Apollo.Query<BlogsQueryQuery, BlogsQueryQueryVariables> {
-    document = BlogsQueryDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
@@ -317,8 +199,8 @@ export const LoginQueryDocument = gql`
     }
   }
 export const UserQueryDocument = gql`
-    query UserQuery($id: String!) {
-  user(id: $id) {
+    query UserQuery($userId: ID!) {
+  user(userId: $userId) {
     id
     username
     email
@@ -343,38 +225,6 @@ export const UserQueryDocument = gql`
   })
   export class UserQueryGQL extends Apollo.Query<UserQueryQuery, UserQueryQueryVariables> {
     document = UserQueryDocument;
-    
-    constructor(apollo: Apollo.Apollo) {
-      super(apollo);
-    }
-  }
-export const UsersQueryDocument = gql`
-    query UsersQuery {
-  users {
-    id
-    username
-    email
-    description
-    photoUrl
-    createdAt
-    updatedAt
-    blogList {
-      id
-      name
-    }
-    articleList {
-      id
-      name
-    }
-  }
-}
-    `;
-
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class UsersQueryGQL extends Apollo.Query<UsersQueryQuery, UsersQueryQueryVariables> {
-    document = UsersQueryDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);

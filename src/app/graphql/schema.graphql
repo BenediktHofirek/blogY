@@ -38,10 +38,7 @@ type Auth {
   
 # the schema allows the following query:
 type Query {
-  articles: [Article]
-  blogs: [Blog]
-  users: [User]
-  user(id: ID!): User
+  user(userId: ID!): User
   login(usernameOrEmail: String!, password: String!): Auth
 }
 

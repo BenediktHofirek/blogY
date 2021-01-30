@@ -18,7 +18,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
   ],
   exports: [
     LoadingSpinnerComponent,
-
+    
+    CommonModule,
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,

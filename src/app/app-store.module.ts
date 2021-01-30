@@ -14,7 +14,7 @@ import { currentUserReducer } from './store/reducers/app.reducer';
     StoreModule.forRoot({
       currentUser: currentUserReducer
     }),
-    // EffectsModule.forRoot([AppEffects]),
+    EffectsModule.forRoot([AppEffects]),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }),
   ]
 })

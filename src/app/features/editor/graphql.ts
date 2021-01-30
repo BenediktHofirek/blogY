@@ -18,10 +18,7 @@ export const articleQuery = gql`
       updatedAt
       author {
         id
-        firstName
-        lastName
         username
-        photoUrl
       }
       blog {
         id

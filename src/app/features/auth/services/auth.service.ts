@@ -30,7 +30,6 @@ export class AuthService {
       this.tokenExpirationTime = tokenExpirationTime;
       const token = localStorage.getItem("token");
       this.tokenSubject = new BehaviorSubject<string | object | null | undefined>(token);
-
       if (token) {
         const userId = this.jwtHelper.decodeToken(token).sub;
         this.store.dispatch(currentUserLoad({ id: userId }));

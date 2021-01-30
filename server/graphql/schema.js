@@ -230,7 +230,7 @@ const RootQuery = new GraphQLObjectType({
               if (!user) {
                 reject(errorMap.USER_NOT_FOUND);
               }else if (validatePassword(password, user.password)) {
-                const token = issueJWT(user.id, '1m');
+                const token = issueJWT(user.id, '1d');
                 resolve({ 
                   token,
                   user,

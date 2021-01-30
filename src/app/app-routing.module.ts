@@ -11,6 +11,11 @@ import { UserProfileComponent } from './features/user/pages/user-profile/user-pr
 
 const routes: Routes = [
   { 
+    path: 'user/:username/blog/:blogName/article/:articleName/edit',
+    canActivate: [AuthGuard],
+    loadChildren: async () => (await import('./features/editor/editor.module')).EditorModule 
+  },
+  { 
     path: 'user/:username/blog/:blogName/article/:articleName', 
     loadChildren: async () => (await import('./features/article/article.module')).ArticleModule 
   },

@@ -23,7 +23,6 @@ app.use(
 	graphqlHTTP(function(req, res, next) {
     let user;
     passport.authenticate('jwt', {session: false}, (err, user) => {
-      console.log('USERee', user, err);
       user = user;
     })(req, res, next);
     
