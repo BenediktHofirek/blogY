@@ -108,7 +108,7 @@ export class ContentTableComponent implements OnInit, OnDestroy {
     let url = '/';
     switch(row.__typename) {
       case "Article":
-        url = `/user/${row.author.username}/blog/${row.blog.name}/article/${row.name}`;
+        url = `/user/${row.author.username}/blog/${row.blog.name}/article/${row.name}/edit`;
         break;
       case "Blog":
         url = `/user/${row.author.username}/blog/${row.name}`;

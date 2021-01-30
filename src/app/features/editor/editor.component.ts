@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Apollo } from 'apollo-angular';
-import { Quill } from 'quill';
+import Quill from 'quill';
 import { Subscription } from 'rxjs';
 import { AppState, User } from 'src/app/store/models/app.models';
 import { Article } from '../../core/models/models';
@@ -59,22 +59,27 @@ export class EditorComponent implements OnInit {
     }).subscribe(
       ({ data }: {data: any}) => {
         this.article = data.article;
-        this.isLoading = false;  
+        this.isLoading = false;
+        if (this.isUserAllowed()) {
+          this.initEditor();
+        }
       },
       (err) => console.log('error', err)
     );
+  }
 
-    // const quill = new Quill(this.editor, {
-    //   modules: {
-    //     toolbar: [
-    //       [{ header: [1, 2, false] }],
-    //       ['bold', 'italic', 'underline'],
-    //       ['image', 'code-block']
-    //     ]
-    //   },
-    //   placeholder: 'Compose an epic...',
-    //   theme: 'snow'  // or 'bubble'
-    // });
+  initEditor() {
+    const quill = new Quill(this.editor?.nativeElement, {
+      modules: {
+        toolbar: [
+          [{ header: [1, 2, false] }],
+          ['bold', 'italic', 'underline'],
+          ['image', 'code-block']
+        ]
+      },
+      placeholder: 'Compose an epic...',
+      theme: 'snow'  // or 'bubble'
+    });
   }
 
   isUserAllowed() {

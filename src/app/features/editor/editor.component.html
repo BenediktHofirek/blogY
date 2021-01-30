@@ -7,13 +7,10 @@
   >
   </mat-spinner>
 </mat-card>
-<ng-container *ngIf="!isLoading">
-  <ngContainer *ngIf="isUserAllowed()" else="notAllowed">
-    <div #editor>
-      
-    </div>
-  </ngContainer>
-  <div #notAllowed>
-    Sorry, you are not allowed to edit this article
-  </div>
-</ng-container>
+
+<div *ngIf="!isLoading && !isUserAllowed()">
+  Sorry, you are not allowed to edit this article
+</div>
+<div #editor>
+    
+</div>
