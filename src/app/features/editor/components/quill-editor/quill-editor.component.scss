@@ -1,0 +1,13 @@
+@use '~/node_modules/quill/dist/quill.core' as core;
+@use '~/node_modules/quill/dist/quill.snow' as snow;
+
+.quillEditor {
+  display: block;
+  width: 100%;
+  height: 400px;
+
+  &__saveButton {
+    display: block;
+    float: right;
+  }
+}

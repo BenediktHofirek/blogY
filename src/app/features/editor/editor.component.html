@@ -1,5 +1,5 @@
 <mat-card
-    *ngIf="isLoading"
+    *ngIf="isLoading else notLoading"
     style="display: flex; justify-content: center; align-items: center"
 >
   <mat-spinner 
@@ -8,19 +8,16 @@
   </mat-spinner>
 </mat-card>
 
-<div *ngIf="!isLoading && !isUserAllowed()">
-  Sorry, you are not allowed to edit this article
-</div>
-<div #editor class="editor">
-    
-</div>
-<button
-  class="saveButton"
-  mat-raised-button
-  [disabled]="!isContentChanged"
-  color="primary"
-  (click)="handleSave()"
->
-  Save
-</button>
+<ng-template #notLoading >
+  <div *ngIf="!isUserAllowed() else editor">
+    Sorry, you are not allowed to edit this article
+  </div>
+      
+    <ng-template #editor>
+      <app-quill-editor
+      [source]="article?.source"
+      (save)="handleSave($event)"
+    ></app-quill-editor>
+  </ng-template>
+</ng-template>
 

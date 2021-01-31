@@ -1,0 +1,12 @@
+<div #editor class="quillEditor">
+    
+</div>
+<button
+    class="quillEditor__saveButton"
+    mat-raised-button
+    [disabled]="!canSave()"
+    color="primary"
+    (click)="handleSave()"
+  >
+    Save
+  </button>
