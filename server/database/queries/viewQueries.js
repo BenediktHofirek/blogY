@@ -34,7 +34,24 @@ function getViewAverageByBlogId(blogId) {
   });
 }
 
+function getView({articleId, userId}) {
+  return sequelize.query(`
+    SELECT
+      updated_at as "viewedAt"
+    FROM views
+    WHERE article_id = $articleId
+    AND user_id = $userId
+  `, {
+    bind: {
+      articleId,
+      userId
+    },
+    type: QueryTypes.SELECT
+  });
+}
+
 module.exports = {
   getViewCountByArticleId,
   getViewAverageByBlogId,
+  getView,
 }

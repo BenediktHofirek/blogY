@@ -14,6 +14,7 @@ const {
   getCommentListByArticleId,
 	getViewCountByArticleId,
 	getViewAverageByBlogId,
+	getView,
   getRatingAverageByArticleId,
   getRatingAverageByBlogId,
   getRating,
@@ -138,6 +139,24 @@ export const ArticleType = new GraphQLObjectType({
 			type: GraphQLInt,
 			resolve(parent) {
 				return getRatingAverageByArticleId(parent.id);
+			}
+		},
+		lastViewed: {
+			type: GraphQLString,
+			resolve(parent,args, context) {
+				return getView({
+					articleId: parent.id,
+					userId: context.user.id,
+				});
+			}
+		},
+		myRating: {
+			type: GraphQLInt,
+			resolve(parent, args, context) {
+				return getRating({
+					articleId: parent.id,
+					userId: context.user.id,
+				});
 			}
 		},
 		viewCount: {

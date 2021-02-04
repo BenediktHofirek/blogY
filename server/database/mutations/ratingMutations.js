@@ -34,13 +34,23 @@ function ratingCreateMutation({
   rating
 }) {
   return sequelize.query(`
-  INSERT INTO ratings (article_id, user_id, rating)
-  VALUES (
-    $articleId,
-    $userId,
-    $rating,
-  )
-  RETURNING *
+    CASE WHEN $articleId NOT IN (
+      SELECT id
+      FROM articles
+      WHERE blog_id IN (
+        SELECT id
+        FROM blogs
+        WHERE author_id = $userId
+      )
+    ) THEN
+    INSERT INTO ratings (article_id, user_id, rating)
+    VALUES (
+      $articleId,
+      $userId,
+      $rating,
+    )
+    RETURNING *
+    END
   `, {
     bind: {
       articleId,
