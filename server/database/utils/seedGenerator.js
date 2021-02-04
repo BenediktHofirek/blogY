@@ -39,14 +39,19 @@ c.define('article', function(blog_id) {
   };
 });
 
-c.define('comment', function(parent_id, user_id, article_id) {
-  return {
+c.define('comment', function(user_id, article_id, parent_id) {
+  const comment = {
     id: c.uuid,
     article_id,
     user_id,
-    parent_id,
     text: c.sentences(1,5),
   };
+
+  if (parent_id) {
+    comment.parent_id = parent_id;
+  }
+
+  return comment;
 });
 
 c.define('message', function(sender_id, receiver_id) {
@@ -124,11 +129,11 @@ const commentList = articleList.filter(a => a.allow_comments).map(a => {
   const blog = blogList.find(b => b.id === a.blog_id);
   
   const resultList = [
-    c.comment('', blog.author_id, a.id),
+    c.comment(blog.author_id, a.id),
   ];
 
   if (isParent) {
-    resultList.push(c.comment(resultList[0].id, blog.author_id, a.id));
+    resultList.push(c.comment(blog.author_id, a.id, resultList[0].id));
   }
 
   return resultList;

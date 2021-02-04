@@ -25,7 +25,7 @@ module.exports = {
       source: {
         type: Sequelize.JSON,
       },
-      isPublished: {
+      is_published: {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
       },
