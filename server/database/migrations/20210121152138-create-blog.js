@@ -28,11 +28,6 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
       },
-      allow_comments: {
-        allowNull: false,
-        type: Sequelize.BOOLEAN,
-        defaultValue: true,
-      },
       created_at: {
         allowNull: false,
         defaultValue: Sequelize.fn('NOW'),

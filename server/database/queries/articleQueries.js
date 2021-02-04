@@ -132,44 +132,9 @@ function getArticleListByAuthorIdQuery(authorId) {
   });
 }
 
-function articleUpdateMutation({
-  id,
-  name = null,
-  source = null,
-  html = null
-}) {
-  return sequelize.query(`
-    UPDATE articles
-    SET
-      name = COALESCE($name, name),
-      source = COALESCE($source, source),
-      html = COALESCE($html, html)
-    WHERE id = $id
-    RETURNING 
-      id,
-      blog_id as "blogId",
-      name,
-      source, 
-      html,
-      TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
-      TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
-  `, {
-    bind: {
-      id,
-      name,
-      source,
-      html
-    },
-    type: QueryTypes.SELECT
-  });
-}
-
-
-
 module.exports = {
   getArticleQuery,
   getArticleListQuery,
   getArticleListByBlogIdQuery,
   getArticleListByAuthorIdQuery,
-  articleUpdateMutation,
 }

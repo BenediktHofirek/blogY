@@ -29,6 +29,16 @@ module.exports = {
         defaultValue: false,
         type: Sequelize.BOOLEAN,
       },
+      is_deleted: {
+        allowNull: false,
+        defaultValue: false,
+        type: Sequelize.BOOLEAN,
+      },
+      is_archived: {
+        allowNull: false,
+        defaultValue: false,
+        type: Sequelize.BOOLEAN,
+      },
       created_at: {
         allowNull: false,
         defaultValue: Sequelize.fn('NOW'),

@@ -1,25 +1,12 @@
 const userQueries = require('./userQueries');
 const blogQueries = require('./blogQueries');
 const articleQueries = require('./articleQueries');
+const commentQueries = require('./commentQueries');
+const viewQueries = require('./viewQueries');
+const ratingQueries = require('./ratingQueries');
+const messageQueries = require('./messageQueries');
 
-function extractQueryResult(query, isList = false) {
-  return (...args) => new Promise((resolve, reject) => {
-    query(...args)
-      .then((queryResult) => {
-        let temp = queryResult;
-        while (Array.isArray(temp[0])) {
-          temp = temp[0];
-        }
-        
-        const result = temp.length === 1 && !isList ?
-          temp[0] :
-          temp;
-        
-        resolve(result);
-      })
-      .catch((err) => reject(err));
-  });
-}
+const extractQueryResult = require('../utils/extractQueryResult');
 
 module.exports = {
   getUserByCredentialsQuery: userQueries.getUserByCredentialsQuery,
@@ -34,8 +21,10 @@ module.exports = {
   getArticleListByAuthorIdQuery: extractQueryResult(articleQueries.getArticleListByAuthorIdQuery, true),
   getBlogListQuery: extractQueryResult(blogQueries.getBlogListQuery),
   getBlogListByAuthorIdQuery: extractQueryResult(blogQueries.getBlogListByAuthorIdQuery, true),
-  createUserMutation: extractQueryResult(userQueries.createUserMutation),
-  updateUserMutation: extractQueryResult(userQueries.updateUserMutation),
-  deleteUserMutation: extractQueryResult(userQueries.deleteUserMutation),
-  articleUpdateMutation: extractQueryResult(articleQueries.articleUpdateMutation),
+  getCommentListByArticleId: extractQueryResult(commentQueries.getCommentListByArticleId, true),
+  getViewCountByArticleId: extractQueryResult(viewQueries.getViewCountByArticleId, true),
+  getRatingAverageByArticleId: extractQueryResult(ratingQueries.getRatingAverageByArticleId, true),
+  getRating: extractQueryResult(ratingQueries.getRating, true),
+  getMessageSendedListByUserId: extractQueryResult(messageQueries.getMessageSendedListByUserId, true),
+  getMessageReceivedListByUserId: extractQueryResult(messageQueries.getMessageReceivedListByUserId, true),
 }
