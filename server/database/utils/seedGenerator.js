@@ -22,8 +22,6 @@ c.define('blog', function(author_id) {
     id: c.uuid,
     name: c.populate_one_of(["{{first_name}}", "{{last_name}}", "{{word}}"]),
     description: c.sentences(4,10),
-    is_published: true,
-    allow_comments: Math.random() > 0.9 ? false : true,
     author_id,
   };
 });
@@ -34,6 +32,8 @@ c.define('article', function(blog_id) {
     id: c.uuid,
     name: c.populate_one_of(["{{first_name}}", "{{last_name}}", "{{word}}"]),
     blog_id,
+    is_published: true,
+    allow_comments: Math.random() > 0.9 ? false : true,
     source: JSON.stringify({ ops: [{ insert: content }]}),
     html: `<div>${content}</div>`
   };
@@ -122,14 +122,13 @@ const ratingList = userIdList.map((userId) =>
 const commentList = articleList.filter(a => a.allow_comments).map(a => {
   const isParent = Math.random() > 0.8;
   const blog = blogList.find(b => b.id === a.blog_id);
-  const user = userList.find(u => u.id === blog.author_id);
   
   const resultList = [
-    c.comment(null, user.id, a.id),
+    c.comment('', blog.author_id, a.id),
   ];
 
   if (isParent) {
-    resultList.push(c.comment(resultList[0].id, user.id, a.id));
+    resultList.push(c.comment(resultList[0].id, blog.author_id, a.id));
   }
 
   return resultList;
@@ -148,7 +147,7 @@ const messageList = userIdList.map(u => {
   }
 
   for (let x = Math.ceil(Math.random() * 10); x > 0; x--) {
-    messageList.push(c.message(u.id, getReceiverId()));
+    messageList.push(c.message(u, getReceiverId()));
   }
 
   return messageList;
