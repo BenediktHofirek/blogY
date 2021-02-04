@@ -29,7 +29,22 @@ module.exports = {
       }
     });
 
-    await autoUpdateUpdatedAt(queryInterface, 'ratings');
+    await queryInterface.sequelize.query(`
+      CREATE OR REPLACE FUNCTION update_changetimestamp_column()
+      RETURNS TRIGGER AS $$
+      BEGIN
+        NEW.changetimestamp = now(); 
+        RETURN NEW;
+      END;
+      $$ language 'plpgsql'; 
+    `);
+
+    //here string interpolation is safe, no user input
+    await queryInterface.sequelize.query(`
+      CREATE TRIGGER update_ratings_changetimestamp BEFORE UPDATE
+      ON ratings FOR EACH ROW EXECUTE PROCEDURE 
+      update_changetimestamp_column();
+    `);
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('ratings');

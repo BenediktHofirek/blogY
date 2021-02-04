@@ -36,7 +36,22 @@ module.exports = {
       }
     });
 
-    await autoUpdateUpdatedAt(queryInterface, 'comments');
+    await queryInterface.sequelize.query(`
+      CREATE OR REPLACE FUNCTION update_changetimestamp_column()
+      RETURNS TRIGGER AS $$
+      BEGIN
+        NEW.changetimestamp = now(); 
+        RETURN NEW;
+      END;
+      $$ language 'plpgsql'; 
+    `);
+
+    //here string interpolation is safe, no user input
+    await queryInterface.sequelize.query(`
+      CREATE TRIGGER update_comments_changetimestamp BEFORE UPDATE
+      ON comments FOR EACH ROW EXECUTE PROCEDURE 
+      update_changetimestamp_column();
+    `);
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('comments');

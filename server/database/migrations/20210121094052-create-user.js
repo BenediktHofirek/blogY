@@ -1,9 +1,7 @@
 'use strict';
 
-const { autoUpdateUpdatedAt } = require("../utils/utils");
-
 module.exports = {
-  up: (queryInterface, Sequelize) => {
+  up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('users', {
       id: {
         allowNull: false,
@@ -52,7 +50,22 @@ module.exports = {
       }
     });
     
-    await autoUpdateUpdatedAt(queryInterface, 'users');
+    await queryInterface.sequelize.query(`
+      CREATE OR REPLACE FUNCTION update_changetimestamp_column()
+      RETURNS TRIGGER AS $$
+      BEGIN
+        NEW.changetimestamp = now(); 
+        RETURN NEW;
+      END;
+      $$ language 'plpgsql'; 
+    `);
+
+    //here string interpolation is safe, no user input
+    await queryInterface.sequelize.query(`
+      CREATE TRIGGER update_users_changetimestamp BEFORE UPDATE
+      ON users FOR EACH ROW EXECUTE PROCEDURE 
+      update_changetimestamp_column();
+    `);
   },
   down: (queryInterface, Sequelize) => {
     return queryInterface.dropTable('users');
