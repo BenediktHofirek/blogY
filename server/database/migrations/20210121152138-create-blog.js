@@ -20,7 +20,18 @@ module.exports = {
         type: Sequelize.UUID
       },
       description: {
+        allowNull: false,
         type: Sequelize.TEXT,
+      },
+      is_published: {
+        allowNull: false,
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+      },
+      allow_comments: {
+        allowNull: false,
+        type: Sequelize.BOOLEAN,
+        defaultValue: true,
       },
       created_at: {
         allowNull: false,
@@ -33,6 +44,8 @@ module.exports = {
         type: Sequelize.DATE
       }
     });
+
+    await autoUpdateUpdatedAt(queryInterface, 'blogs');
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('blogs');

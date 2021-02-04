@@ -1,5 +1,8 @@
 <h1 class="title">{{ article?.name }}</h1>
 
-<!-- <p class="content">
-  {{article?.html}}
-</p> -->
+<!-- html is sanitized on the server -->
+<div 
+  *ngIf="article?.html" 
+  class="content" 
+  [innerHTML]="sanitizer.bypassSecurityTrustHtml(article?.html)"
+>

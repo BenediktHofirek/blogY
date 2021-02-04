@@ -1,8 +1,10 @@
 'use strict';
 
+const { autoUpdateUpdatedAt } = require("../utils/utils");
+
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('users', {
+    await queryInterface.createTable('users', {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -49,6 +51,8 @@ module.exports = {
         type: Sequelize.DATE
       }
     });
+    
+    await autoUpdateUpdatedAt(queryInterface, 'users');
   },
   down: (queryInterface, Sequelize) => {
     return queryInterface.dropTable('users');

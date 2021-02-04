@@ -8,7 +8,7 @@ module.exports = {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4
       },
-      element_id: {
+      article_id: {
         allowNull: false,
         type: Sequelize.UUID,
         unique: 'compositeView'
@@ -18,17 +18,14 @@ module.exports = {
         unique: 'compositeView',
         type: Sequelize.UUID,
       },
-      created_at: {
-        allowNull: false,
-        defaultValue: Sequelize.fn('NOW'),
-        type: Sequelize.DATE
-      },
       updated_at: {
         allowNull: false,
         defaultValue: Sequelize.fn('NOW'),
         type: Sequelize.DATE
       }
     });
+
+    await autoUpdateUpdatedAt(queryInterface, 'views');
   },
   down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable('views');

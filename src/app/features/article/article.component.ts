@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Apollo } from 'apollo-angular';
 import { Article } from '../../core/models/models';
@@ -16,6 +17,7 @@ export class ArticleComponent implements OnInit {
   articleName: any;
 
   constructor(private route: ActivatedRoute,
+              private sanitizer: DomSanitizer,
               private apollo: Apollo) { }
 
   ngOnInit(): void {
@@ -34,7 +36,8 @@ export class ArticleComponent implements OnInit {
       }
     }).subscribe(
       ({ data }: {data: any}) => {
-        this.article = data.article;     
+        this.article = data.article;  
+        console.log(this.article.html);   
       },
       (err) => console.log('error', err)
     );

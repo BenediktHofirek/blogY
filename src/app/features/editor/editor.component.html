@@ -12,9 +12,33 @@
   <div *ngIf="!isUserAllowed() else editor">
     Sorry, you are not allowed to edit this article
   </div>
-      
-    <ng-template #editor>
-      <app-quill-editor
+  <ng-template #editor>
+    <div class="header">
+      <div class="title">
+        <mat-form-field appearance="outline">
+          <mat-label>Title</mat-label>
+          <input
+            class="title__text"
+            #titleInput
+            matInput
+            [value]="article?.name"
+            (input)="isTitleChanged = true"
+          >
+        </mat-form-field>
+        <button
+          class="title__editButton"
+          mat-raised-button
+          [disabled]="!isTitleChanged"
+          color="primary"
+          (click)="handleTitleSave(titleInput.value)"
+        >
+          Save
+        </button>
+      </div>
+    </div>
+
+
+    <app-quill-editor
       [source]="article?.source"
       (save)="handleSave($event)"
     ></app-quill-editor>

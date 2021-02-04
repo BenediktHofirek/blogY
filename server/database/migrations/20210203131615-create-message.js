@@ -1,51 +1,44 @@
 'use strict';
-
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('articles', {
+    await queryInterface.createTable('messages', {
       id: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4
       },
-      name: {
+      sender_id: {
         allowNull: false,
-        unique: 'compositeArticle',
-        type: Sequelize.STRING
+        type: Sequelize.UUID,
       },
-      blog_id: {
+      receiver_id: {
         allowNull: false,
-        unique: 'compositeArticle',
-        type: Sequelize.UUID
+        type: Sequelize.UUID,
       },
-      html: {
+      text: {
         allowNull: false,
         type: Sequelize.TEXT,
       },
-      source: {
+      text: {
         allowNull: false,
-        type: Sequelize.JSON,
+        type: Sequelize.STRING,
       },
-      isPublished: {
-        type: Sequelize.BOOLEAN,
+      is_readed: {
+        allowNull: false,
         defaultValue: false,
+        type: Sequelize.BOOLEAN,
       },
       created_at: {
-        allowNull: false,
-        defaultValue: Sequelize.fn('NOW'),
-        type: Sequelize.DATE
-      },
-      updated_at: {
         allowNull: false,
         defaultValue: Sequelize.fn('NOW'),
         type: Sequelize.DATE
       }
     });
 
-    await autoUpdateUpdatedAt(queryInterface, 'articles');
+    await autoUpdateUpdatedAt(queryInterface, 'messages'); 
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('articles');
+    await queryInterface.dropTable('messages');
   }
 };

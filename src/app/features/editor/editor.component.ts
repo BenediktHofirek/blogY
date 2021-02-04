@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Apollo } from 'apollo-angular';
 import { Subscription } from 'rxjs';
@@ -20,9 +20,11 @@ export class EditorComponent implements OnInit {
   isLoading = true;
   userSubscription: Subscription;
   user: User | null;
+  isTitleChanged = false;
 
   constructor(private route: ActivatedRoute,
               private store: Store,
+              private router: Router,
               private apollo: Apollo) {
     this.userSubscription = this.store.select((state: any) => state.currentUser)
       .subscribe(user => {
@@ -57,6 +59,24 @@ export class EditorComponent implements OnInit {
       },
       (err) => console.log('error', err)
     );
+  }
+
+  handleTitleSave(newTitle: string) {
+    this.isTitleChanged = false;
+    this.apollo.mutate({
+      mutation: articleUpdateMutation,
+      variables: {
+        id: this.article.id,
+        name: newTitle,
+      }
+    }).subscribe(
+      (result: any) => {
+        console.log('name change success', result?.data?.articleUpdate);
+      },
+      (err) => console.log('error', err)
+    );
+
+    this.router.navigate(['/user',this.userUsername, 'blog', this.blogName, 'article', newTitle, 'edit']);
   }
 
   handleSave(source: any) {
