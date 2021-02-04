@@ -4,12 +4,14 @@ const { QueryTypes } = require('sequelize');
 function commentUpdateMutation({
   id,
   text,
+  userId
 }) {
   return sequelize.query(`
     UPDATE comments
     SET
       text = $text
     WHERE id = $id
+    AND user_id = $userId
     RETURNING 
       id,
       parent_id as "parentId",
@@ -21,7 +23,8 @@ function commentUpdateMutation({
   `, {
     bind: {
       id,
-      text
+      text,
+      userId
     },
     type: QueryTypes.UPDATE
   });
@@ -53,14 +56,19 @@ function commentCreateMutation({
   });
 }
 
-function commentDeleteMutation(commentId) {
+function commentDeleteMutation({
+  commentId,
+  userId
+}) {
   return sequelize.query(`
       DELETE FROM comments
       WHERE id = $commentId
+      AND user_id = $userId
       RETURNING *
   `, {
     bind: {
       commentId,
+      userId
     },
     type: QueryTypes.DELETE,
   });

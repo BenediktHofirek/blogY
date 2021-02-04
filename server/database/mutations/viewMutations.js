@@ -2,13 +2,15 @@ const { sequelize } = require('../models/index.js');
 const { QueryTypes } = require('sequelize');
 
 function viewUpdateMutation({
-  id
+  id,
+  userId
 }) {
   return sequelize.query(`
     UPDATE views
     SET
       updated_at = CURRENT_TIMESTAMP()
     WHERE id = $id
+    AND user_id = $userId
     RETURNING 
       id,
       article_id as "articleId",
@@ -16,7 +18,8 @@ function viewUpdateMutation({
       TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
   `, {
     bind: {
-      id
+      id,
+      userId
     },
     type: QueryTypes.UPDATE
   });
@@ -24,15 +27,13 @@ function viewUpdateMutation({
 
 function viewCreateMutation({
   articleId,
-  userId,
-  view
+  userId
 }) {
   return sequelize.query(`
-  INSERT INTO views (article_id, user_id, view)
+  INSERT INTO views (article_id, user_id)
   VALUES (
     $articleId,
     $userId,
-    $view,
   )
   RETURNING *
   `, {
@@ -45,22 +46,7 @@ function viewCreateMutation({
   });
 }
 
-function viewDeleteMutation(viewId) {
-  return sequelize.query(`
-      DELETE FROM views
-      WHERE id = $viewId
-      RETURNING *
-  `, {
-    bind: {
-      viewId,
-    },
-    type: QueryTypes.DELETE,
-  });
-}
-
-
 module.exports = {
   viewCreateMutation,
-  viewDeleteMutation,
   viewUpdateMutation,
 }

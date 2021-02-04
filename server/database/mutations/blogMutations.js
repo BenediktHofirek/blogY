@@ -3,64 +3,68 @@ const { QueryTypes } = require('sequelize');
 
 function blogUpdateMutation({
   id,
+  authorId,
   name = null,
-  source = null,
-  html = null
+  description = null
 }) {
   return sequelize.query(`
     UPDATE blogs
     SET
       name = COALESCE($name, name),
-      source = COALESCE($source, source),
-      html = COALESCE($html, html)
+      description = COALESCE($description, description)
     WHERE id = $id
+    AND author_id = $authorId
     RETURNING 
       id,
       blog_id as "blogId",
       name,
-      source, 
-      html,
+      description,
       TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
       TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
   `, {
     bind: {
       id,
+      authorId,
       name,
-      source,
-      html
+      description
     },
     type: QueryTypes.UPDATE
   });
 }
 
 function blogCreateMutation({
-  blogId,
+  authorId,
   name
 }) {
   return sequelize.query(`
-  INSERT INTO blogs (name, blog_id)
+  INSERT INTO blogs (name, author_id)
   VALUES (
     $name,
-    $blogId
+    $authorId
   )
   RETURNING *
   `, {
     bind: {
-      blogId,
+      authorId,
       name
     },
     type: QueryTypes.INSERT
   });
 }
 
-function blogDeleteMutation(blogId) {
+function blogDeleteMutation({
+  blogId,
+  authorId,
+}) {
   return sequelize.query(`
       DELETE FROM blogs
       WHERE id = $blogId
+      AND author_id = $authorId
       RETURNING *
   `, {
     bind: {
       blogId,
+      authorId
     },
     type: QueryTypes.DELETE,
   });

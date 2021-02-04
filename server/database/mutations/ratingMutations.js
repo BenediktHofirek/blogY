@@ -3,6 +3,7 @@ const { QueryTypes } = require('sequelize');
 
 function ratingUpdateMutation({
   id,
+  userId,
   rating
 }) {
   return sequelize.query(`
@@ -10,6 +11,7 @@ function ratingUpdateMutation({
     SET
       rating = $rating
     WHERE id = $id
+    AND user_id = $userId
     RETURNING 
       id,
       article_id as "articleId",
@@ -19,6 +21,7 @@ function ratingUpdateMutation({
   `, {
     bind: {
       id,
+      userId,
       rating
     },
     type: QueryTypes.UPDATE
@@ -48,14 +51,22 @@ function ratingCreateMutation({
   });
 }
 
-function ratingDeleteMutation(ratingId) {
+function ratingDeleteMutation({
+  ratingId,
+  articleId,
+  userId
+}) {
   return sequelize.query(`
       DELETE FROM ratings
       WHERE id = $ratingId
+      AND article_id = $articleId
+      AND user_id = $userId
       RETURNING *
   `, {
     bind: {
       ratingId,
+      articleId,
+      userId
     },
     type: QueryTypes.DELETE,
   });

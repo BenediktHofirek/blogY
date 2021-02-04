@@ -3,6 +3,7 @@ const { QueryTypes } = require('sequelize');
 
 function articleUpdateMutation({
   id,
+  authorId,
   name = null,
   source = null,
   html = null
@@ -14,6 +15,11 @@ function articleUpdateMutation({
       source = COALESCE($source, source),
       html = COALESCE($html, html)
     WHERE id = $id
+    AND blog_id IN (
+      SELECT id
+      FROM blogs
+      WHERE author_id = $authorId
+    )
     RETURNING 
       id,
       blog_id as "blogId",
@@ -25,6 +31,7 @@ function articleUpdateMutation({
   `, {
     bind: {
       id,
+      authorId,
       name,
       source,
       html
@@ -53,14 +60,20 @@ function articleCreateMutation({
   });
 }
 
-function articleDeleteMutation(articleId) {
+function articleDeleteMutation({articleId, authorId}) {
   return sequelize.query(`
       DELETE FROM articles
       WHERE id = $articleId
+      AND blog_id IN (
+        SELECT id
+        FROM blogs
+        WHERE author_id = $authorId
+      )
       RETURNING *
   `, {
     bind: {
       articleId,
+      authorId
     },
     type: QueryTypes.DELETE,
   });

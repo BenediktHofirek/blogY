@@ -1,5 +1,5 @@
 const graphql = require('graphql');
-const { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull } = graphql;
+const { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLBoolean } = graphql;
 const { GraphQLJSON, GraphQLJSONObject } = require('graphql-type-json');
 const QuillDeltaToHtmlConverter = require('quill-delta-to-html').QuillDeltaToHtmlConverter;
 const sanitizeHtml = require('sanitize-html');
@@ -12,6 +12,10 @@ const {
 	BlogListType,
 	UserListType,
 } = require('./types');
+
+const {
+  getUserQuery,
+} = require('../database/queries/queries');
 
 const {
   createUserMutation,
@@ -27,14 +31,10 @@ const {
   blogDeleteMutation,
   blogUpdateMutation,
   messageCreateMutation,
-  markMessageAsDeletedMutation,
-  markMessageAsArchivedMutation,
-  markMessageAsReadedMutation,
-  restoreMessageMutation,
+  messageUpdateMutation,
   ratingDeleteMutation,
   ratingUpdateMutation,
   ratingCreateMutation,
-  viewDeleteMutation,
   viewUpdateMutation,
   viewCreateMutation,
 } = require('../database/mutations/mutations');
@@ -87,7 +87,6 @@ export const Mutation = new GraphQLObjectType({
     updateUser: {
 			type: UserType,
 			args: {
-        id: { type: GraphQLString },
         username: { type: GraphQLString },
         password: { type: GraphQLString },
         email: { type: GraphQLString },
@@ -98,35 +97,64 @@ export const Mutation = new GraphQLObjectType({
         if (!context.user) {
           return errorMap.UNAUTHORIZED;
         }
-        const providedId = context.user.permissionList.includes['admin'] ?
-          args.id || context.user.id :
-          context.user.id;
-        const passwordHash = generatePasswordHash(password);
 
-				return updateUserMutation({
-          id: providedId,
+        const payload = {
+          id: context.user.id,
           username: args.username,
-          password: passwordHash,
           email: args.email,
           description: args.description,
           photoUrl: args.photoUrl
-        });
+        };
+
+        if (args.password) {
+          payload.password = generatePasswordHash(args.password);
+        }
+
+				return updateUserMutation(payload);
 			}
 		},
     deleteUser: {
 			type: UserType,
 			args: {
-        id: { type: new GraphQLNonNull(GraphQLID) },
+        password: { type: new GraphQLNonNull(GraphQLString) },
+			},
+			resolve(parent, {password}, {user}) {
+        return new Promise(async(resolve, reject) => {
+          getUserQuery({userId: user.id})
+            .then((user) => {
+              if (!user) {
+                reject(errorMap.USER_NOT_FOUND);
+              }else if (validatePassword(password, user.password)) {
+                const deletedUser = await deleteUserMutation(user.id);
+                resolve(deletedUser);
+              } else {
+                reject(errorMap.WRONG_PASSWORD);
+              }
+            }).catch((err) => { reject(errorMap.USER_NOT_FOUND); });
+        });
+			}
+    },
+    articleCreate: {
+			type: ArticleType,
+			args: {
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        blogId: { type: new GraphQLNonNull(GraphQLID) },
 			},
 			resolve(parent, args, context) {
-        if (!context.user) {
-          throw new Error(errorMap.UNAUTHORIZED);  
-        }
-        const providedId = content.user.permissionList.includes['admin'] ?
-          args.id || context.user.id :
-          context.user.id;
-
-        return deleteUserMutation(providedId);
+        return articleCreateMutation(args);
+			}
+    },
+    articleDelete: {
+			type: ArticleType,
+			args: {
+        id: { type: new GraphQLNonNull(GraphQLID) },
+        blogId: { type: new GraphQLNonNull(GraphQLID) },
+			},
+			resolve(parent, args, context) {
+        return articleDeleteMutation({
+          articleId: args.id,
+          authorId: context.user.id
+        });
 			}
     },
     articleUpdate: {
@@ -147,7 +175,8 @@ export const Mutation = new GraphQLObjectType({
 
         const payload = {
           id,
-          name
+          name,
+          authorId: context.user.id,
         };
 
         if (source) {
@@ -177,5 +206,170 @@ export const Mutation = new GraphQLObjectType({
         return articleUpdateMutation(payload);
 			}
     },
-	}
+    commentCreate: {
+			type: commentType,
+			args: {
+        text: { type: new GraphQLNonNull(GraphQLString) },
+        articleId: { type: new GraphQLNonNull(GraphQLID) },
+        userId: { type: new GraphQLNonNull(GraphQLID) },
+        parentId: { type: GraphQLID },
+			},
+			resolve(parent, args, context) {
+        return commentCreateMutation(args);
+			}
+    },
+    commentUpdate: {
+			type: commentType,
+			args: {
+        id: { type: new GraphQLNonNull(GraphQLID) },              
+        text: { type: new GraphQLNonNull(GraphQLString) },
+			},
+			resolve(parent, args, context) {
+        return commentUpdateMutation({
+          ...args,
+          userId: context.user.id
+        });
+			}
+    },
+    commentDelete: {
+			type: commentType,
+			args: {
+        id: { type: new GraphQLNonNull(GraphQLID) },
+			},
+			resolve(parent, args, context) {
+        return commentDeleteMutation({
+          commentId: args.id,
+          userId: context.user.id
+        });
+			}
+    },
+  },
+  blogCreate: {
+    type: blogType,
+    args: {
+      name: { type: new GraphQLNonNull(GraphQLString) }
+    },
+    resolve(parent, {name}, context) {
+      return blogCreateMutation({
+        name,
+        authorId: context.user.id
+      });
+    }
+  },
+  blogUpdate: {
+    type: blogType,
+    args: {
+      id: { type: new GraphQLNonNull(GraphQLID) },              
+      name: { type: GraphQLString },
+      description: { type: GraphQLString },
+    },
+    resolve(parent, args, context) {
+      return blogUpdateMutation({
+        ...args,
+        authorId: context.user.id
+      });
+    }
+  },
+  blogDelete: {
+    type: blogType,
+    args: {
+      id: { type: new GraphQLNonNull(GraphQLID) },
+    },
+    resolve(parent, args, context) {
+      return blogDeleteMutation({
+        blogId: args.id,
+        authorId: context.user.id
+      });
+    }
+  },
+  messageCreate: {
+    type: messageType,
+    args: {
+      receiverId: { type: new GraphQLNonNull(GraphQLID) },  
+      text: { type: new GraphQLNonNull(GraphQLString) }
+    },
+    resolve(parent, args, context) {
+      return messageCreateMutation({
+        ...args,
+        senderId: context.user.id
+      });
+    }
+  },
+  messageUpdate: {
+    type: messageType,
+    args: {
+      id: { type: new GraphQLNonNull(GraphQLID) },              
+      isReaded: { type: GraphQLBoolean },
+      isArchived: { type: GraphQLBoolean },
+      isDeleted: { type: GraphQLBoolean },
+    },
+    resolve(parent, args, context) {
+      return messageUpdateMutation({
+        ...args,
+        receiverId: context.user.id
+      });
+    }
+  },
+  ratingCreate: {
+    type: ratingType,
+    args: {
+      rating: { type: new GraphQLNonNull(GraphQLInt) },
+      articleId: { type: new GraphQLNonNull(GraphQLID) }
+    },
+    resolve(parent, args, context) {
+      return ratingCreateMutation({
+        ...args,
+        userId: context.user.id
+      });
+    }
+  },
+  ratingUpdate: {
+    type: ratingType,
+    args: {
+      id: { type: new GraphQLNonNull(GraphQLID) },    
+      rating: { type: new GraphQLNonNull(GraphQLInt) },
+    },
+    resolve(parent, args, context) {
+      return ratingUpdateMutation({
+        ...args,
+        userId: context.user.id
+      });
+    }
+  },
+  ratingDelete: {
+    type: ratingType,
+    args: {
+      id: { type: new GraphQLNonNull(GraphQLID) },
+    },
+    resolve(parent, args, context) {
+      return ratingDeleteMutation({
+        id: args.id,
+        userId: context.user.id
+      });
+    }
+  },
+  viewCreate: {
+    type: viewType,
+    args: {
+      articleId: { type: new GraphQLNonNull(GraphQLID) }
+    },
+    resolve(parent, {articleId}, context) {
+      return viewCreateMutation({
+        articleId,
+        userId: context.user.id
+      });
+    }
+  },
+  viewUpdate: {
+    type: viewType,
+    args: {
+      articleId: { type: new GraphQLNonNull(GraphQLID) }
+    },
+    resolve(parent, args, context) {
+      return viewUpdateMutation({
+        ...args,
+        userId: context.user.id
+      });
+    }
+  }
 });
