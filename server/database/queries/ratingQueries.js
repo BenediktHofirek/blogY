@@ -15,6 +15,28 @@ function getRatingAverageByArticleId(articleId) {
   });
 }
 
+function getRatingAverageByBlogId(blogId) {
+  return sequelize.query(`
+    SELECT
+      AVG(articleRating) as "ratingAverage"
+    FROM (
+      SELECT
+        AVG(rating) as "articleRating"
+        FROM ratings
+        WHERE article_id IN (
+          SELECT id
+          FROM articles
+          WHERE blog_id = $blogId
+        )
+      )
+  `, {
+    bind: {
+      blogId,
+    },
+    type: QueryTypes.SELECT
+  });
+}
+
 function getRating({articleId, userId}) {
   return sequelize.query(`
     SELECT
@@ -33,5 +55,6 @@ function getRating({articleId, userId}) {
 
 module.exports = {
   getRatingAverageByArticleId,
+  getRatingAverageByBlogId,
   getRating
 }

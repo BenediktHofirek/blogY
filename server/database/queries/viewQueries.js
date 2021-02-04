@@ -15,6 +15,26 @@ function getViewCountByArticleId(articleId) {
   });
 }
 
+function getViewAverageByBlogId(blogId) {
+  return sequelize.query(`
+    SELECT
+      AVG(id) as "viewAverage"
+    FROM views as v
+    RIGHT JOIN (
+      SELECT id
+      FROM articles
+      WHERE blog_id = $blogId
+    ) as a
+    ON v.article_id = a.id
+  `, {
+    bind: {
+      blogId,
+    },
+    type: QueryTypes.SELECT
+  });
+}
+
 module.exports = {
   getViewCountByArticleId,
+  getViewAverageByBlogId,
 }

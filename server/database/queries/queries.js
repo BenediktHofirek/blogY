@@ -23,8 +23,10 @@ module.exports = {
   getBlogListByAuthorIdQuery: extractQueryResult(blogQueries.getBlogListByAuthorIdQuery, true),
   getCommentListByArticleId: extractQueryResult(commentQueries.getCommentListByArticleId, true),
   getViewCountByArticleId: extractQueryResult(viewQueries.getViewCountByArticleId, true),
+  getViewAverageByBlogId: extractQueryResult(viewQueries.getViewAverageByBlogId, true),
   getRatingAverageByArticleId: extractQueryResult(ratingQueries.getRatingAverageByArticleId, true),
   getRating: extractQueryResult(ratingQueries.getRating, true),
+  getRatingAverageByBlogId: extractQueryResult(ratingQueries.getRatingAverageByBlogId, true),
   getMessageSendedListByUserId: extractQueryResult(messageQueries.getMessageSendedListByUserId, true),
   getMessageReceivedListByUserId: extractQueryResult(messageQueries.getMessageReceivedListByUserId, true),
 }

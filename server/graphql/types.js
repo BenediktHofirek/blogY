@@ -1,5 +1,5 @@
 const graphql = require('graphql');
-const { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull } = graphql;
+const { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLBoolean } = graphql;
 const { GraphQLJSON, GraphQLJSONObject } = require('graphql-type-json');
 
 const {
@@ -7,23 +7,47 @@ const {
   getUserQuery,
   getBlogByIdQuery,
   getUserByBlogIdQuery,
-  getUserListQuery,
-  getBlogQuery,
-  getArticleQuery,
-  getArticleListQuery,
   getArticleListByBlogIdQuery,
   getArticleListByAuthorIdQuery,
   getBlogListQuery,
   getBlogListByAuthorIdQuery,
   getCommentListByArticleId,
-  getViewCountByArticleId,
+	getViewCountByArticleId,
+	getViewAverageByBlogId,
   getRatingAverageByArticleId,
+  getRatingAverageByBlogId,
   getRating,
-  getMessageSendedListByUserId,
-  getMessageReceivedListByUserId,
 } = require('../database/queries/queries.js');
 
-const UserType = new GraphQLObjectType({
+export const CommentType = new GraphQLObjectType({
+	name: 'Comment',
+	fields: () => ({
+		id: { type: GraphQLID },
+		parentId: { type: GraphQLID },
+		userId: { type: GraphQLID },
+		articleId: { type: GraphQLID },
+		text: { type: GraphQLString },
+		createdAt: { type: GraphQLString },
+		updatedAt: { type: GraphQLString },
+	})
+});
+
+export const MessageType = new GraphQLObjectType({
+	name: 'Message',
+	fields: () => ({
+		id: { type: GraphQLID },
+		senderId: { type: GraphQLID },
+		receiverId: { type: GraphQLID },
+		text: { type: GraphQLString },
+		isReaded: { type: GraphQLBoolean },
+		isArchived: { type: GraphQLBoolean },
+		isDeleted: { type: GraphQLBoolean },
+		createdAt: { type: GraphQLString },
+		updatedAt: { type: GraphQLString },
+	})
+});
+
+export const UserType = new GraphQLObjectType({
 	name: 'User',
 	fields: () => ({
 		id: { type: GraphQLID },
@@ -58,6 +82,18 @@ export const BlogType = new GraphQLObjectType({
 		authorId: { type: GraphQLID },
 		createdAt: { type: GraphQLString },
 		updatedAt: { type: GraphQLString },
+		averageRating: {
+			type: GraphQLInt,
+			resolve(parent) {
+				return getRatingAverageByBlogId(parent.id);
+			}
+		},
+		averageViews: {
+			type: GraphQLInt,
+			resolve(parent) {
+				return getViewAverageByBlogId(parent.id);
+			}
+		},
 		articleList: {
 			type: new GraphQLList(ArticleType),
 			resolve(parent) {
@@ -91,7 +127,25 @@ export const ArticleType = new GraphQLObjectType({
 		source: { type: GraphQLJSON },
 		html: { type: GraphQLString },
 		createdAt: { type: GraphQLString },
-    updatedAt: { type: GraphQLString },
+		updatedAt: { type: GraphQLString },
+		commentList: {
+			type: new GraphQLList(CommentType),
+			resolve(parent) {
+				return getCommentListByArticleId(parent.id);
+			}
+		},
+		averageRating: {
+			type: GraphQLInt,
+			resolve(parent) {
+				return getRatingAverageByArticleId(parent.id);
+			}
+		},
+		viewCount: {
+			type: GraphQLInt,
+			resolve(parent) {
+				return getViewCountByArticleId(parent.id);
+			}
+		},
     author: {
 			type: UserType,
 			resolve(parent) {

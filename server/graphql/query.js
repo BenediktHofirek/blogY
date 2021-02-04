@@ -9,6 +9,7 @@ const {
 	ArticleListType,
 	BlogListType,
 	UserListType,
+  MessageType,
 } = require('./types');
 
 const {
@@ -43,6 +44,20 @@ const { errorMap } = require('./errors.js');
 export const Query = new GraphQLObjectType({
 	name: 'QueryType',
 	fields: {
+    messageList: {
+      type: new GraphQLList(MessageType),
+			resolve: async function (parent, args) {
+        const [messageSendedList, messageReceivedList] = Promise.all([
+          getMessageSendedListByUserId(args.user.id),          
+          getMessageReceivedListByUserId(args.user.id),          
+        ]);
+
+        return {
+          messageSendedList,
+          messageReceivedList
+        }
+			}
+		},
     articleList: {
       type: ArticleListType,
       args: {
