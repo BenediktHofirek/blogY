@@ -21,6 +21,9 @@ c.define('blog', function(author_id) {
   return {
     id: c.uuid,
     name: c.populate_one_of(["{{first_name}}", "{{last_name}}", "{{word}}"]),
+    description: c.sentences(4,10),
+    is_published: true,
+    allow_comments: Math.random() > 0.9 ? false : true,
     author_id,
   };
 });
@@ -36,18 +39,42 @@ c.define('article', function(blog_id) {
   };
 });
 
-c.define('view', function(element_id, user_id) {
+c.define('comment', function(parent_id, user_id, article_id) {
   return {
     id: c.uuid,
-    element_id,
+    article_id,
+    user_id,
+    parent_id,
+    text: c.sentences(1,5),
+  };
+});
+
+c.define('message', function(sender_id, receiver_id) {
+  const isDeleted = Math.random() > 0.8 ? true : false;
+  return {
+    id: c.uuid,
+    receiver_id,
+    sender_id,
+    subject: c.words(2),
+    text: c.sentences(2,8),
+    is_readed: Math.random() > 0.5 ? true : false,
+    is_deleted: isDeleted,
+    is_archived: !isDeleted && Math.random() > 0.8 ? true : false,
+  };
+});
+
+c.define('view', function(article_id, user_id) {
+  return {
+    id: c.uuid,
+    article_id,
     user_id,
   };
 });
 
-c.define('rating', function(element_id, user_id) {
+c.define('rating', function(article_id, user_id) {
   return {
     id: c.uuid,
-    element_id,
+    article_id,
     user_id,
     rating: c.random_element([0,0.5,1,1.5,2,2.5,3,3.5,4,4.5,5])
   };
@@ -92,12 +119,49 @@ const ratingList = userIdList.map((userId) =>
 )
 .flat(Infinity);
 
+const commentList = articleList.filter(a => a.allow_comments).map(a => {
+  const isParent = Math.random() > 0.8;
+  const blog = blogList.find(b => b.id === a.blog_id);
+  const user = userList.find(u => u.id === blog.author_id);
+  
+  const resultList = [
+    c.comment(null, user.id, a.id),
+  ];
+
+  if (isParent) {
+    resultList.push(c.comment(resultList[0].id, user.id, a.id));
+  }
+
+  return resultList;
+}).flat(Infinity);
+
+const messageList = userIdList.map(u => {
+  const messageList = [];
+
+  function getReceiverId() {
+    let rId = userIdList[Math.floor(Math.random() * userIdList.length)];
+    if (rId === u.id) {
+      return getReceiverId();
+    }
+
+    return rId;
+  }
+
+  for (let x = Math.ceil(Math.random() * 10); x > 0; x--) {
+    messageList.push(c.message(u.id, getReceiverId()));
+  }
+
+  return messageList;
+}).flat(Infinity);
+
 const seedMap = {
   users: userList,
   blogs: blogList,
   articles: articleList,
   views: viewList,
   ratings: ratingList,
+  comments: commentList,
+  messages: messageList,
 };
 
 function createString(objectList) {
