@@ -1,5 +1,5 @@
 const graphql = require('graphql');
-const { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLBoolean } = graphql;
+const { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLID, GraphQLInt, GraphQLList, GraphQLNonNull, GraphQLBoolean, GraphQLFloat } = graphql;
 const { GraphQLJSON, GraphQLJSONObject } = require('graphql-type-json');
 
 const {
@@ -20,7 +20,7 @@ const {
   getRating,
 } = require('../database/queries/queries.js');
 
-export const CommentType = new GraphQLObjectType({
+const CommentType = new GraphQLObjectType({
 	name: 'Comment',
 	fields: () => ({
 		id: { type: GraphQLID },
@@ -33,7 +33,7 @@ export const CommentType = new GraphQLObjectType({
 	})
 });
 
-export const MessageType = new GraphQLObjectType({
+const MessageType = new GraphQLObjectType({
 	name: 'Message',
 	fields: () => ({
 		id: { type: GraphQLID },
@@ -48,7 +48,7 @@ export const MessageType = new GraphQLObjectType({
 	})
 });
 
-export const UserType = new GraphQLObjectType({
+const UserType = new GraphQLObjectType({
 	name: 'User',
 	fields: () => ({
 		id: { type: GraphQLID },
@@ -75,7 +75,7 @@ export const UserType = new GraphQLObjectType({
 	})
 });
 
-export const BlogType = new GraphQLObjectType({
+const BlogType = new GraphQLObjectType({
 	name: 'Blog',
 	fields: () => ({
 		id: { type: GraphQLID },
@@ -110,7 +110,7 @@ export const BlogType = new GraphQLObjectType({
 	})
 });
 
-export const AuthType = new GraphQLObjectType({
+const AuthType = new GraphQLObjectType({
 	name: 'AuthType',
 	fields: () => ({
 		token: { type: GraphQLString },
@@ -119,7 +119,7 @@ export const AuthType = new GraphQLObjectType({
 	})
 });
 
-export const ArticleType = new GraphQLObjectType({
+const ArticleType = new GraphQLObjectType({
 	name: 'Article',
 	fields: () => ({
 		id: { type: GraphQLID },
@@ -135,8 +135,8 @@ export const ArticleType = new GraphQLObjectType({
 				return getCommentListByArticleId(parent.id);
 			}
 		},
-		averageRating: {
-			type: GraphQLInt,
+		ratingAverage: {
+			type: GraphQLFloat,
 			resolve(parent) {
 				return getRatingAverageByArticleId(parent.id);
 			}
@@ -154,15 +154,15 @@ export const ArticleType = new GraphQLObjectType({
 			type: GraphQLInt,
 			resolve(parent, args, context) {
 				return getRating({
-					articleId: parent.id,
-					userId: context.user.id,
-				});
+						articleId: parent.id,
+						userId: context.user.id,
+					});
 			}
 		},
 		viewCount: {
 			type: GraphQLInt,
 			resolve(parent) {
-				return getViewCountByArticleId(parent.id);
+				return getViewCountByArticleId(parent.id)
 			}
 		},
     author: {
@@ -180,7 +180,7 @@ export const ArticleType = new GraphQLObjectType({
 	})
 });
 
-export const ArticleListType = new GraphQLObjectType({
+const ArticleListType = new GraphQLObjectType({
 	name: 'ArticleList',
 	fields: () => ({
     articleList: { type: new GraphQLList(ArticleType) },
@@ -188,7 +188,7 @@ export const ArticleListType = new GraphQLObjectType({
 	})
 });
 
-export const BlogListType = new GraphQLObjectType({
+const BlogListType = new GraphQLObjectType({
 	name: 'BlogList',
 	fields: () => ({
     blogList: { type: new GraphQLList(BlogType) },
@@ -196,10 +196,22 @@ export const BlogListType = new GraphQLObjectType({
 	})
 });
 
-export const UserListType = new GraphQLObjectType({
+const UserListType = new GraphQLObjectType({
 	name: 'UserList',
 	fields: () => ({
     userList: { type: new GraphQLList(UserType) },
 		count: { type: GraphQLInt }
 	})
 });
+
+module.exports = {
+	UserListType,
+	BlogListType,
+	ArticleListType,
+	ArticleType,
+	AuthType,
+	BlogType,
+	CommentType,
+	MessageType,
+	UserType
+}

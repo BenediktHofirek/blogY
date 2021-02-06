@@ -2,16 +2,20 @@ const { sequelize } = require('../models/index.js');
 const { QueryTypes } = require('sequelize');
 
 function getViewCountByArticleId(articleId) {
-  return sequelize.query(`
-    SELECT
-      COUNT(*) as "count"
-    FROM views
-    WHERE article_id = $articleId
-  `, {
-    bind: {
-      articleId,
-    },
-    type: QueryTypes.SELECT
+  return new Promise((resolve, reject) => {
+    sequelize.query(`
+      SELECT
+        COUNT(*) as "viewCount"
+      FROM views
+      WHERE article_id = $articleId
+    `, {
+      bind: {
+        articleId,
+      },
+      type: QueryTypes.SELECT
+    }).then((result) => {
+      resolve((result && result[0].viewCount) || null);
+    }).catch((err) => reject(err))
   });
 }
 

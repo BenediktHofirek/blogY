@@ -47,6 +47,7 @@ export const blogQuery = gql`
         firstName
         lastName
         username
+        birthdate
         photoUrl
       }
     }

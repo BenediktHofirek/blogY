@@ -10,6 +10,7 @@ function getUserByCredentialsQuery(usernameOrEmail) {
         email,
         photo_url as "photoUrl",
         username,
+        birthdate,
         password,
         TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
         TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
@@ -39,6 +40,7 @@ function getUserQuery({
         email,
         photo_url as "photoUrl",
         username,
+        birthdate,
         TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
         TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
       FROM users
@@ -64,6 +66,7 @@ function getUserByBlogIdQuery(blogId) {
       email,
       photo_url as "photoUrl",
       username,
+      birthdate,
       TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
       TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
     FROM users
@@ -96,6 +99,7 @@ function getUserListQuery({
         'firstName', first_name,
         'lastName', last_name,
         'username', username,
+        'birthdate', birthdate,
         'createdAt', TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS'),
         'updatedAt', TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS')
       )))[$offset : $limit] as "userList",

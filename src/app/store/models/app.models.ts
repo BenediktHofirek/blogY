@@ -13,6 +13,7 @@ export interface User {
   blogIdList: string[],
   imageUrl: string,
   description: string,
+  birthdate: string,
   isLoading?: boolean,
 }
 

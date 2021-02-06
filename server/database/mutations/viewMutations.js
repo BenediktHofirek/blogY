@@ -12,9 +12,6 @@ function viewUpdateMutation({
     WHERE id = $id
     AND user_id = $userId
     RETURNING 
-      id,
-      article_id as "articleId",
-      user_id as "userId",
       TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
   `, {
     bind: {
@@ -35,7 +32,7 @@ function viewCreateMutation({
     $articleId,
     $userId,
   )
-  RETURNING *
+  RETURNING TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
   `, {
     bind: {
       articleId,

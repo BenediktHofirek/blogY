@@ -1,4 +1,4 @@
-export default function extractQueryResult(query, isList = false) {
+module.exports = function extractQueryResult(query, isList = false) {
   return (...args) => new Promise((resolve, reject) => {
     query(...args)
       .then((queryResult) => {

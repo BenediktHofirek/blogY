@@ -25,6 +25,7 @@ function updateUserMutation(alteredUserMap) {
       username = COALESCE($username, username),
       password = COALESCE($password, password),
       email = COALESCE($email, email),
+      birthdate = COALESCE($birthdate, birthdate),
       description = COALESCE($description, description),
       photo_url = COALESCE($photoUrl, photo_url)
     WHERE id = $id

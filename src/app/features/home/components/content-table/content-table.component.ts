@@ -73,9 +73,9 @@ export class ContentTableComponent implements OnInit, OnDestroy {
     "all",
   ];
   displayedColumnsMap = {
-    articles: ['name', 'authorUsername', 'blogName', 'published'],// 'views', 'rating'],
-    users: ['username','firstName','lastName', 'registered'],// 'averageViews', 'rating'],
-    blogs: ['name', 'authorUsername', 'created'],// 'averageViews', 'rating'],
+    articles: ['name', 'authorUsername', 'blogName', 'published', 'views', 'rating'],
+    users: ['username','firstName','lastName', 'registered', 'views', 'rating'],
+    blogs: ['name', 'authorUsername', 'created', 'views', 'rating'],
   };
 
   itemsPerPageOptionList = [10,20,50,100];
@@ -239,6 +239,7 @@ export class ContentTableComponent implements OnInit, OnDestroy {
   handleFetchResult({ data }: {data: any}) {
     const resultName = this.getQueryResultName(this.state.display);
     const queryResult = data[resultName];
+    console.log(queryResult);
     this.dataSource = queryResult[resultName];
     this.isLoading = false;
     this.store.dispatch(stateSuccess({ collectionSize: queryResult.count }));

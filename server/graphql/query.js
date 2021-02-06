@@ -5,7 +5,8 @@ const { GraphQLJSON, GraphQLJSONObject } = require('graphql-type-json');
 const {
 	UserType,
 	BlogType,
-	ArticleType,
+  ArticleType,
+  AuthType,
 	ArticleListType,
 	BlogListType,
 	UserListType,
@@ -41,8 +42,8 @@ const {
 
 const { errorMap } = require('./errors.js');
 
-export const Query = new GraphQLObjectType({
-	name: 'QueryType',
+module.exports = new GraphQLObjectType({
+	name: 'RootQuery',
 	fields: {
     messageList: {
       type: new GraphQLList(MessageType),

@@ -79,6 +79,23 @@
         <th mat-header-cell *matHeaderCellDef> Published </th>
         <td mat-cell *matCellDef="let row"> {{formatDate(row.createdAt)}} </td>
       </ng-container>
+
+      <ng-container matColumnDef="views">
+        <th mat-header-cell *matHeaderCellDef> Views </th>
+        <td mat-cell *matCellDef="let row"> {{row.viewCount}} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="rating">
+        <th mat-header-cell *matHeaderCellDef> Rating </th>
+        <td mat-cell *matCellDef="let row">
+          <bar-rating 
+            [(rate)]="row.ratingAverage" 
+            [max]="5"
+            [showText]="true"
+            [readOnly]="true"
+          ></bar-rating>
+        </td>
+      </ng-container>
     </ng-container>
 
     <ng-container *ngIf="state.display === 'users'">

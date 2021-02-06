@@ -32,6 +32,8 @@ const articleListQuery = gql`
           id
           name
         }
+        viewCount
+        ratingAverage
       }
     }
   }

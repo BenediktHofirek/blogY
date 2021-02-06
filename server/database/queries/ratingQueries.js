@@ -2,23 +2,27 @@ const { sequelize } = require('../models/index.js');
 const { QueryTypes } = require('sequelize');
 
 function getRatingAverageByArticleId(articleId) {
-  return sequelize.query(`
-    SELECT
-      AVG(rating) as "ratingAverage"
-    FROM ratings
-    WHERE article_id = $articleId
-  `, {
-    bind: {
-      articleId,
-    },
-    type: QueryTypes.SELECT
+  return new Promise((resolve, reject) => {
+    sequelize.query(`
+      SELECT
+        ROUND(CAST(AVG(rating) AS numeric), 1) as "ratingAverage"
+      FROM ratings
+      WHERE article_id = $articleId
+    `, {
+      bind: {
+        articleId,
+      },
+      type: QueryTypes.SELECT
+    }).then((result) => {
+      resolve((result && result[0].ratingAverage) || null);
+    }).catch((err) => reject(err))
   });
 }
 
 function getRatingAverageByBlogId(blogId) {
   return sequelize.query(`
     SELECT
-      AVG(articleRating) as "ratingAverage"
+      ROUND(CAST(AVG(rating) AS numeric), 1) as "ratingAverage"
     FROM (
       SELECT
         AVG(rating) as "articleRating"

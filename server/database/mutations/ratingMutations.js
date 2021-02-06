@@ -2,7 +2,7 @@ const { sequelize } = require('../models/index.js');
 const { QueryTypes } = require('sequelize');
 
 function ratingUpdateMutation({
-  id,
+  articleId,
   userId,
   rating
 }) {
@@ -10,17 +10,13 @@ function ratingUpdateMutation({
     UPDATE ratings
     SET
       rating = $rating
-    WHERE id = $id
+    WHERE article_id = $articleId
     AND user_id = $userId
     RETURNING 
-      id,
-      article_id as "articleId",
-      user_id as "userId",
-      rating,
-      TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
+      rating
   `, {
     bind: {
-      id,
+      articleId,
       userId,
       rating
     },
@@ -62,19 +58,16 @@ function ratingCreateMutation({
 }
 
 function ratingDeleteMutation({
-  ratingId,
   articleId,
   userId
 }) {
   return sequelize.query(`
       DELETE FROM ratings
-      WHERE id = $ratingId
-      AND article_id = $articleId
+      WHERE article_id = $articleId
       AND user_id = $userId
-      RETURNING *
+      RETURNING rating
   `, {
     bind: {
-      ratingId,
       articleId,
       userId
     },

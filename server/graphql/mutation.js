@@ -5,9 +5,12 @@ const QuillDeltaToHtmlConverter = require('quill-delta-to-html').QuillDeltaToHtm
 const sanitizeHtml = require('sanitize-html');
 
 const {
-	UserType,
+  UserType,
+  CommentType,
+  MessageType,
 	BlogType,
-	ArticleType,
+  ArticleType,
+  AuthType,
 	ArticleListType,
 	BlogListType,
 	UserListType,
@@ -47,7 +50,7 @@ const {
 
 const { errorMap } = require('./errors.js');
 
-export const Mutation = new GraphQLObjectType({
+module.exports = new GraphQLObjectType({
 	name: 'Mutation',
 	fields: {
 		register: {
@@ -90,6 +93,7 @@ export const Mutation = new GraphQLObjectType({
         username: { type: GraphQLString },
         password: { type: GraphQLString },
         email: { type: GraphQLString },
+        birthdate: { type: GraphQLString },
         description: { type: GraphQLString },
         photoUrl: { type: GraphQLString },
 			},
@@ -102,6 +106,7 @@ export const Mutation = new GraphQLObjectType({
           id: context.user.id,
           username: args.username,
           email: args.email,
+          birthdate: args.birthdate,
           description: args.description,
           photoUrl: args.photoUrl
         };
@@ -119,9 +124,9 @@ export const Mutation = new GraphQLObjectType({
         password: { type: new GraphQLNonNull(GraphQLString) },
 			},
 			resolve(parent, {password}, {user}) {
-        return new Promise(async(resolve, reject) => {
+        return new Promise((resolve, reject) => {
           getUserQuery({userId: user.id})
-            .then((user) => {
+            .then(async(user) => {
               if (!user) {
                 reject(errorMap.USER_NOT_FOUND);
               }else if (validatePassword(password, user.password)) {
@@ -207,7 +212,7 @@ export const Mutation = new GraphQLObjectType({
 			}
     },
     commentCreate: {
-			type: commentType,
+			type: CommentType,
 			args: {
         text: { type: new GraphQLNonNull(GraphQLString) },
         articleId: { type: new GraphQLNonNull(GraphQLID) },
@@ -219,7 +224,7 @@ export const Mutation = new GraphQLObjectType({
 			}
     },
     commentUpdate: {
-			type: commentType,
+			type: CommentType,
 			args: {
         id: { type: new GraphQLNonNull(GraphQLID) },              
         text: { type: new GraphQLNonNull(GraphQLString) },
@@ -232,7 +237,7 @@ export const Mutation = new GraphQLObjectType({
 			}
     },
     commentDelete: {
-			type: commentType,
+			type: CommentType,
 			args: {
         id: { type: new GraphQLNonNull(GraphQLID) },
 			},
@@ -245,7 +250,7 @@ export const Mutation = new GraphQLObjectType({
     },
   },
   blogCreate: {
-    type: blogType,
+    type: BlogType,
     args: {
       name: { type: new GraphQLNonNull(GraphQLString) }
     },
@@ -257,7 +262,7 @@ export const Mutation = new GraphQLObjectType({
     }
   },
   blogUpdate: {
-    type: blogType,
+    type: BlogType,
     args: {
       id: { type: new GraphQLNonNull(GraphQLID) },              
       name: { type: GraphQLString },
@@ -271,7 +276,7 @@ export const Mutation = new GraphQLObjectType({
     }
   },
   blogDelete: {
-    type: blogType,
+    type: BlogType,
     args: {
       id: { type: new GraphQLNonNull(GraphQLID) },
     },
@@ -283,7 +288,7 @@ export const Mutation = new GraphQLObjectType({
     }
   },
   messageCreate: {
-    type: messageType,
+    type: MessageType,
     args: {
       receiverId: { type: new GraphQLNonNull(GraphQLID) },  
       text: { type: new GraphQLNonNull(GraphQLString) }
@@ -296,7 +301,7 @@ export const Mutation = new GraphQLObjectType({
     }
   },
   messageUpdate: {
-    type: messageType,
+    type: MessageType,
     args: {
       id: { type: new GraphQLNonNull(GraphQLID) },              
       isReaded: { type: GraphQLBoolean },
@@ -311,7 +316,7 @@ export const Mutation = new GraphQLObjectType({
     }
   },
   ratingCreate: {
-    type: ratingType,
+    type: GraphQLInt,
     args: {
       rating: { type: new GraphQLNonNull(GraphQLInt) },
       articleId: { type: new GraphQLNonNull(GraphQLID) }
@@ -324,9 +329,9 @@ export const Mutation = new GraphQLObjectType({
     }
   },
   ratingUpdate: {
-    type: ratingType,
+    type: GraphQLInt,
     args: {
-      id: { type: new GraphQLNonNull(GraphQLID) },    
+      articleId: { type: new GraphQLNonNull(GraphQLID) }, 
       rating: { type: new GraphQLNonNull(GraphQLInt) },
     },
     resolve(parent, args, context) {
@@ -337,19 +342,19 @@ export const Mutation = new GraphQLObjectType({
     }
   },
   ratingDelete: {
-    type: ratingType,
+    type: GraphQLInt,
     args: {
-      id: { type: new GraphQLNonNull(GraphQLID) },
+      articleId: { type: new GraphQLNonNull(GraphQLID) },
     },
     resolve(parent, args, context) {
       return ratingDeleteMutation({
-        id: args.id,
+        articleId: args.articleId,
         userId: context.user.id
       });
     }
   },
   viewCreate: {
-    type: viewType,
+    type: GraphQLString,
     args: {
       articleId: { type: new GraphQLNonNull(GraphQLID) }
     },
@@ -361,7 +366,7 @@ export const Mutation = new GraphQLObjectType({
     }
   },
   viewUpdate: {
-    type: viewType,
+    type: GraphQLString,
     args: {
       articleId: { type: new GraphQLNonNull(GraphQLID) }
     },

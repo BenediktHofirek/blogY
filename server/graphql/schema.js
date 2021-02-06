@@ -1,7 +1,8 @@
-var { Query } = require('./query');
-var { Mutation } = require('./mutation');
+var RootQuery = require('./query');
+var Mutation = require('./mutation');
+var { GraphQLSchema } = require('graphql');
 
 module.exports = new GraphQLSchema({
-	query: Query,
+	query: RootQuery,
 	mutation: Mutation
 });
