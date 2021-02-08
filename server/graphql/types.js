@@ -14,9 +14,11 @@ const {
   getCommentListByArticleId,
 	getViewCountByArticleId,
 	getViewCountByBlogId,
+	getViewCountByUserId,
 	getView,
   getRatingAverageByArticleId,
   getRatingAverageByBlogId,
+  getRatingAverageByUserId,
   getRating,
 } = require('../database/queries/queries.js');
 
@@ -60,6 +62,18 @@ const UserType = new GraphQLObjectType({
 		photoUrl: { type: GraphQLString },
 		createdAt: { type: GraphQLString },
 		updatedAt: { type: GraphQLString },
+		ratingAverage: {
+			type: GraphQLFloat,
+			resolve(parent) {
+				return getRatingAverageByUserId(parent.id);
+			}
+		},
+		viewCount: {
+			type: GraphQLInt,
+			resolve(parent) {
+				return getViewCountByUserId(parent.id);
+			}
+		},
 		blogList: {
 			type: new GraphQLList(BlogType),
 			resolve(parent) {

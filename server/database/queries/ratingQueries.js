@@ -41,6 +41,32 @@ function getRatingAverageByBlogId(blogId) {
   });
 }
 
+function getRatingAverageByUserId(userId) {
+  return new Promise((resolve, reject) => {
+    sequelize.query(`
+      SELECT
+        ROUND(CAST(AVG(rating) AS numeric), 1) as "ratingAverage"
+      FROM ratings
+      WHERE article_id IN (
+        SELECT id
+        FROM articles
+        WHERE blog_id IN (
+          SELECT id
+          FROM blogs
+          WHERE author_id = $userId
+        )
+      )
+    `, {
+      bind: {
+        userId,
+      },
+      type: QueryTypes.SELECT
+    }).then((result) => {
+      resolve((result && result[0].ratingAverage) || 0);
+    }).catch((err) => reject(err))
+  });
+}
+
 function getRating({articleId, userId}) {
   return sequelize.query(`
     SELECT
@@ -60,5 +86,6 @@ function getRating({articleId, userId}) {
 module.exports = {
   getRatingAverageByArticleId,
   getRatingAverageByBlogId,
+  getRatingAverageByUserId,
   getRating
 }
