@@ -13,7 +13,7 @@ const {
   getBlogListByAuthorIdQuery,
   getCommentListByArticleId,
 	getViewCountByArticleId,
-	getViewAverageByBlogId,
+	getViewCountByBlogId,
 	getView,
   getRatingAverageByArticleId,
   getRatingAverageByBlogId,
@@ -83,16 +83,16 @@ const BlogType = new GraphQLObjectType({
 		authorId: { type: GraphQLID },
 		createdAt: { type: GraphQLString },
 		updatedAt: { type: GraphQLString },
-		averageRating: {
-			type: GraphQLInt,
+		ratingAverage: {
+			type: GraphQLFloat,
 			resolve(parent) {
 				return getRatingAverageByBlogId(parent.id);
 			}
 		},
-		averageViews: {
+		viewCount: {
 			type: GraphQLInt,
 			resolve(parent) {
-				return getViewAverageByBlogId(parent.id);
+				return getViewCountByBlogId(parent.id);
 			}
 		},
 		articleList: {

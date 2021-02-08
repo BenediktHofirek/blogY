@@ -14,30 +14,30 @@ function getRatingAverageByArticleId(articleId) {
       },
       type: QueryTypes.SELECT
     }).then((result) => {
-      resolve((result && result[0].ratingAverage) || null);
+      resolve((result && result[0].ratingAverage) || 0);
     }).catch((err) => reject(err))
   });
 }
 
 function getRatingAverageByBlogId(blogId) {
-  return sequelize.query(`
-    SELECT
-      ROUND(CAST(AVG(rating) AS numeric), 1) as "ratingAverage"
-    FROM (
+  return new Promise((resolve, reject) => {
+    sequelize.query(`
       SELECT
-        AVG(rating) as "articleRating"
-        FROM ratings
-        WHERE article_id IN (
-          SELECT id
-          FROM articles
-          WHERE blog_id = $blogId
-        )
+        ROUND(CAST(AVG(rating) AS numeric), 1) as "ratingAverage"
+      FROM ratings
+      WHERE article_id IN (
+        SELECT id
+        FROM articles
+        WHERE blog_id = $blogId
       )
-  `, {
-    bind: {
-      blogId,
-    },
-    type: QueryTypes.SELECT
+    `, {
+      bind: {
+        blogId,
+      },
+      type: QueryTypes.SELECT
+    }).then((result) => {
+      resolve((result && result[0].ratingAverage) || 0);
+    }).catch((err) => reject(err))
   });
 }
 

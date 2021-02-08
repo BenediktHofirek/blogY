@@ -104,6 +104,10 @@ export class ContentTableComponent implements OnInit, OnDestroy {
     this.stateSubscription.unsubscribe();
   }
 
+  round(n: number) {
+    return Math.round(n);
+  }
+
   handleRowClick(row: any) {
     let url = '/';
     switch(row.__typename) {

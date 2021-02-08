@@ -63,6 +63,8 @@ const blogListQuery = gql`
         authorId
         createdAt
         updatedAt
+        viewCount
+        ratingAverage
         articleList {
           id
           name
@@ -103,6 +105,8 @@ const userListQuery = gql`
         username
         createdAt
         updatedAt
+        viewCount
+        ratingAverage
       }
     }
   }

@@ -14,27 +14,30 @@ function getViewCountByArticleId(articleId) {
       },
       type: QueryTypes.SELECT
     }).then((result) => {
-      resolve((result && result[0].viewCount) || null);
+      resolve((result && result[0].viewCount) || 0);
     }).catch((err) => reject(err))
   });
 }
 
-function getViewAverageByBlogId(blogId) {
-  return sequelize.query(`
-    SELECT
-      AVG(id) as "viewAverage"
-    FROM views as v
-    RIGHT JOIN (
-      SELECT id
-      FROM articles
-      WHERE blog_id = $blogId
-    ) as a
-    ON v.article_id = a.id
-  `, {
-    bind: {
-      blogId,
-    },
-    type: QueryTypes.SELECT
+function getViewCountByBlogId(blogId) {
+  return new Promise((resolve, reject) => {
+    sequelize.query(`
+      SELECT
+        COUNT(*) as "viewCount"
+      FROM views
+      WHERE article_id IN (
+        SELECT id
+        FROM articles
+        WHERE blog_id = $blogId
+      )
+    `, {
+      bind: {
+        blogId,
+      },
+      type: QueryTypes.SELECT
+    }).then((result) => {
+      resolve((result && result[0].viewCount) || 0);
+    }).catch((err) => reject(err))
   });
 }
 
@@ -56,6 +59,6 @@ function getView({articleId, userId}) {
 
 module.exports = {
   getViewCountByArticleId,
-  getViewAverageByBlogId,
+  getViewCountByBlogId,
   getView,
 }
