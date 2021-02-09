@@ -145,6 +145,8 @@ const ArticleType = new GraphQLObjectType({
 		html: { type: GraphQLString },
 		createdAt: { type: GraphQLString },
 		updatedAt: { type: GraphQLString },
+		isPublished: { type: GraphQLBoolean },
+		allowComments: { type: GraphQLBoolean },
 		commentList: {
 			type: new GraphQLList(CommentType),
 			resolve(parent) {

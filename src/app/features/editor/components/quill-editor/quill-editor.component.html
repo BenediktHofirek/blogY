@@ -1,3 +1,22 @@
+<div class="editButtons">
+  <button
+    class="quillEditor__editButton"
+    mat-raised-button
+    color="primary"
+    (click)="handleUndo()"
+  >
+    Back
+  </button>
+  <button
+    class="quillEditor__editButton"
+    mat-raised-button
+    color="primary"
+    (click)="handleRedo()"
+  >
+    Forward
+  </button>
+</div>
+
 <div #editor class="quillEditor">
     
 </div>

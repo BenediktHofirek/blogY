@@ -61,35 +61,48 @@ export class EditorComponent implements OnInit {
     );
   }
 
-  showPreview() {
+  viewArticle() {
     window.open(`${window.location.origin}/user/${this.userUsername}/blog/${this.blogName}/article/${this.articleName}`,'_blank');
+  }
+
+  handleIsPublishedChange() {
+    const isPublished = !this.article.isPublished;
+    this.article = {
+      ...this.article,
+      isPublished,
+    }
+
+    this.handleSave({ isPublished });
+  }
+
+
+  handleAllowCommentsChange() {
+    const allowComments = !this.article.allowComments;
+    this.article = {
+      ...this.article,
+      allowComments,
+    }
+
+    this.handleSave({ allowComments });
   }
 
   handleTitleSave(newTitle: string) {
     this.isTitleChanged = false;
-    this.apollo.mutate({
-      mutation: articleUpdateMutation,
-      variables: {
-        id: this.article.id,
-        name: newTitle,
-      }
-    }).subscribe(
-      (result: any) => {
-        console.log('name change success', result?.data?.articleUpdate);
-      },
-      (err) => console.log('error', err)
-    );
+    this.handleSave({name: newTitle});
 
     this.router.navigate(['/user',this.userUsername, 'blog', this.blogName, 'article', newTitle, 'edit']);
   }
 
-  handleSave(source: any) {
-    console.log('source', source);
+  handleSaveSource(source: any) {
+    this.handleSave({ source });
+  }
+
+  handleSave(payload: any) {
     this.apollo.mutate({
       mutation: articleUpdateMutation,
       variables: {
         id: this.article.id,
-        source,
+        ...payload,
       }
     }).subscribe(
       (result: any) => {

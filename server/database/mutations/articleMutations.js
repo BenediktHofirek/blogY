@@ -4,6 +4,8 @@ const { QueryTypes } = require('sequelize');
 function articleUpdateMutation({
   id,
   authorId,
+  isPublished = null,
+  allowComments = null,
   name = null,
   source = null,
   html = null
@@ -13,6 +15,8 @@ function articleUpdateMutation({
     SET
       name = COALESCE($name, name),
       source = COALESCE($source, source),
+      is_published = COALESCE($isPublished, is_published),
+      allow_comments = COALESCE($allowComments, allow_comments),
       html = COALESCE($html, html)
     WHERE id = $id
     AND blog_id IN (
@@ -24,6 +28,8 @@ function articleUpdateMutation({
       id,
       blog_id as "blogId",
       name,
+      is_published as "isPublished",
+      allow_comments as "allowComments",
       source, 
       html,
       TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
@@ -32,6 +38,8 @@ function articleUpdateMutation({
     bind: {
       id,
       authorId,
+      isPublished,
+      allowComments,
       name,
       source,
       html

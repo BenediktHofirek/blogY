@@ -13,6 +13,7 @@ function getArticleListByBlogIdQuery(blogId) {
       TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
     FROM articles
     WHERE blog_id = $blogId
+    AND is_published = true
   `, {
     bind: {
       blogId,
@@ -32,6 +33,8 @@ function getArticleQuery({
       blog_id as "blogId",
       name,
       source, 
+      is_published as "isPublished",
+      allow_comments as "allowComments",
       html,
       TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
       TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
@@ -82,6 +85,7 @@ function getArticleListQuery({
     	SELECT *
       FROM articles
       WHERE '' = $blogId or blog_id::text = $blogId
+      AND is_published = true
       ORDER BY
           CASE WHEN 'ASC' = $orderBy THEN (
             CASE when 'name' = $sortBy then "name" end,
@@ -124,6 +128,7 @@ function getArticleListByAuthorIdQuery(authorId) {
         FROM blogs
         WHERE author_id = $authorId
       )
+    AND is_published = true
   `, {
     bind: {
       authorId,

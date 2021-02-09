@@ -15,6 +15,8 @@ export const articleQuery = gql`
       name
       source
       html
+      isPublished
+      allowComments
       createdAt
       updatedAt
       author {
@@ -34,16 +36,22 @@ export const articleUpdateMutation = gql`
       $id: ID!,
       $name: String,
       $source: JSON,
+      $isPublished: Boolean,
+      $allowComments: Boolean
     ) {
     articleUpdate(
       id: $id,
       name: $name,
       source: $source,
+      isPublished: $isPublished,
+      allowComments: $allowComments
     ) {
       id
       name
       source
       html
+      isPublished
+      allowComments
       createdAt
       updatedAt
       author {

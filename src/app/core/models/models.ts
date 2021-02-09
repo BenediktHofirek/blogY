@@ -7,6 +7,8 @@ export interface Article {
   name: string,
   source: JSON,
   viewCount: number,
+  isPublished: boolean,
+  allowComments: boolean,
   ratingAverage: number,
   html: string,
   author: User,

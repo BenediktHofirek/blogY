@@ -3,10 +3,24 @@
 .quillEditor {
   display: block;
   width: 100%;
-  height: 400px;
+  max-width: 700px;
+  height: max-content;
+  margin: auto;
 
   &__saveButton {
     display: block;
     float: right;
   }
+}
+
+.ql-toolbar {
+  display: block;
+  width: 100%;
+  max-width: 700px;
+  margin: auto;
+}
+
+.editButtons {
+  display: block;
+  float: right;
 }

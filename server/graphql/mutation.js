@@ -168,11 +168,15 @@ module.exports = new GraphQLObjectType({
         id: { type: new GraphQLNonNull(GraphQLID) },
         name: { type: GraphQLString },
         source: { type: GraphQLJSON },
+        isPublished: { type: GraphQLBoolean },
+        allowComments: { type: GraphQLBoolean },
       },
 			resolve(parent, {
         id,
         name,
-        source
+        source,
+        isPublished,
+        allowComments
       }, context) {
         if (!context.user) {
           return errorMap.UNAUTHORIZED;
@@ -181,9 +185,11 @@ module.exports = new GraphQLObjectType({
         const payload = {
           id,
           name,
+          isPublished,
+          allowComments,
           authorId: context.user.id,
         };
-
+        console.log('payload', payload, isPublished);
         if (source) {
           payload.source = source;
           const dirtyHtml = new QuillDeltaToHtmlConverter(source.ops, {}).convert();
@@ -207,7 +213,7 @@ module.exports = new GraphQLObjectType({
           });
           payload.html = sanitizedHtml;
         }
-
+        
         return articleUpdateMutation(payload);
 			}
     },
