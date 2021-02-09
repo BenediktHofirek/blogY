@@ -61,6 +61,10 @@ export class EditorComponent implements OnInit {
     );
   }
 
+  showPreview() {
+    window.open(`${window.location.origin}/user/${this.userUsername}/blog/${this.blogName}/article/${this.articleName}`,'_blank');
+  }
+
   handleTitleSave(newTitle: string) {
     this.isTitleChanged = false;
     this.apollo.mutate({

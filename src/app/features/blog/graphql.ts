@@ -40,6 +40,9 @@ export const blogQuery = gql`
     ) {
       id
       name
+      description
+      viewCount
+      ratingAverage
       createdAt
       updatedAt
       author {

@@ -1,4 +1,18 @@
+@import '~quill/dist/quill.core.css';
+
 .content {
+  display: block;
   width: 100%;
+  max-width: 700px;
+  margin: auto;
   height: max-content;
+}
+
+.title {
+  display: block;
+  width: 100%;
+  float: left;
+  text-align: center;
+  font-size: 3rem;
+  margin-top: 2rem;
 }

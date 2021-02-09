@@ -6,17 +6,22 @@ export interface Article {
   updatedAt: string,
   name: string,
   source: JSON,
+  viewCount: number,
+  ratingAverage: number,
   html: string,
   author: User,
   blog: Blog,
 }
 
 export interface User {
-  id: string;
-  email: string;
-  firstName: string;
+  id: string,
+  email: string,
+  firstName: string,
   lastName: string,
-  username: string;
+  username: string,
+  birthdate: string,
+  viewCount: number,
+  ratingAverage: number,
   photoUrl: string,
   description: string,
 }
@@ -27,5 +32,8 @@ export interface Blog {
   createdAt: string,
   updatedAt: string,
   name: string,
+  viewCount: number,
+  ratingAverage: number,
+  description: string,
   author: User
 }

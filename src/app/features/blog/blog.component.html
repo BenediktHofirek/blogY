@@ -1,5 +1,60 @@
-<h1 class="title">{{ blog?.name }}</h1>
+<div class="container">
+  <h1 class="title">{{ blog?.name }}</h1>
 
-<p class="description">
-  {{blog?.author?.description}}
-</p>
+  <div class="info">
+    <div class="info__authorContainer">
+      <h3 class="info__title">Author:</h3>
+      <div 
+        class="authorIdentity"
+        (click)="navigateToUser()"
+      >
+        <img
+          class="authorIdentity__photo"
+          [src]="blog?.author?.photoUrl"
+          alt="Author photo"
+        />
+        <span
+          class="authorIdentity__username"
+        >
+          {{ blog?.author?.username }}
+        </span>
+      </div>
+    </div>
+    
+    <div
+      class="info__blogContainer"
+    >
+      <div 
+        class="info__xxx"
+      >
+        Created: {{ formatDate(blog?.createdAt) }}
+      </div>
+      <div 
+        class="info__xxx"
+      >
+        Rating:
+        <bar-rating
+          [rate]="blog?.ratingAverage"
+          [theme]="'fontawesome-o'"
+          [showText]="true" 
+          [max]="5"
+          [readOnly]="true"
+        ></bar-rating>
+      </div>
+      <div 
+        class="info__xxx"
+      >
+        Views: {{ blog?.viewCount }}
+      </div>
+    </div>
+  </div>
+  
+  <div class="description" *ngIf="blog?.description">
+    <h3 class="description__title">Description:</h3>
+    <p class="description__content">
+      {{blog?.description}}
+    </p>
+  </div>
+  
+</div>
+  

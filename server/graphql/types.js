@@ -57,6 +57,7 @@ const UserType = new GraphQLObjectType({
 		username: { type: GraphQLString },
 		firstName: { type: GraphQLString },
 		lastName: { type: GraphQLString },
+		birthdate: { type: GraphQLString },
 		email: { type: GraphQLString },
 		description: { type: GraphQLString },
 		photoUrl: { type: GraphQLString },
@@ -94,6 +95,7 @@ const BlogType = new GraphQLObjectType({
 	fields: () => ({
 		id: { type: GraphQLID },
 		name: { type: GraphQLString },
+		description: { type: GraphQLString },
 		authorId: { type: GraphQLID },
 		createdAt: { type: GraphQLString },
 		updatedAt: { type: GraphQLString },

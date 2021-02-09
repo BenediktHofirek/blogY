@@ -50,7 +50,7 @@ module.exports = {
       CREATE OR REPLACE FUNCTION update_changetimestamp_column()
       RETURNS TRIGGER AS $$
       BEGIN
-        NEW.changetimestamp = now(); 
+        NEW.updated_at = now(); 
         RETURN NEW;
       END;
       $$ language 'plpgsql'; 

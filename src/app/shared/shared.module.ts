@@ -5,10 +5,12 @@ import { LoadingSpinnerComponent } from './components/loading-spinner/loading-sp
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BarRatingModule } from "ngx-bar-rating";
+import { RatingComponent } from './components/rating/rating.component';
 
 @NgModule({
   declarations: [
     LoadingSpinnerComponent,
+    RatingComponent,
   ],
   imports: [
     BarRatingModule,
@@ -20,6 +22,7 @@ import { BarRatingModule } from "ngx-bar-rating";
   ],
   exports: [
     LoadingSpinnerComponent,
+    RatingComponent,
     
     BarRatingModule,
     CommonModule,

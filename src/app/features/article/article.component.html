@@ -4,5 +4,9 @@
 <div 
   *ngIf="article?.html" 
   class="content" 
-  [innerHTML]="sanitizer.bypassSecurityTrustHtml(article?.html)"
 >
+  <div  
+    class="ql-editor" 
+    [innerHTML]="sanitizer.bypassSecurityTrustHtml(article?.html)"
+  ></div>
+</div>

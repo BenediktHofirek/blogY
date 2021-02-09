@@ -6,6 +6,7 @@ function getBlogByIdQuery(blogId) {
     SELECT 
       id,
       name,
+      description,
       author_id as "authorId",
       TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
       TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
@@ -25,6 +26,7 @@ function getBlogListByAuthorIdQuery(authorId) {
       id,
       author_id as "authorId",
       name,
+      description,
       TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
       TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
     FROM blogs
@@ -46,6 +48,7 @@ function getBlogQuery({
       id,
       author_id as "authorId",
       name,
+      description,
       TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
       TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
     FROM blogs
@@ -79,6 +82,7 @@ function getBlogListQuery({
         'id', id,
         'authorId', author_id,
         'name', name,
+        'description', description,
         'createdAt', TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS'),
         'updatedAt', TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS')
       )))[$offset : $limit] as "blogList",

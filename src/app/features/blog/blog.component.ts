@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Apollo } from 'apollo-angular';
+import moment from 'moment';
 import { Article, Blog } from 'src/app/core/models/models';
 import { blogQuery } from './graphql';
 
@@ -16,6 +17,7 @@ export class BlogComponent implements OnInit {
   blogName: any;
 
   constructor(private route: ActivatedRoute,
+              private router: Router,
               private apollo: Apollo) { }
 
   ngOnInit(): void {
@@ -36,6 +38,14 @@ export class BlogComponent implements OnInit {
       },
       (err) => console.log('error', err)
     );
+  }
+
+  formatDate(date: string) {
+    return moment(date).format('DD. MMMM YYYY');
+  }
+
+  navigateToUser() {
+    this.router.navigateByUrl(`/user/${this.blog?.author?.username}`);
   }
 
 }

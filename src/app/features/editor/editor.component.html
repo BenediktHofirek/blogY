@@ -42,6 +42,14 @@
       [source]="article?.source"
       (save)="handleSave($event)"
     ></app-quill-editor>
+    <button
+      class="previewButton"
+      mat-raised-button
+      color="primary"
+      (click)="showPreview()"
+    >
+      Preview
+    </button>
   </ng-template>
 </ng-template>
 
