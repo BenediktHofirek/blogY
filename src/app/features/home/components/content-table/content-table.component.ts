@@ -243,7 +243,6 @@ export class ContentTableComponent implements OnInit, OnDestroy {
   handleFetchResult({ data }: {data: any}) {
     const resultName = this.getQueryResultName(this.state.display);
     const queryResult = data[resultName];
-    console.log(queryResult);
     this.dataSource = queryResult[resultName];
     this.isLoading = false;
     this.store.dispatch(stateSuccess({ collectionSize: queryResult.count }));

@@ -189,7 +189,7 @@ module.exports = new GraphQLObjectType({
           allowComments,
           authorId: context.user.id,
         };
-        console.log('payload', payload, isPublished);
+      
         if (source) {
           payload.source = source;
           const dirtyHtml = new QuillDeltaToHtmlConverter(source.ops, {}).convert();

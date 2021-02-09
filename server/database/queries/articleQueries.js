@@ -13,7 +13,7 @@ function getArticleListByBlogIdQuery(blogId) {
       TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
     FROM articles
     WHERE blog_id = $blogId
-    AND is_published = true
+    AND is_published IS TRUE
   `, {
     bind: {
       blogId,
@@ -85,7 +85,6 @@ function getArticleListQuery({
     	SELECT *
       FROM articles
       WHERE '' = $blogId or blog_id::text = $blogId
-      AND is_published = true
       ORDER BY
           CASE WHEN 'ASC' = $orderBy THEN (
             CASE when 'name' = $sortBy then "name" end,
@@ -98,6 +97,7 @@ function getArticleListQuery({
     ) AS a
     WHERE LOWER(name) LIKE LOWER($filter || '%')
     AND created_at >= to_timestamp($timeframe)
+    AND is_published IS TRUE
   `, {
     bind: {
       offset,
@@ -128,7 +128,7 @@ function getArticleListByAuthorIdQuery(authorId) {
         FROM blogs
         WHERE author_id = $authorId
       )
-    AND is_published = true
+    AND is_published IS TRUE
   `, {
     bind: {
       authorId,

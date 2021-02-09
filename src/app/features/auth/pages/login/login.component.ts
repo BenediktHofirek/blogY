@@ -35,7 +35,6 @@ export class LoginComponent implements OnInit {
       }
     )
 
-    console.log(usernameOrEmail, password);
     // form.reset();
   }
 

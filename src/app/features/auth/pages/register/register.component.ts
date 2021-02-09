@@ -30,7 +30,6 @@ export class RegisterComponent implements OnInit {
     this.isLoading = true;
     this.authService.register(email, password, username).catch(
       error => {
-        console.log('error', error);
         this.error = error.message;
         this.isLoading = false;
       }

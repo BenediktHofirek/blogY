@@ -12,30 +12,6 @@
   <div *ngIf="!isUserAllowed() else editor">
     Sorry, you are not allowed to edit this article
   </div>
-  <div class="settings">
-    <div>
-      <span>{{article?.isPublished ? 'Published' : 'Draft'}}</span>
-      <button
-        class="publishButton"
-        mat-raised-button
-        color="primary"
-        (click)="handleIsPublishedChange()"
-      >
-        {{article?.isPublished ? 'Switch to draft' : 'Publish article' }}
-      </button>
-    </div>
-    <div>
-      <span>{{article?.allowComments ? 'Comments allowed' : 'Comments forbidden'}}</span>
-      <button
-        class="allowCommentsButton"
-        mat-raised-button
-        color="primary"
-        (click)="handleAllowCommentsChange()"
-      >
-        {{article?.allowComments ? 'Turn off' : 'Allow' }}
-      </button>
-    </div>
-  </div>
   <ng-template #editor>
     <div class="header">
       <div class="title">
@@ -61,7 +37,31 @@
       </div>
     </div>
 
-
+    <div class="settings">
+      <div>
+        <span>{{article?.isPublished ? 'Published' : 'Draft'}}</span>
+        <button
+          class="publishButton"
+          mat-raised-button
+          color="primary"
+          (click)="handleIsPublishedChange()"
+        >
+          {{article?.isPublished ? 'Switch to draft' : 'Publish article' }}
+        </button>
+      </div>
+      <div>
+        <span>{{article?.allowComments ? 'Comments allowed' : 'Comments forbidden'}}</span>
+        <button
+          class="allowCommentsButton"
+          mat-raised-button
+          color="primary"
+          (click)="handleAllowCommentsChange()"
+        >
+          {{article?.allowComments ? 'Turn off' : 'Allow' }}
+        </button>
+      </div>
+    </div>
+    
     <app-quill-editor
       [source]="article?.source"
       (save)="handleSaveSource($event)"
