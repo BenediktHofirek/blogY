@@ -17,15 +17,21 @@
       <mat-menu #menu="matMenu">
         <button
           mat-menu-item
-          (click)="router.navigateByUrl('/account')"
+          (click)="navigateTo('account')"
         >
           Account
         </button>
         <button
           mat-menu-item
-          (click)="router.navigateByUrl('/settings')"
+          (click)="navigateTo('blogs')"
         >
-          Settings
+          Blogs
+        </button>
+        <button
+          mat-menu-item
+          (click)="navigateTo('messages')"
+        >
+          Messages
         </button>
         <button
           mat-menu-item

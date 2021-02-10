@@ -14,6 +14,9 @@ export const articleQuery = gql`
       id
       name
       html
+      myRating
+      ratingAverage
+      viewCount
       createdAt
       updatedAt
       author {

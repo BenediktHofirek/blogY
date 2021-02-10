@@ -42,4 +42,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.userSubscription.unsubscribe();
   }
 
+  navigateTo(page: string) {
+    this.router.navigateByUrl(`/user/${this.user?.username}/${page}`);
+  }
+
 }

@@ -1,12 +1,23 @@
-<h1 class="title">{{ article?.name }}</h1>
-
-<!-- html is sanitized on the server -->
-<div 
-  *ngIf="article?.html" 
-  class="content" 
->
-  <div  
-    class="ql-editor" 
-    [innerHTML]="sanitizer.bypassSecurityTrustHtml(article?.html)"
-  ></div>
+<div class="container">
+  <h1 class="title">{{ article?.name }}</h1>
+  
+  <div class="info--left">
+    <div>{{'Blog: ' + blogName }}</div>
+    <div>{{'Author: ' + userUsername }}</div>
+  </div>
+  <div class="info--right">
+    <div>{{'Created: ' + article?.createdAt }}</div>
+    <div>{{'Views: ' + article?.viewCount }}</div>
+  </div>
+  
+  <!-- html is sanitized on the server -->
+  <div 
+    *ngIf="article?.html" 
+    class="content" 
+  >
+    <div  
+      class="ql-editor" 
+      [innerHTML]="sanitizer.bypassSecurityTrustHtml(article?.html)"
+    ></div>
+  </div>
 </div>

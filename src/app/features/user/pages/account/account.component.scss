@@ -1,0 +1,32 @@
+.content {
+  display: block;
+  width: 100%;
+  max-width: 500px;
+  height: max-content;
+
+  &__row {
+    float: left;
+    display: block;
+    width: 100%;
+
+    & + & {
+      margin-top: 1rem;
+    }
+  }
+
+  &__title {
+    float: left;
+    width: 30%;
+    text-align: left;
+  }
+
+  &__data {
+    float: left;
+    width: 30%;
+    text-align: left;
+  }
+
+  &__editButton {
+    float: right;
+  }
+}

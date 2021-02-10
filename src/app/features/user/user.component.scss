@@ -1,0 +1,11 @@
+.navbar {
+  display: block;
+  width: 100%;
+  float: left;
+  margin-bottom: 1rem;
+
+  &__links {
+    display: block;
+    margin: auto;
+  }
+}

@@ -1,21 +1,36 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { AccountComponent } from './pages/account/account.component';
-import { SettingsComponent } from './pages/settings/settings.component';
-import { UserProfileComponent } from './pages/user-profile/user-profile.component';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { BlogsComponent } from './pages/blogs/blogs.component';
+import { MessagesComponent } from './pages/messages/messages.component';
+import { RouterModule, Routes } from '@angular/router';
+import { UserComponent } from './user.component';
+import { InputDialogComponent } from './components/input-dialog/input-dialog.component';
 
-
+const routes: Routes = [
+  {
+    path: '',
+    component: UserComponent,
+    children: [
+      { path: 'account', component:  AccountComponent},
+      { path: 'blogs', component:  BlogsComponent},
+      { path: 'messages', component: MessagesComponent},
+      { path: '', redirectTo: '/not-found', pathMatch: 'full' }
+    ],
+  }
+];
 
 @NgModule({
   declarations: [
     AccountComponent,
-    SettingsComponent,
-    UserProfileComponent,
+    BlogsComponent,
+    MessagesComponent,
+    UserComponent,
+    InputDialogComponent,
   ],
   imports: [
-    CommonModule,
     SharedModule,
+    RouterModule.forChild(routes),
   ],
 })
 export class UserModule { }

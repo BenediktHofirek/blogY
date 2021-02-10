@@ -68,18 +68,22 @@ function getRatingAverageByUserId(userId) {
 }
 
 function getRating({articleId, userId}) {
-  return sequelize.query(`
-    SELECT
-      rating
-    FROM ratings
-    WHERE article_id = $articleId
-    AND user_id = $userId
-  `, {
-    bind: {
-      articleId,
-      userId
-    },
-    type: QueryTypes.SELECT
+  new Promise((resolve, reject) => {
+    sequelize.query(`
+      SELECT
+        rating
+      FROM ratings
+      WHERE article_id = $articleId
+      AND user_id = $userId
+    `, {
+      bind: {
+        articleId,
+        userId
+      },
+      type: QueryTypes.SELECT
+    }).then((result) => {
+      resolve((result && result[0].ratingAverage) || 0);
+    }).catch((err) => reject(err))
   });
 }
 

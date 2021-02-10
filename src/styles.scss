@@ -83,3 +83,23 @@ select {
     scroll-behavior: auto !important;
   }
 }
+
+///////////////////////////////
+
+.container {
+  display: block;
+  width: 100%;
+  max-width: 700px;
+  margin: auto;
+}
+
+.title {
+  width: 100%;
+  float: left;
+  text-align: left;
+  
+  &--2 {
+    margin: 2rem 0;
+    font-size: 3rem;
+  }
+}

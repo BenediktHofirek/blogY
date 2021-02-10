@@ -20,6 +20,7 @@ import { HomeModule } from './features/home/home.module';
 import { SharedModule } from './shared/shared.module';
 import { UserModule } from './features/user/user.module';
 import { HttpHeaders } from '@angular/common/http';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { HttpHeaders } from '@angular/common/http';
     UserModule,
   ],
   providers: [
+    { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' } },
     {
       provide: APOLLO_OPTIONS,
       useFactory(httpLink: HttpLink) {

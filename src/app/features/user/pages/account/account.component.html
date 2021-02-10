@@ -1,5 +1,40 @@
-<div *ngIf="user">
-  <h2>Account</h2>
-  <p>Username {{user.displayName}}</p>
-  <p>Email: {{user.email}}</p>
+<div 
+  *ngIf="user"
+  class="container"
+>
+  <h2 class="title title--2">Account</h2>
+  <div class="content">
+    <div class="content__row">
+      <div class="content__title">
+       Username:
+      </div>
+      <div class="content__data">
+      {{user.username}}
+      </div>
+      <button
+        class="content__editButton"
+        mat-raised-button
+        color="primary"
+        (click)="edit('username')"
+      >
+        Edit
+      </button>
+    </div>
+    <div class="content__row">
+      <div class="content__title">
+      Email:
+      </div>
+      <div class="content__data">
+      {{ user.email }}
+      </div>
+      <button
+        class="content__editButton"
+        mat-raised-button
+        color="primary"
+        (click)="edit('email')"
+      >
+        Edit
+      </button>
+    </div>
+  </div>
 </div>

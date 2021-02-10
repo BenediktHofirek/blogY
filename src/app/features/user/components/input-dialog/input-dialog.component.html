@@ -1,0 +1,35 @@
+<h2 mat-dialog-title>{{'Edit ' + data.name}}</h2>
+<mat-dialog-content class="mat-typography">
+  <form>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ firstLetterUpperCase(data.name) }}</mat-label>
+      <input
+        matInput
+        [formControl]="formControl"
+        [type]="data.type"
+        required
+      >
+    </mat-form-field>
+    <mat-error *ngIf="formControl.hasError('email') && !formControl.hasError('required')">
+      Please enter a valid email address
+    </mat-error>
+    <mat-error *ngIf="formControl.hasError('usernameAlreadyExists') && !formControl.hasError('required')">
+      Username already exists
+    </mat-error>
+    <mat-error *ngIf="formControl.hasError('required')">
+      You must provide a value
+    </mat-error>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button
+    mat-raised-button
+    [mat-dialog-close]="formControl.value"
+    [disabled]="formControl.invalid || formControl.value === data.initialValue"
+    color="primary"
+    cdkFocusInitial
+  >
+    Save
+  </button>
+</mat-dialog-actions>

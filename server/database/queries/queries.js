@@ -28,7 +28,7 @@ module.exports = {
   getView: extractQueryResult(viewQueries.getView, true),
   getRatingAverageByArticleId: ratingQueries.getRatingAverageByArticleId,
   getRatingAverageByUserId: ratingQueries.getRatingAverageByUserId,
-  getRating: extractQueryResult(ratingQueries.getRating, true),
+  getRating: ratingQueries.getRating,
   getRatingAverageByBlogId: ratingQueries.getRatingAverageByBlogId,
   getMessageSendedListByUserId: extractQueryResult(messageQueries.getMessageSendedListByUserId, true),
   getMessageReceivedListByUserId: extractQueryResult(messageQueries.getMessageReceivedListByUserId, true),
