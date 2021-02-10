@@ -29,4 +29,12 @@
   &__editButton {
     float: right;
   }
+
+  &__photo {
+    display: block;
+    border-radius: 50%;
+    float: left;
+    width: 100px;
+    height: 100px;
+  }
 }

@@ -5,6 +5,21 @@
   <h2 class="title title--2">Account</h2>
   <div class="content">
     <div class="content__row">
+      <img
+        *ngIf="user?.photoUrl"
+        class="content__photo"
+        [src]="user?.photoUrl"
+      />
+      <button
+        class="content__editButton"
+        mat-raised-button
+        color="primary"
+        (click)="uploadPhoto()"
+      >
+        Upload photo
+      </button>
+    </div>
+    <div class="content__row">
       <div class="content__title">
        Username:
       </div>

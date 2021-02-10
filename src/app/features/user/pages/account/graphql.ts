@@ -6,12 +6,16 @@ export const userUpdateMutation = gql`
       $username: String,
       $firstName: String,
       $lastName: String,
+      $email: String,
+      $photoUrl: String,
     ) {
     userUpdate(
       id: $id,
       username: $username,
       firstName: $firstName,
-      lastName: $lastName
+      lastName: $lastName,
+      email: $email,
+      photoUrl: $photoUrl
     ) {
       id
       username

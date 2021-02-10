@@ -9,6 +9,7 @@ import { Apollo } from 'apollo-angular';
 import { userUpdateMutation } from './graphql';
 import { currentUserSuccess } from 'src/app/store/actions/app.actions';
 import { NotificationService } from 'src/app/shared/services/notification.service';
+import { ImageUploadDialogComponent } from '../../components/image-upload-dialog/image-upload-dialog.component';
 
 @Component({
   selector: 'app-account',
@@ -18,6 +19,7 @@ import { NotificationService } from 'src/app/shared/services/notification.servic
 export class AccountComponent implements OnInit, OnDestroy {
   user: any = undefined;
   userSubscription: Subscription;
+  dialogRef: any;
 
   constructor(private store: Store<AppState>,
               private apollo: Apollo,
@@ -35,6 +37,21 @@ export class AccountComponent implements OnInit, OnDestroy {
     this.userSubscription.unsubscribe();
   }
 
+  saveUploadedPhoto = (newPhoto: string) => {
+    this.updateUser({ photoUrl: newPhoto });
+    this.dialogRef.close();
+  }
+
+  uploadPhoto() {
+    this.dialogRef = this.dialog.open(ImageUploadDialogComponent, {
+      data: {
+        callback: this.saveUploadedPhoto,
+      },
+      disableClose: true,
+      autoFocus: true,
+    });
+  }
+
   edit(field: string) {
     const dialogRef = this.dialog.open(InputDialogComponent, {
       data: {
@@ -47,37 +64,41 @@ export class AccountComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(newValue => {
-      const userBeforeUpdate = {...this.user};
+      this.updateUser({ [field]: newValue });
+    });
+  }
+
+  updateUser(payload: object) {
+    const userBeforeUpdate = {...this.user};
       this.user = {
         ...this.user,
-        [field]: newValue,
+        ...payload
       };
 
-      this.apollo.mutate({
-        mutation: userUpdateMutation,
-        variables: {
-          id: this.user?.id,
-          [field]: newValue,
-        }
-      }).subscribe(
-        (result: any) => {
-          const updatedUser = result?.data?.userUpdate;
-          if (updatedUser) {
-            this.store.dispatch(currentUserSuccess({ currentUser: updatedUser }));
-          } else {
-            this.user = {
-              ...userBeforeUpdate,
-            };
+    this.apollo.mutate({
+      mutation: userUpdateMutation,
+      variables: {
+        id: this.user?.id,
+        ...payload
+      }
+    }).subscribe(
+      (result: any) => {
+        const updatedUser = result?.data?.userUpdate;
+        if (updatedUser) {
+          this.store.dispatch(currentUserSuccess({ currentUser: updatedUser }));
+        } else {
+          this.user = {
+            ...userBeforeUpdate,
+          };
 
-            this.notification.error(
-              'Something went wrong', 
-              'An error occur while saving your changes. Please try again later.'
-            );
-          }
-        },
-        (err) => console.log('error', err)
-      );
-    });
+          this.notification.error(
+            'Something went wrong', 
+            'An error occur while saving your changes. Please try again later.'
+          );
+        }
+      },
+      (err) => console.log('error', err)
+    );
   }
 
 }
