@@ -28,7 +28,6 @@
     "@ngrx/effects": "^10.1.2",
     "@ngrx/store": "^10.1.2",
     "@ngrx/store-devtools": "^10.1.2",
-    "angular2-image-upload": "^1.0.0-rc.2",
     "apollo-angular": "^2.2.0",
     "font-awesome": "^4.7.0",
     "graphql": "^15.4.0",

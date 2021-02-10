@@ -22,7 +22,6 @@ import { UserModule } from './features/user/user.module';
 import { HttpHeaders } from '@angular/common/http';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { ToastrModule } from 'ngx-toastr';
-import { ImageUploadModule } from 'angular2-image-upload';
 
 @NgModule({
   declarations: [
@@ -33,7 +32,6 @@ import { ImageUploadModule } from 'angular2-image-upload';
     BrowserAnimationsModule,
 
     ToastrModule.forRoot(),
-    ImageUploadModule.forRoot(),
     AppRoutingModule,
     AppStoreModule,
     AuthModule,

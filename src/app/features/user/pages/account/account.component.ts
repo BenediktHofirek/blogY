@@ -19,7 +19,6 @@ import { ImageUploadDialogComponent } from '../../components/image-upload-dialog
 export class AccountComponent implements OnInit, OnDestroy {
   user: any = undefined;
   userSubscription: Subscription;
-  dialogRef: any;
 
   constructor(private store: Store<AppState>,
               private apollo: Apollo,
@@ -37,18 +36,14 @@ export class AccountComponent implements OnInit, OnDestroy {
     this.userSubscription.unsubscribe();
   }
 
-  saveUploadedPhoto = (newPhoto: string) => {
-    this.updateUser({ photoUrl: newPhoto });
-    this.dialogRef.close();
-  }
-
   uploadPhoto() {
-    this.dialogRef = this.dialog.open(ImageUploadDialogComponent, {
-      data: {
-        callback: this.saveUploadedPhoto,
-      },
+    const dialogRef = this.dialog.open(ImageUploadDialogComponent, {
       disableClose: true,
       autoFocus: true,
+    });
+
+    dialogRef.afterClosed().subscribe(newPhoto => {
+      this.updateUser({ photoUrl: newPhoto });
     });
   }
 

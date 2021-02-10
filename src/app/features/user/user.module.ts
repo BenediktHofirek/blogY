@@ -7,7 +7,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { UserComponent } from './user.component';
 import { InputDialogComponent } from './components/input-dialog/input-dialog.component';
 import { ImageUploadDialogComponent } from './components/image-upload-dialog/image-upload-dialog.component';
-import { ImageUploadModule } from 'angular2-image-upload';
 
 const routes: Routes = [
   {
@@ -33,7 +32,6 @@ const routes: Routes = [
   ],
   imports: [
     SharedModule,
-    ImageUploadModule,
     RouterModule.forChild(routes),
   ],
 })
