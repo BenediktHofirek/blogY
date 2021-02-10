@@ -21,9 +21,9 @@ const {
 } = require('../database/queries/queries');
 
 const {
-  createUserMutation,
-  updateUserMutation,
-  deleteUserMutation,
+  userCreateMutation,
+  userUpdateMutation,
+  userDeleteMutation,
   articleCreateMutation,
   articleDeleteMutation,
   articleUpdateMutation,
@@ -71,7 +71,7 @@ module.exports = new GraphQLObjectType({
         
         const passwordHash = JSON.stringify(generatePasswordHash(password));
         return new Promise((resolve, reject) => {
-          createUserMutation({
+          userCreateMutation({
             username,
             password: passwordHash,
             email
@@ -87,11 +87,14 @@ module.exports = new GraphQLObjectType({
         });
 			}
     },
-    updateUser: {
+    userUpdate: {
 			type: UserType,
 			args: {
+        id: { type: new GraphQLNonNull(GraphQLID) },
         username: { type: GraphQLString },
         password: { type: GraphQLString },
+        firstName: { type: GraphQLString },
+        lastName: { type: GraphQLString },
         email: { type: GraphQLString },
         birthdate: { type: GraphQLString },
         description: { type: GraphQLString },
@@ -103,22 +106,17 @@ module.exports = new GraphQLObjectType({
         }
 
         const payload = {
-          id: context.user.id,
-          username: args.username,
-          email: args.email,
-          birthdate: args.birthdate,
-          description: args.description,
-          photoUrl: args.photoUrl
+          ...args
         };
 
         if (args.password) {
           payload.password = generatePasswordHash(args.password);
         }
 
-				return updateUserMutation(payload);
+				return userUpdateMutation(payload);
 			}
 		},
-    deleteUser: {
+    userDelete: {
 			type: UserType,
 			args: {
         password: { type: new GraphQLNonNull(GraphQLString) },
@@ -130,7 +128,7 @@ module.exports = new GraphQLObjectType({
               if (!user) {
                 reject(errorMap.USER_NOT_FOUND);
               }else if (validatePassword(password, user.password)) {
-                const deletedUser = await deleteUserMutation(user.id);
+                const deletedUser = await userDeleteMutation(user.id);
                 resolve(deletedUser);
               } else {
                 reject(errorMap.WRONG_PASSWORD);

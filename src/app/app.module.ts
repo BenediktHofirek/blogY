@@ -21,6 +21,7 @@ import { SharedModule } from './shared/shared.module';
 import { UserModule } from './features/user/user.module';
 import { HttpHeaders } from '@angular/common/http';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
     BrowserModule,
     BrowserAnimationsModule,
 
+    ToastrModule.forRoot(),
     AppRoutingModule,
     AppStoreModule,
     AuthModule,

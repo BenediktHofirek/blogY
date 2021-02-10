@@ -3,6 +3,8 @@ query UserQuery($userId: ID!) {
     id
     username
     email
+    firstName
+    lastName
     description
     photoUrl
     createdAt

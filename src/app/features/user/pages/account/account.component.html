@@ -36,5 +36,37 @@
         Edit
       </button>
     </div>
+    <div class="content__row">
+      <div class="content__title">
+      First Name:
+      </div>
+      <div class="content__data">
+      {{ user.firstName }}
+      </div>
+      <button
+        class="content__editButton"
+        mat-raised-button
+        color="primary"
+        (click)="edit('firstName')"
+      >
+        Edit
+      </button>
+    </div>
+    <div class="content__row">
+      <div class="content__title">
+      Last Name:
+      </div>
+      <div class="content__data">
+      {{ user.lastName }}
+      </div>
+      <button
+        class="content__editButton"
+        mat-raised-button
+        color="primary"
+        (click)="edit('lastName')"
+      >
+        Edit
+      </button>
+    </div>
   </div>
 </div>

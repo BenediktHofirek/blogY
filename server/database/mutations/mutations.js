@@ -9,9 +9,9 @@ const messageMutations = require('./messageMutations');
 const extractQueryResult = require('../utils/extractQueryResult');
 
 module.exports = {
-  createUserMutation: extractQueryResult(userMutations.createUserMutation),
-  updateUserMutation: extractQueryResult(userMutations.updateUserMutation),
-  deleteUserMutation: extractQueryResult(userMutations.deleteUserMutation),
+  userCreateMutation: extractQueryResult(userMutations.userCreateMutation),
+  userUpdateMutation: extractQueryResult(userMutations.userUpdateMutation),
+  userDeleteMutation: extractQueryResult(userMutations.userDeleteMutation),
   articleCreateMutation: extractQueryResult(articleMutations.articleCreateMutation),
   articleDeleteMutation: extractQueryResult(articleMutations.articleDeleteMutation),
   articleUpdateMutation: extractQueryResult(articleMutations.articleUpdateMutation),

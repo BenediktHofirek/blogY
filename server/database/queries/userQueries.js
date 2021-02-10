@@ -10,6 +10,8 @@ function getUserByCredentialsQuery(usernameOrEmail) {
         email,
         photo_url as "photoUrl",
         username,
+        first_name as "firstName",
+        last_name as "lastName",
         birthdate,
         password,
         TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
@@ -40,6 +42,8 @@ function getUserQuery({
         email,
         photo_url as "photoUrl",
         username,
+        first_name as "firstName",
+        last_name as "lastName",
         birthdate,
         TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
         TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
@@ -66,6 +70,8 @@ function getUserByBlogIdQuery(blogId) {
       email,
       photo_url as "photoUrl",
       username,
+      first_name as "firstName",
+      last_name as "lastName",
       birthdate,
       TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
       TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"

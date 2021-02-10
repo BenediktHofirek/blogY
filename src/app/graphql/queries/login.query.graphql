@@ -5,10 +5,20 @@ query LoginQuery($usernameOrEmail: String!, $password: String!) {
       id
       username
       email
-      photoUrl
+      firstName
+      lastName
       description
+      photoUrl
       createdAt
       updatedAt
+      blogList {
+        id
+        name
+      }
+      articleList {
+        id
+        name
+      }
     }
   }
 }
