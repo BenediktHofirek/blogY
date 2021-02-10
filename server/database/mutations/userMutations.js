@@ -41,7 +41,17 @@ function userUpdateMutation({
       description = COALESCE($description, description),
       photo_url = COALESCE($photoUrl, photo_url)
     WHERE id = $id
-    RETURNING *
+    RETURNING 
+      id,
+      description,
+      email,
+      photo_url as "photoUrl",
+      username,
+      first_name as "firstName",
+      last_name as "lastName",
+      birthdate,
+      TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
+      TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
   `, {
     bind: {
       id,
@@ -62,7 +72,17 @@ function userDeleteMutation(userId) {
   return sequelize.query(`
       DELETE FROM users
       WHERE id = $userId
-      RETURNING *
+      RETURNING
+        id,
+        description,
+        email,
+        photo_url as "photoUrl",
+        username,
+        first_name as "firstName",
+        last_name as "lastName",
+        birthdate,
+        TO_CHAR(created_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "createdAt",
+        TO_CHAR(updated_at, 'YYYY-MM-DD"T"HH24:MI:SS') as "updatedAt"
   `, {
     bind: {
       userId,

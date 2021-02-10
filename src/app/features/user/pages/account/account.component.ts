@@ -63,7 +63,7 @@ export class AccountComponent implements OnInit, OnDestroy {
         (result: any) => {
           const updatedUser = result?.data?.userUpdate;
           if (updatedUser) {
-            this.store.dispatch(currentUserSuccess(updatedUser));
+            this.store.dispatch(currentUserSuccess({ currentUser: updatedUser }));
           } else {
             this.user = {
               ...userBeforeUpdate,

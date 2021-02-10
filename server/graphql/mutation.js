@@ -112,7 +112,7 @@ module.exports = new GraphQLObjectType({
         if (args.password) {
           payload.password = generatePasswordHash(args.password);
         }
-
+        
 				return userUpdateMutation(payload);
 			}
 		},
