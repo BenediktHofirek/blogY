@@ -60,7 +60,7 @@ const UserType = new GraphQLObjectType({
 		birthdate: { type: GraphQLString },
 		email: { type: GraphQLString },
 		description: { type: GraphQLString },
-		photoUrl: { type: GraphQLString },
+		image: { type: GraphQLString },
 		createdAt: { type: GraphQLString },
 		updatedAt: { type: GraphQLString },
 		ratingAverage: {

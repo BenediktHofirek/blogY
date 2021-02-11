@@ -12,7 +12,7 @@ mutation RegisterMutation(
       firstName
       lastName
       description
-      photoUrl
+      image
       createdAt
       updatedAt
       blogList {

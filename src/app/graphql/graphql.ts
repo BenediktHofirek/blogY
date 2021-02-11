@@ -24,7 +24,7 @@ export type User = {
   description?: Maybe<Scalars['String']>;
   firstName?: Maybe<Scalars['String']>;
   lastName?: Maybe<Scalars['String']>;
-  photoUrl?: Maybe<Scalars['String']>;
+  image?: Maybe<Scalars['String']>;
   createdAt?: Maybe<Scalars['String']>;
   updatedAt?: Maybe<Scalars['String']>;
   blogList?: Maybe<Array<Maybe<Blog>>>;
@@ -103,7 +103,7 @@ export type RegisterMutationMutation = (
     & Pick<Auth, 'token'>
     & { user: (
       { __typename?: 'User' }
-      & Pick<User, 'id' | 'username' | 'email' | 'firstName' | 'lastName' | 'description' | 'photoUrl' | 'createdAt' | 'updatedAt'>
+      & Pick<User, 'id' | 'username' | 'email' | 'firstName' | 'lastName' | 'description' | 'image' | 'createdAt' | 'updatedAt'>
       & { blogList?: Maybe<Array<Maybe<(
         { __typename?: 'Blog' }
         & Pick<Blog, 'id' | 'name'>
@@ -128,7 +128,7 @@ export type LoginQueryQuery = (
     & Pick<Auth, 'token'>
     & { user: (
       { __typename?: 'User' }
-      & Pick<User, 'id' | 'username' | 'email' | 'firstName' | 'lastName' | 'description' | 'photoUrl' | 'createdAt' | 'updatedAt'>
+      & Pick<User, 'id' | 'username' | 'email' | 'firstName' | 'lastName' | 'description' | 'image' | 'createdAt' | 'updatedAt'>
       & { blogList?: Maybe<Array<Maybe<(
         { __typename?: 'Blog' }
         & Pick<Blog, 'id' | 'name'>
@@ -149,7 +149,7 @@ export type UserQueryQuery = (
   { __typename?: 'Query' }
   & { user?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'username' | 'email' | 'firstName' | 'lastName' | 'description' | 'photoUrl' | 'createdAt' | 'updatedAt'>
+    & Pick<User, 'id' | 'username' | 'email' | 'firstName' | 'lastName' | 'description' | 'image' | 'createdAt' | 'updatedAt'>
     & { blogList?: Maybe<Array<Maybe<(
       { __typename?: 'Blog' }
       & Pick<Blog, 'id' | 'name'>
@@ -171,7 +171,7 @@ export const RegisterMutationDocument = gql`
       firstName
       lastName
       description
-      photoUrl
+      image
       createdAt
       updatedAt
       blogList {
@@ -208,7 +208,7 @@ export const LoginQueryDocument = gql`
       firstName
       lastName
       description
-      photoUrl
+      image
       createdAt
       updatedAt
       blogList {
@@ -243,7 +243,7 @@ export const UserQueryDocument = gql`
     firstName
     lastName
     description
-    photoUrl
+    image
     createdAt
     updatedAt
     blogList {

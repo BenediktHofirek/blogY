@@ -5,7 +5,7 @@ type User {
   description: String
   firstName: String
   lastName: String
-  photoUrl: String
+  image: String
   createdAt: String
   updatedAt: String
   blogList: [Blog]

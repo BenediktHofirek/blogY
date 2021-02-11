@@ -27,7 +27,7 @@ function userUpdateMutation({
   email = null,
   birthdate = null,
   description = null,
-  photoUrl = null,
+  image = null,
 }) {
   return sequelize.query(`
     UPDATE users
@@ -39,13 +39,13 @@ function userUpdateMutation({
       email = COALESCE($email, email),
       birthdate = COALESCE($birthdate, birthdate),
       description = COALESCE($description, description),
-      photo_url = COALESCE($photoUrl, photo_url)
+      image = COALESCE($image, image)
     WHERE id = $id
     RETURNING 
       id,
       description,
       email,
-      photo_url as "photoUrl",
+      image,
       username,
       first_name as "firstName",
       last_name as "lastName",
@@ -62,7 +62,7 @@ function userUpdateMutation({
       email,
       birthdate,
       description,
-      photoUrl,
+      image,
     },
     type: QueryTypes.UPDATE,
   });
@@ -76,7 +76,7 @@ function userDeleteMutation(userId) {
         id,
         description,
         email,
-        photo_url as "photoUrl",
+        image,
         username,
         first_name as "firstName",
         last_name as "lastName",

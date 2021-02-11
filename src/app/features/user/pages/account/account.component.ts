@@ -43,7 +43,9 @@ export class AccountComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(newPhoto => {
-      this.updateUser({ photoUrl: newPhoto });
+      if (newPhoto) {
+        this.updateUser({ image: newPhoto });
+      }
     });
   }
 

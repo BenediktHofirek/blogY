@@ -24,7 +24,7 @@ export const articleQuery = gql`
         firstName
         lastName
         username
-        photoUrl
+        image
       }
       blog {
         id

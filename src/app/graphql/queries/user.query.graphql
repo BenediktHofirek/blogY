@@ -6,7 +6,7 @@ query UserQuery($userId: ID!) {
     firstName
     lastName
     description
-    photoUrl
+    image
     createdAt
     updatedAt
     blogList {

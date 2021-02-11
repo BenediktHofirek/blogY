@@ -24,7 +24,7 @@ export interface User {
   birthdate: string,
   viewCount: number,
   ratingAverage: number,
-  photoUrl: string,
+  image: string,
   description: string,
 }
 

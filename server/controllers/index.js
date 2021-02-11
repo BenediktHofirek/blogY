@@ -31,7 +31,7 @@ const getAllUsers = async (req, res) => {
         created_at as "createdAt",
         description,
         email,
-        photo_url as "photoUrl",
+        image,
         username,
         updated_at as "updatedAt",
         blog_name_list as "BlogNameList"

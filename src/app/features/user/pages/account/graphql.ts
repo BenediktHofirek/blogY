@@ -7,7 +7,7 @@ export const userUpdateMutation = gql`
       $firstName: String,
       $lastName: String,
       $email: String,
-      $photoUrl: String,
+      $image: String,
     ) {
     userUpdate(
       id: $id,
@@ -15,7 +15,7 @@ export const userUpdateMutation = gql`
       firstName: $firstName,
       lastName: $lastName,
       email: $email,
-      photoUrl: $photoUrl
+      image: $image
     ) {
       id
       username
@@ -23,7 +23,7 @@ export const userUpdateMutation = gql`
       firstName
       lastName
       description
-      photoUrl
+      image
       createdAt
       updatedAt
       blogList {

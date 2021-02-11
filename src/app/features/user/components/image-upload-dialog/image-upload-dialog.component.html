@@ -13,17 +13,17 @@
     Wrong file type, must be an image!
   </mat-error>
   <img
-    *ngIf="newPhoto"
+    *ngIf="newPhoto | async"
     class="newPhoto"
-    [src]="newPhoto"
+    [src]="newPhoto | async"
   />
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-button mat-dialog-close>Cancel</button>
   <button
     mat-raised-button
-    [mat-dialog-close]="newPhoto"
-    [disabled]="!newPhoto"
+    [mat-dialog-close]="newPhoto | async"
+    [disabled]="!(newPhoto | async)"
     color="primary"
   >
     Save

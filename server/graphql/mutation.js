@@ -98,7 +98,7 @@ module.exports = new GraphQLObjectType({
         email: { type: GraphQLString },
         birthdate: { type: GraphQLString },
         description: { type: GraphQLString },
-        photoUrl: { type: GraphQLString },
+        image: { type: GraphQLString },
 			},
 			resolve(parent, args, context) {
         if (!context.user) {
@@ -111,6 +111,10 @@ module.exports = new GraphQLObjectType({
 
         if (args.password) {
           payload.password = generatePasswordHash(args.password);
+        }
+
+        if (args.image) {
+          payload.image = sanitizeHtml(args.image);
         }
         
 				return userUpdateMutation(payload);

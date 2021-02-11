@@ -1,6 +1,7 @@
 import { Component, OnInit, Inject, OnDestroy } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FileHolder } from 'angular2-image-upload';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-image-upload-dialog',
@@ -8,13 +9,14 @@ import { FileHolder } from 'angular2-image-upload';
   styleUrls: ['./image-upload-dialog.component.scss']
 })
 export class ImageUploadDialogComponent implements OnDestroy {
-  newPhoto: string;
+  newPhoto: BehaviorSubject<string>;
   isTooBig = false;
   isWrongFileType = false;
   reader: FileReader;
 
   constructor() {
     this.reader = new FileReader();
+    this.newPhoto = new BehaviorSubject('');
 
     this.reader.addEventListener('load', this.handleLoad);
     // this.reader.addEventListener('progress', this.handleProgress);
@@ -35,10 +37,8 @@ export class ImageUploadDialogComponent implements OnDestroy {
     }
   }
 
-  handleLoad(event: any) {
-    console.log(event.currentTarget.result);
-    this.newPhoto = event.currentTarget.result;
-    console.log(this.newPhoto);
+  handleLoad = (event: any) => {
+    this.newPhoto.next(event.currentTarget.result);
   }
 
   handleProgress(event: any) {
